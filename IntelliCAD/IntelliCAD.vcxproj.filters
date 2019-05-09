@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일\ui">
+      <UniqueIdentifier>{de0a985e-9fd8-41bf-a833-b7ceabf32ec7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\ui">
+      <UniqueIdentifier>{fadfd02c-b1d1-46f2-8890-9bea0adb0730}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\ui\rendering_view">
+      <UniqueIdentifier>{c4559f61-9e70-405c-b48c-b38f368eaefd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\ui\rendering_view">
+      <UniqueIdentifier>{0880da00-59a1-4149-a44e-07e6228a0028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\common">
+      <UniqueIdentifier>{ea5e81f0-c029-4c23-98f3-25c03187580c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\data_structure">
+      <UniqueIdentifier>{01812d6c-eb06-4856-a507-93833ce1f4c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\event">
+      <UniqueIdentifier>{4be0a7ef-9a5f-4572-a185-31d47a382300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\rendering_engine">
+      <UniqueIdentifier>{f8e9142e-2e4f-48c5-9553-2c5bc53469f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\system">
+      <UniqueIdentifier>{4776cb82-3d9b-4a07-a4d9-e19a9b745110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\task">
+      <UniqueIdentifier>{cc9a0526-d33c-47b8-9b8d-a5f23045d09d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\util">
+      <UniqueIdentifier>{d4b513ea-fa00-4dba-93ce-98149c44557c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\common">
+      <UniqueIdentifier>{d797adef-4142-410c-8de9-bdd7df6be21c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\data_structure">
+      <UniqueIdentifier>{94895e70-8a3f-4ee8-8c97-7228a4c362ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\event">
+      <UniqueIdentifier>{51276c6c-6f30-4a41-86bd-60972506ce7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\rendering_engine">
+      <UniqueIdentifier>{f8134b59-ad3c-46de-9ddc-d38380bb25d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\system">
+      <UniqueIdentifier>{13e2257f-78ba-43eb-9253-f864056946f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\task">
+      <UniqueIdentifier>{9df23a6e-fb55-45af-b632-0119a30494b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\util">
+      <UniqueIdentifier>{c4708df2-a027-47f3-981f-3a717c33ceaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\image_processing">
+      <UniqueIdentifier>{aed709d4-adec-423e-ad88-20400b94f30c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\image_processing">
+      <UniqueIdentifier>{e8ea3007-ba92-4128-83f7-84397e1fe826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\machine_learning">
+      <UniqueIdentifier>{2971ab4f-1814-42f0-bfcb-fb560cded1c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\machine_learning">
+      <UniqueIdentifier>{c38eecbf-a581-494e-a53e-851b999baa13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\fileio">
+      <UniqueIdentifier>{f528da09-df21-438a-9db4-017685866487}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\fileio">
+      <UniqueIdentifier>{6441f0ac-558d-4cab-8b76-6dbe4df14718}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CCustomSplitterWnd.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="IntelliCAD.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="IntelliCADDoc.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="IntelliCADView.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="CRenderingView.h">
+      <Filter>헤더 파일\ui\rendering_view</Filter>
+    </ClInclude>
+    <ClInclude Include="CVolumeRenderingView.h">
+      <Filter>헤더 파일\ui\rendering_view</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeEx.h">
+      <Filter>헤더 파일\common</Filter>
+    </ClInclude>
+    <ClInclude Include="AsyncTaskManager.hpp">
+      <Filter>헤더 파일\task</Filter>
+    </ClInclude>
+    <ClInclude Include="Debugger.h">
+      <Filter>헤더 파일\util</Filter>
+    </ClInclude>
+    <ClInclude Include="EventBroadcaster.h">
+      <Filter>헤더 파일\event</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericListener.h">
+      <Filter>헤더 파일\event</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUVolume.h">
+      <Filter>헤더 파일\data_structure</Filter>
+    </ClInclude>
+    <ClInclude Include="MacroTransaction.h">
+      <Filter>헤더 파일\util</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkUtility.h">
+      <Filter>헤더 파일\util</Filter>
+    </ClInclude>
+    <ClInclude Include="NumberUtility.hpp">
+      <Filter>헤더 파일\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Parser.hpp">
+      <Filter>헤더 파일\util</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingEngine.h">
+      <Filter>헤더 파일\rendering_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="StringTokenizer.h">
+      <Filter>헤더 파일\util</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>헤더 파일\system</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskType.h">
+      <Filter>헤더 파일\task</Filter>
+    </ClInclude>
+    <ClInclude Include="tstring.h">
+      <Filter>헤더 파일\common</Filter>
+    </ClInclude>
+    <ClInclude Include="VolumeReader.hpp">
+      <Filter>헤더 파일\util</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageProcessor.h">
+      <Filter>헤더 파일\image_processing</Filter>
+    </ClInclude>
+    <ClInclude Include="SetVolumeListener.h">
+      <Filter>헤더 파일\event</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CCustomSplitterWnd.cpp">
+      <Filter>소스 파일\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelliCAD.cpp">
+      <Filter>소스 파일\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelliCADDoc.cpp">
+      <Filter>소스 파일\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelliCADView.cpp">
+      <Filter>소스 파일\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>소스 파일\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="CRenderingView.cpp">
+      <Filter>소스 파일\ui\rendering_view</Filter>
+    </ClCompile>
+    <ClCompile Include="CVolumeRenderingView.cpp">
+      <Filter>소스 파일\ui\rendering_view</Filter>
+    </ClCompile>
+    <ClCompile Include="AsyncTaskManager.cpp">
+      <Filter>소스 파일\task</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger.cpp">
+      <Filter>소스 파일\util</Filter>
+    </ClCompile>
+    <ClCompile Include="EventBroadcaster.cpp">
+      <Filter>소스 파일\event</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkUtility.cpp">
+      <Filter>소스 파일\util</Filter>
+    </ClCompile>
+    <ClCompile Include="Parser.cpp">
+      <Filter>소스 파일\util</Filter>
+    </ClCompile>
+    <ClCompile Include="StringTokenizer.cpp">
+      <Filter>소스 파일\util</Filter>
+    </ClCompile>
+    <ClCompile Include="System.cpp">
+      <Filter>소스 파일\system</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingEngine.cpp">
+      <Filter>소스 파일\rendering_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageProcessor.cpp">
+      <Filter>소스 파일\image_processing</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUVolume.cpp">
+      <Filter>소스 파일\data_structure</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="IntelliCAD.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\buttons.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\filelarge.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\filesmall.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\main.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\writelarge.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\writesmall.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\IntelliCADDoc.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\IntelliCAD.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Toolbar256.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ribbon.mfcribbon-ms">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="res\IntelliCAD.rc2">
+      <Filter>리소스 파일</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="Pixel.cpp">
+      <Filter>소스 파일</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Pixel.h">
+      <Filter>헤더 파일\data_structure</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Size2D.hpp">
+      <Filter>헤더 파일\data_structure</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Size3D.hpp">
+      <Filter>헤더 파일\data_structure</Filter>
+    </CudaCompile>
+  </ItemGroup>
+</Project>
