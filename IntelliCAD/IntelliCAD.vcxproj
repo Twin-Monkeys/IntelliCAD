@@ -208,6 +208,7 @@
   <ItemGroup>
     <ClInclude Include="AsyncTaskManager.hpp" />
     <ClInclude Include="CCustomSplitterWnd.h" />
+    <ClInclude Include="CInspecterView.h" />
     <ClInclude Include="CRenderingView.h" />
     <ClInclude Include="CVolumeRenderingView.h" />
     <ClInclude Include="Debugger.h" />
@@ -241,6 +242,7 @@
   <ItemGroup>
     <ClCompile Include="AsyncTaskManager.cpp" />
     <ClCompile Include="CCustomSplitterWnd.cpp" />
+    <ClCompile Include="CInspecterView.cpp" />
     <ClCompile Include="CRenderingView.cpp" />
     <ClCompile Include="CVolumeRenderingView.cpp" />
     <ClCompile Include="Debugger.cpp" />
