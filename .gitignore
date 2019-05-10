@@ -1,7 +1,3 @@
-
-# Created by https://www.gitignore.io/api/c++,windows,visualstudio
-# Edit at https://www.gitignore.io/?templates=c++,windows,visualstudio
-
 ### C++ ###
 # Prerequisites
 *.d
@@ -19,7 +15,6 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
 
 # Fortran module files
 *.mod
@@ -29,7 +24,6 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe
@@ -70,7 +64,6 @@ $RECYCLE.BIN/
 # User-specific files
 *.rsuser
 *.suo
-*.user
 *.userosscache
 *.sln.docstates
 
@@ -133,7 +126,6 @@ StyleCopReport.xml
 *.ilk
 *.meta
 *.iobj
-*.pdb
 *.ipdb
 *.pgc
 *.pgd
@@ -402,7 +394,7 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
-# Backup folder for Package Reference Convert tool in Visual Studio 2017
+# Backup folder for Package Reference Convert tool in Visual iStudio 2017
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/c++,windows,visualstudio

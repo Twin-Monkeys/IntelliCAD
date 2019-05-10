@@ -53,7 +53,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	CCustomSplitterWnd __wndSplitter;
+	CCustomSplitterWnd __parentSplitterWnd;
+	CCustomSplitterWnd __childSplitterWnd;
 
 public:
 	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
