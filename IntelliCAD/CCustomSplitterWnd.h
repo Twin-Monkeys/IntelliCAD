@@ -8,11 +8,18 @@ class CCustomSplitterWnd : public CSplitterWnd
 
 public:
 	/* constructor */
-	CCustomSplitterWnd(class CMainFrame& mainFrm);
+	CCustomSplitterWnd();
 
 	/* member function */
 	afx_msg void OnSize(const UINT nType, const int cx, const int cy);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+
+	/* member variable */
+	bool splitted = false;
 
 private:
-	CMainFrame& __mainFrm;
+	/* member variable */
+	CRect __clientWindow;
+	float __columnRatio = 0.5f;
+	float __rowRatio = 0.5f;
 };
