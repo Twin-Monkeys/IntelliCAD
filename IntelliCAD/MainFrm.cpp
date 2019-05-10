@@ -14,7 +14,6 @@
 
 #include "stdafx.h"
 #include "IntelliCAD.h"
-
 #include "MainFrm.h"
 #include "IntelliCADView.h"
 #include "CVolumeRenderingView.h"
@@ -33,7 +32,8 @@ END_MESSAGE_MAP()
 
 // CMainFrame 생성/소멸
 
-CMainFrame::CMainFrame() noexcept 
+CMainFrame::CMainFrame() noexcept : 
+	__parentSplitterWnd(0.8f, 0.2f)
 {}
 
 CMainFrame::~CMainFrame()
@@ -110,20 +110,25 @@ void CMainFrame::Dump(CDumpContext& dc) const
 // CMainFrame 메시지 처리기
 BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 {
-	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	// 1 * 2 정적 분할 윈도우를 만든다.
+	__parentSplitterWnd.CreateStatic(this, 1, 2);
 
-	// 2 * 2 정적 분할 윈도우를 만든다.
-	__wndSplitter.CreateStatic(this, 2, 2);
+	// 좌측 윈도우를 2 * 2로 분할한다.
+	__childSplitterWnd.CreateStatic(
+		&__parentSplitterWnd, 2, 2,
+		(WS_CHILD | WS_VISIBLE | WS_BORDER), 
+		__parentSplitterWnd.IdFromRowCol(0, 0));
 
-	// 각각의 윈도우에 view를 생성하고,
-	// view에서 표시할 section 타입을 결정한다.
-	__wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
-	__wndSplitter.CreateView(0, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
-	__wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
-	__wndSplitter.CreateView(1, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
+	// 좌, 우측 윈도우에 View를 할당한다.
+	__childSplitterWnd.CreateView(0, 0, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
+	__childSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
+	__childSplitterWnd.CreateView(1, 0, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
+	__childSplitterWnd.CreateView(1, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
+	__parentSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
 
 	// 분할 윈도우를 만들었다.
-	__wndSplitter.splitted = true;
+	__parentSplitterWnd.splitted = true;
+	__childSplitterWnd.splitted = true;
 
 	return true;
 	// return CFrameWndEx::OnCreateClient(lpcs, pContext);

@@ -2,16 +2,17 @@
 
 #include <afxext.h>
 
-class CCustomSplitterWnd : public CSplitterWnd
+class CCustomSplitterWnd : public CSplitterWnd 
 {
 	DECLARE_MESSAGE_MAP()
 
 public:
 	/* constructor */
 	CCustomSplitterWnd();
+	CCustomSplitterWnd(const float columnRatio, const float rowRatio);
 
 	/* member function */
-	afx_msg void OnSize(const UINT nType, const int cx, const int cy);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 
 	/* member variable */
