@@ -215,6 +215,7 @@
     <ClInclude Include="EventBroadcaster.h" />
     <ClInclude Include="GenericListener.h" />
     <ClInclude Include="GPUVolume.h" />
+    <ClInclude Include="GPUVolumeFactory.h" />
     <ClInclude Include="ImageProcessor.h" />
     <ClInclude Include="IntelliCAD.h" />
     <ClInclude Include="IntelliCADDoc.h" />
@@ -224,7 +225,9 @@
     <ClInclude Include="NetworkUtility.h" />
     <ClInclude Include="NumberUtility.hpp" />
     <ClInclude Include="Parser.hpp" />
+    <ClInclude Include="VoxelFormatType.h" />
     <CudaCompile Include="Pixel.h" />
+    <ClInclude Include="Point3D.h" />
     <ClInclude Include="RenderingEngine.h" />
     <ClInclude Include="Resource.h" />
     <CudaCompile Include="Size2D.hpp" />
@@ -237,6 +240,8 @@
     <ClInclude Include="TaskType.h" />
     <ClInclude Include="tstring.h" />
     <ClInclude Include="TypeEx.h" />
+    <ClInclude Include="Vector3D.h" />
+    <ClInclude Include="VolumeFormatType.h" />
     <ClInclude Include="VolumeReader.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -248,6 +253,7 @@
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="EventBroadcaster.cpp" />
     <ClCompile Include="GPUVolume.cpp" />
+    <ClCompile Include="GPUVolumeFactory.cpp" />
     <ClCompile Include="ImageProcessor.cpp" />
     <ClCompile Include="IntelliCAD.cpp" />
     <ClCompile Include="IntelliCADDoc.cpp" />
@@ -256,6 +262,8 @@
     <ClCompile Include="NetworkUtility.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="RenderingEngine.cpp" />
+    <ClCompile Include="Vector3D.cpp" />
+    <ClCompile Include="VolumeReader.cpp" />
     <CudaCompile Include="Pixel.cpp" />
     <ClCompile Include="StringTokenizer.cpp" />
     <ClCompile Include="System.cpp" />

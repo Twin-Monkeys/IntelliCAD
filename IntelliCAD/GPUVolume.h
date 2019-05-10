@@ -1,33 +1,32 @@
 #pragma once
 
 #include "Size3D.hpp"
+#include "Point3D.h"
+#include "VoxelFormatType.h"
 
 class GPUVolume
 {
 private:
-	ubyte *pDevBuffer = nullptr;
+	static GPUVolume __instance;
+
+	Size3D<> __volumeSize;
+	VoxelFormatType __voxelFormat;
+	int __voxelPrecision;
 
 public:
-	const Size3D<> SIZE;
-	const int ELEMENT_SIZE;
-	const int ELEMENT_PRECISION;
-	
-	GPUVolume(const int width, const int height, const int depth, const int elementSize);
-	GPUVolume(const int width, const int height, const int depth, const int elementSize, const int elementPrecision);
+	void init(
+		const ubyte *const pHostSrc,
+		const int width, const int height, const int depth,
+		const VoxelFormatType voxelFormat, const int voxelPrecision);
 
-	GPUVolume(const Size3D<> &size, const int elementSize);
-	GPUVolume(const Size3D<> &size, const int elementSize, const int elementPrecision);
+	const Size3D<>& getSize() const;
+	VoxelFormatType getVoxelFormat() const;
+	int getVoxelPrecision() const;
 
-	void zeroInit();
+	float get(const float x, const float y, const float z);
+	float get(const Point3D &position);
 
-	template <typename T>
-	T *getDevBuffer() const;
+	static GPUVolume& getInstance();
 
 	~GPUVolume();
 };
-
-template <typename T>
-T *GPUVolume::getDevBuffer() const
-{
-
-}

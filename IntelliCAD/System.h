@@ -1,6 +1,5 @@
 #pragma once
 
-#include "GPUVolume.h"
 #include "AsyncTaskManager.hpp"
 #include "EventBroadcaster.h"
 #include "RenderingEngine.h"
@@ -43,6 +42,7 @@ public:
 		ImageProcessor &getImageProcessor();
 
 		GPUVolume *getVolume();
+		
 		void setVolume(GPUVolume *const pVolume);
 	}
 	systemContents;

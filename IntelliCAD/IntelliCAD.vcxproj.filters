@@ -85,6 +85,12 @@
     <Filter Include="헤더 파일\fileio">
       <UniqueIdentifier>{6441f0ac-558d-4cab-8b76-6dbe4df14718}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\util\volume">
+      <UniqueIdentifier>{64fb8082-3830-4769-9644-2a8133ac46b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\util\volume">
+      <UniqueIdentifier>{fd266607-76ab-4863-bd3f-53360ee8b214}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IntelliCAD.h">
@@ -159,9 +165,6 @@
     <ClInclude Include="tstring.h">
       <Filter>헤더 파일\common</Filter>
     </ClInclude>
-    <ClInclude Include="VolumeReader.hpp">
-      <Filter>헤더 파일\util</Filter>
-    </ClInclude>
     <ClInclude Include="ImageProcessor.h">
       <Filter>헤더 파일\image_processing</Filter>
     </ClInclude>
@@ -173,6 +176,24 @@
     </ClInclude>
     <ClInclude Include="CInspecterView.h">
       <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Point3D.h">
+      <Filter>헤더 파일\data_structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3D.h">
+      <Filter>헤더 파일\data_structure</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUVolumeFactory.h">
+      <Filter>헤더 파일\util\volume</Filter>
+    </ClInclude>
+    <ClInclude Include="VolumeFormatType.h">
+      <Filter>헤더 파일\util\volume</Filter>
+    </ClInclude>
+    <ClInclude Include="VolumeReader.hpp">
+      <Filter>헤더 파일\util\volume</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelFormatType.h">
+      <Filter>헤더 파일\util\volume</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +250,15 @@
     </ClCompile>
     <ClCompile Include="CInspecterView.cpp">
       <Filter>소스 파일\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3D.cpp">
+      <Filter>소스 파일\data_structure</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUVolumeFactory.cpp">
+      <Filter>소스 파일\util\volume</Filter>
+    </ClCompile>
+    <ClCompile Include="VolumeReader.cpp">
+      <Filter>소스 파일\util\volume</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

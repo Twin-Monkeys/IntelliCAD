@@ -62,11 +62,7 @@ GPUVolume *System::SystemContents::getVolume()
 
 void System::SystemContents::setVolume(GPUVolume *const pVolume)
 {
-	if (__pVolume)
-		delete __pVolume;
-
 	__pVolume = pVolume;
-
 	__pEventBroadcaster->notifySetVolume(pVolume);
 }
 
