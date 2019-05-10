@@ -17,6 +17,7 @@
 #include "MainFrm.h"
 #include "IntelliCADView.h"
 #include "CVolumeRenderingView.h"
+#include "CInspecterView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -124,7 +125,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	__childSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
 	__childSplitterWnd.CreateView(1, 0, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
 	__childSplitterWnd.CreateView(1, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
-	__parentSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
+	__parentSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CInspecterView), {}, pContext);
 
 	// 분할 윈도우를 만들었다.
 	__parentSplitterWnd.splitted = true;

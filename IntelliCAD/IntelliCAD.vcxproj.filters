@@ -171,6 +171,9 @@
     <ClInclude Include="CCustomSplitterWnd.h">
       <Filter>헤더 파일\ui</Filter>
     </ClInclude>
+    <ClInclude Include="CInspecterView.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IntelliCAD.cpp">
@@ -222,6 +225,9 @@
       <Filter>소스 파일\data_structure</Filter>
     </ClCompile>
     <ClCompile Include="CCustomSplitterWnd.cpp">
+      <Filter>소스 파일\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="CInspecterView.cpp">
       <Filter>소스 파일\ui</Filter>
     </ClCompile>
   </ItemGroup>
