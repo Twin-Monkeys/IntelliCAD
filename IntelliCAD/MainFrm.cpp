@@ -29,20 +29,15 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWndEx)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
-	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 // CMainFrame 생성/소멸
 
-CMainFrame::CMainFrame() noexcept :
-	__wndSplitter(*this)
-{
-	// TODO: 여기에 멤버 초기화 코드를 추가합니다.
-}
+CMainFrame::CMainFrame() noexcept 
+{}
 
 CMainFrame::~CMainFrame()
-{
-}
+{}
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -113,22 +108,6 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 
 // CMainFrame 메시지 처리기
-
-void CMainFrame::notifyClientUpdate()
-{
-	if (__splitted) // 분할 윈도우의 경우
-	{
-		CRect rect;
-		__wndSplitter.GetWindowRect(&rect); // 실제 클라이언트 윈도우 영역(리본 메뉴 제외)을 가져온다.
-
-		// 4분할 한다.
-		__wndSplitter.SetColumnInfo(0, rect.Width() / 2, 0);
-		__wndSplitter.SetRowInfo(0, rect.Height() / 2, 0);
-
-		__wndSplitter.RecalcLayout(); // 레이아웃을 갱신한다.
-	}
-}
-
 BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
@@ -136,28 +115,16 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	// 2 * 2 정적 분할 윈도우를 만든다.
 	__wndSplitter.CreateStatic(this, 2, 2);
 
-	// 각각의 윈도우에 view를 생성한다.
+	// 각각의 윈도우에 view를 생성하고,
+	// view에서 표시할 section 타입을 결정한다.
 	__wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
 	__wndSplitter.CreateView(0, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
 	__wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
 	__wndSplitter.CreateView(1, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
 
-	// view에서 표시할 section 타입을 결정한다.
-
-
 	// 분할 윈도우를 만들었다.
-	__splitted = true;
+	__wndSplitter.splitted = true;
 
 	return true;
 	// return CFrameWndEx::OnCreateClient(lpcs, pContext);
-}
-
-
-void CMainFrame::OnSize(UINT nType, int cx, int cy)
-{
-	CFrameWndEx::OnSize(nType, cx, cy);
-
-	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
-	if (nType != SIZE_MINIMIZED) // 화면이 최소화되지 않았을 경우
-		notifyClientUpdate(); // 클라이언트 윈도우를 업데이트 한다.
 }

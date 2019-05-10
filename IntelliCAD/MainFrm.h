@@ -54,12 +54,9 @@ protected:
 
 private:
 	CCustomSplitterWnd __wndSplitter;
-	bool __splitted = false;
 
 public:
-	void notifyClientUpdate();
 	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
 
 
