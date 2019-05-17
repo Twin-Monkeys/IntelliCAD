@@ -18,6 +18,10 @@
 #include "IntelliCADView.h"
 #include "CVolumeRenderingView.h"
 #include "CInspecterView.h"
+#include "tstring.h"
+#include "Parser.hpp"
+#include "System.h"
+#include "VolumeReader.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -25,10 +29,13 @@
 
 // CMainFrame
 
+using namespace std;
+
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWndEx)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
+	ON_COMMAND(ID_FILE_OPEN, &CMainFrame::OnFileOpen)
 END_MESSAGE_MAP()
 
 // CMainFrame 생성/소멸
@@ -49,6 +56,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_wndRibbonBar.Create(this);
 	m_wndRibbonBar.LoadFromResource(IDR_RIBBON);
+	m_wndRibbonBar.DeleteDropdown();
 
 	if (!m_wndStatusBar.Create(this))
 	{
@@ -133,4 +141,21 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 
 	return true;
 	// return CFrameWndEx::OnCreateClient(lpcs, pContext);
+}
+
+void CMainFrame::OnFileOpen()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	TCHAR *filter = _T("Density File (*.den) |*.den|");
+	CFileDialog fileDlg(true, _T("Density File (*.den)"), nullptr, OFN_FILEMUSTEXIST, filter, nullptr);
+
+	if (fileDlg.DoModal() == IDOK)
+	{
+		AfxGetApp()->AddToRecentFileList(fileDlg.GetPathName());
+
+		const tstring PATH = Parser::CString$tstring(fileDlg.GetPathName());
+		const VolumeData RESULT = VolumeReader::readDen(PATH, 512, 512, 326);
+
+		System::getSystemContents().loadVolume(RESULT);
+	}
 }

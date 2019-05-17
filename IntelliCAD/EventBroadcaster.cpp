@@ -19,9 +19,9 @@ bool EventBroadcaster::addGenericListener(GenericListener &listener)
 	return __genericListeners.emplace(&listener).second;
 }
 
-bool EventBroadcaster::addSetVolumeListener(SetVolumeListener &listener)
+bool EventBroadcaster::addVolumeLoadingListener(VolumeLoadingListener &listener)
 {
-	return __setVolumeListeners.emplace(&listener).second;
+	return __volumeLoadingListeners.emplace(&listener).second;
 }
 
 bool EventBroadcaster::removeGenericListener(GenericListener &listener)
@@ -29,9 +29,9 @@ bool EventBroadcaster::removeGenericListener(GenericListener &listener)
 	return __genericListeners.erase(&listener);
 }
 
-bool EventBroadcaster::removeSetVolumeListener(SetVolumeListener &listener)
+bool EventBroadcaster::removeVolumeLoadingListener(VolumeLoadingListener &listener)
 {
-	return __setVolumeListeners.erase(&listener);
+	return __volumeLoadingListeners.erase(&listener);
 }
 
 void EventBroadcaster::notifyGeneric() const
@@ -40,8 +40,8 @@ void EventBroadcaster::notifyGeneric() const
 		pListener->onGeneric();
 }
 
-void EventBroadcaster::notifySetVolume(const GPUVolume *const pVolume) const
+void EventBroadcaster::notifyLoadVolume(const VolumeData &volumeData) const
 {
-	for (SetVolumeListener *const pListener : __setVolumeListeners)
-		pListener->onSetVolume(pVolume);
+	for (VolumeLoadingListener *const pListener : __volumeLoadingListeners)
+		pListener->onLoadVolume(volumeData);
 }

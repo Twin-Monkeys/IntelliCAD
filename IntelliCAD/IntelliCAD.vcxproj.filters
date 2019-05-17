@@ -67,12 +67,6 @@
     <Filter Include="소스 파일\util">
       <UniqueIdentifier>{c4708df2-a027-47f3-981f-3a717c33ceaf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일\image_processing">
-      <UniqueIdentifier>{aed709d4-adec-423e-ad88-20400b94f30c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\image_processing">
-      <UniqueIdentifier>{e8ea3007-ba92-4128-83f7-84397e1fe826}</UniqueIdentifier>
-    </Filter>
     <Filter Include="헤더 파일\machine_learning">
       <UniqueIdentifier>{2971ab4f-1814-42f0-bfcb-fb560cded1c2}</UniqueIdentifier>
     </Filter>
@@ -84,12 +78,6 @@
     </Filter>
     <Filter Include="헤더 파일\fileio">
       <UniqueIdentifier>{6441f0ac-558d-4cab-8b76-6dbe4df14718}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="헤더 파일\util\volume">
-      <UniqueIdentifier>{64fb8082-3830-4769-9644-2a8133ac46b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\util\volume">
-      <UniqueIdentifier>{fd266607-76ab-4863-bd3f-53360ee8b214}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -135,9 +123,6 @@
     <ClInclude Include="GenericListener.h">
       <Filter>헤더 파일\event</Filter>
     </ClInclude>
-    <ClInclude Include="GPUVolume.h">
-      <Filter>헤더 파일\data_structure</Filter>
-    </ClInclude>
     <ClInclude Include="MacroTransaction.h">
       <Filter>헤더 파일\util</Filter>
     </ClInclude>
@@ -165,12 +150,6 @@
     <ClInclude Include="tstring.h">
       <Filter>헤더 파일\common</Filter>
     </ClInclude>
-    <ClInclude Include="ImageProcessor.h">
-      <Filter>헤더 파일\image_processing</Filter>
-    </ClInclude>
-    <ClInclude Include="SetVolumeListener.h">
-      <Filter>헤더 파일\event</Filter>
-    </ClInclude>
     <ClInclude Include="CCustomSplitterWnd.h">
       <Filter>헤더 파일\ui</Filter>
     </ClInclude>
@@ -183,17 +162,20 @@
     <ClInclude Include="Vector3D.h">
       <Filter>헤더 파일\data_structure</Filter>
     </ClInclude>
-    <ClInclude Include="GPUVolumeFactory.h">
-      <Filter>헤더 파일\util\volume</Filter>
+    <ClInclude Include="VolumeMeta.h">
+      <Filter>헤더 파일\rendering_engine</Filter>
     </ClInclude>
-    <ClInclude Include="VolumeFormatType.h">
-      <Filter>헤더 파일\util\volume</Filter>
+    <ClInclude Include="VolumeLoadingListener.h">
+      <Filter>헤더 파일\event</Filter>
     </ClInclude>
-    <ClInclude Include="VolumeReader.hpp">
-      <Filter>헤더 파일\util\volume</Filter>
+    <ClInclude Include="VolumeReader.h">
+      <Filter>헤더 파일\util</Filter>
     </ClInclude>
-    <ClInclude Include="VoxelFormatType.h">
-      <Filter>헤더 파일\util\volume</Filter>
+    <ClInclude Include="VolumeData.h">
+      <Filter>헤더 파일\data_structure</Filter>
+    </ClInclude>
+    <ClInclude Include="CCustomRibbonBar.h">
+      <Filter>헤더 파일\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -239,12 +221,6 @@
     <ClCompile Include="RenderingEngine.cpp">
       <Filter>소스 파일\rendering_engine</Filter>
     </ClCompile>
-    <ClCompile Include="ImageProcessor.cpp">
-      <Filter>소스 파일\image_processing</Filter>
-    </ClCompile>
-    <ClCompile Include="GPUVolume.cpp">
-      <Filter>소스 파일\data_structure</Filter>
-    </ClCompile>
     <ClCompile Include="CCustomSplitterWnd.cpp">
       <Filter>소스 파일\ui</Filter>
     </ClCompile>
@@ -254,11 +230,11 @@
     <ClCompile Include="Vector3D.cpp">
       <Filter>소스 파일\data_structure</Filter>
     </ClCompile>
-    <ClCompile Include="GPUVolumeFactory.cpp">
-      <Filter>소스 파일\util\volume</Filter>
-    </ClCompile>
     <ClCompile Include="VolumeReader.cpp">
-      <Filter>소스 파일\util\volume</Filter>
+      <Filter>소스 파일\util</Filter>
+    </ClCompile>
+    <ClCompile Include="CCustomRibbonBar.cpp">
+      <Filter>소스 파일\ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

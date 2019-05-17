@@ -15,6 +15,7 @@
 #pragma once
 
 #include "CCustomSplitterWnd.h"
+#include "CCustomRibbonBar.h"
 
 class CMainFrame : public CFrameWndEx
 {
@@ -42,7 +43,7 @@ public:
 #endif
 
 protected:  // 컨트롤 모음이 포함된 멤버입니다.
-	CMFCRibbonBar     m_wndRibbonBar;
+	CCustomRibbonBar     m_wndRibbonBar;
 	CMFCRibbonApplicationButton m_MainButton;
 	CMFCToolBarImages m_PanelImages;
 	CMFCRibbonStatusBar  m_wndStatusBar;
@@ -58,6 +59,7 @@ private:
 
 public:
 	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
+	afx_msg void OnFileOpen();
 };
 
 

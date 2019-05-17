@@ -207,6 +207,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AsyncTaskManager.hpp" />
+    <ClInclude Include="CCustomRibbonBar.h" />
     <ClInclude Include="CCustomSplitterWnd.h" />
     <ClInclude Include="CInspecterView.h" />
     <ClInclude Include="CRenderingView.h" />
@@ -214,9 +215,6 @@
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="EventBroadcaster.h" />
     <ClInclude Include="GenericListener.h" />
-    <ClInclude Include="GPUVolume.h" />
-    <ClInclude Include="GPUVolumeFactory.h" />
-    <ClInclude Include="ImageProcessor.h" />
     <ClInclude Include="IntelliCAD.h" />
     <ClInclude Include="IntelliCADDoc.h" />
     <ClInclude Include="IntelliCADView.h" />
@@ -225,14 +223,14 @@
     <ClInclude Include="NetworkUtility.h" />
     <ClInclude Include="NumberUtility.hpp" />
     <ClInclude Include="Parser.hpp" />
-    <ClInclude Include="VoxelFormatType.h" />
     <CudaCompile Include="Pixel.h" />
     <ClInclude Include="Point3D.h" />
     <ClInclude Include="RenderingEngine.h" />
     <ClInclude Include="Resource.h" />
     <CudaCompile Include="Size2D.hpp" />
     <CudaCompile Include="Size3D.hpp" />
-    <ClInclude Include="SetVolumeListener.h" />
+    <ClInclude Include="VolumeData.h" />
+    <ClInclude Include="VolumeLoadingListener.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringTokenizer.h" />
     <ClInclude Include="System.h" />
@@ -241,20 +239,18 @@
     <ClInclude Include="tstring.h" />
     <ClInclude Include="TypeEx.h" />
     <ClInclude Include="Vector3D.h" />
-    <ClInclude Include="VolumeFormatType.h" />
-    <ClInclude Include="VolumeReader.hpp" />
+    <ClInclude Include="VolumeMeta.h" />
+    <ClInclude Include="VolumeReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsyncTaskManager.cpp" />
+    <ClCompile Include="CCustomRibbonBar.cpp" />
     <ClCompile Include="CCustomSplitterWnd.cpp" />
     <ClCompile Include="CInspecterView.cpp" />
     <ClCompile Include="CRenderingView.cpp" />
     <ClCompile Include="CVolumeRenderingView.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="EventBroadcaster.cpp" />
-    <ClCompile Include="GPUVolume.cpp" />
-    <ClCompile Include="GPUVolumeFactory.cpp" />
-    <ClCompile Include="ImageProcessor.cpp" />
     <ClCompile Include="IntelliCAD.cpp" />
     <ClCompile Include="IntelliCADDoc.cpp" />
     <ClCompile Include="IntelliCADView.cpp" />

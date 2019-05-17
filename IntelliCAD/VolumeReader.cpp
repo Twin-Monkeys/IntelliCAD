@@ -1,28 +1,35 @@
-#include "VolumeReader.hpp"
+#include <fstream>
+#include "VolumeReader.h"
 
 using namespace std;
 
 namespace VolumeReader
 {
-	bool readDen(
-		const std::tstring &path, GPUVolume &volume,
-		const int width, const int height, const int depth,
-		const VoxelFormatType voxelFormat, const int voxelPrecision)
+	VolumeData readDen(
+		const tstring &path, const int width, const int height, const int depth)
 	{
-		using namespace std;
+		return readDen(path, width, height, depth, USHRT_MAX);
+	}
 
+	VolumeData readDen(
+		const tstring &path,
+		const int width, const int height, const int depth, const ushort voxelPrecision)
+	{
+		VolumeData retVal;
+		
 		ifstream fin(path, ifstream::binary);
 
 		if (!fin)
-			return false;
+			return retVal;
 
-		const int TOTAL_MEM_SIZE = (width * height * depth * (1 << voxelFormat));
-		ubyte *const pBuffer = new ubyte[TOTAL_MEM_SIZE];
+		const int TOTAL_SIZE = (width * height * depth);
 
-		volume.init(pBuffer, width, height, depth, voxelFormat, voxelPrecision);
+		retVal.pBuffer = shared_ptr<ushort[]>(new ushort[TOTAL_SIZE]);
+		fin.read(reinterpret_cast<char *>(retVal.pBuffer.get()), TOTAL_SIZE * sizeof(ushort));
 
-		delete[] pBuffer;
+		retVal.meta.size.set(width, height, depth);
+		retVal.meta.voxelPrecision = voxelPrecision;
 
-		return true;
+		return retVal;
 	}
 }

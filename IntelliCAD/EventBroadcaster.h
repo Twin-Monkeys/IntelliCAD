@@ -13,7 +13,7 @@
 #include <set>
 #include <memory>
 #include "GenericListener.h"
-#include "SetVolumeListener.h"
+#include "VolumeLoadingListener.h"
 
 /// <summary>
 /// <para>응용 전역에서 발생하는 이벤트의 제어를 담당하는 클래스이다.</para>
@@ -29,7 +29,7 @@ private:
 	/// </summary>
 	std::set<GenericListener *> __genericListeners;
 
-	std::set<SetVolumeListener *> __setVolumeListeners;
+	std::set<VolumeLoadingListener *> __volumeLoadingListeners;
 
 public:
 
@@ -41,7 +41,7 @@ public:
 	/// <returns>객체 등록 성공 여부</returns>
 	bool addGenericListener(GenericListener &listener);
 
-	bool addSetVolumeListener(SetVolumeListener &listener);
+	bool addVolumeLoadingListener(VolumeLoadingListener &listener);
 
 
 	/// <summary>
@@ -52,7 +52,7 @@ public:
 	/// <returns>객체 등록 해제 성공 여부</returns>
 	bool removeGenericListener(GenericListener &listener);
 
-	bool removeSetVolumeListener(SetVolumeListener &listener);
+	bool removeVolumeLoadingListener(VolumeLoadingListener &listener);
 
 	/// <summary>
 	/// <para>현재 등록되어 있는 모든 GenericListener 객체에게 generic 이벤트를 브로드캐스팅 한다.</para>
@@ -60,5 +60,5 @@ public:
 	/// </summary>
 	void notifyGeneric() const;
 
-	void notifySetVolume(const GPUVolume *const pVolume) const;
+	void notifyLoadVolume(const VolumeData &volumeData) const;
 };

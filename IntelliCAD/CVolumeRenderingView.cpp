@@ -9,5 +9,5 @@ END_MESSAGE_MAP()
 void CVolumeRenderingView::_onRender(Pixel* const pDevScreen, const int screenWidth, const int screenHeight)
 {
 	System::getSystemContents().
-		getRenderingEngine().render(pDevScreen, screenWidth, screenHeight);
+		getRenderingEngine().volumeRenderer.render(pDevScreen, screenWidth, screenHeight);
 }

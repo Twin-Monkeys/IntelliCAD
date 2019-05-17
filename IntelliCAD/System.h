@@ -3,7 +3,6 @@
 #include "AsyncTaskManager.hpp"
 #include "EventBroadcaster.h"
 #include "RenderingEngine.h"
-#include "ImageProcessor.h"
 
 class System
 {
@@ -25,10 +24,7 @@ public:
 
 		AsyncTaskManager *__pTaskMgr = nullptr;
 		EventBroadcaster *__pEventBroadcaster = nullptr;
-
-		GPUVolume *__pVolume = nullptr;
 		RenderingEngine *__pRenderingEngine = nullptr;
-		ImageProcessor *__pImageProcessor = nullptr;
 
 		void __init();
 		void __release();
@@ -36,14 +32,9 @@ public:
 	public:
 		AsyncTaskManager &getTaskManager();
 		EventBroadcaster &getEventBroadcaster();
-
-		GPUVolume *getGPUVolumePtr();
 		RenderingEngine &getRenderingEngine();
-		ImageProcessor &getImageProcessor();
-
-		GPUVolume *getVolume();
 		
-		void setVolume(GPUVolume *const pVolume);
+		void loadVolume(const VolumeData &volumeData);
 	}
 	systemContents;
 

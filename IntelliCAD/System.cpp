@@ -26,8 +26,9 @@ void System::SystemContents::__init()
 {
 	__pTaskMgr = new AsyncTaskManager();
 	__pEventBroadcaster = new EventBroadcaster();
-	__pRenderingEngine = new RenderingEngine();
-	__pImageProcessor = new ImageProcessor();
+	__pRenderingEngine = &RenderingEngine::getInstance();
+
+	__pEventBroadcaster->addVolumeLoadingListener(*__pRenderingEngine);
 }
 
 AsyncTaskManager &System::SystemContents::getTaskManager()
@@ -40,40 +41,18 @@ EventBroadcaster &System::SystemContents::getEventBroadcaster()
 	return *__pEventBroadcaster;
 }
 
-GPUVolume *System::SystemContents::getGPUVolumePtr()
-{
-	return __pVolume;
-}
-
 RenderingEngine &System::SystemContents::getRenderingEngine()
 {
 	return *__pRenderingEngine;
 }
 
-ImageProcessor &System::SystemContents::getImageProcessor()
+void System::SystemContents::loadVolume(const VolumeData &volumeData)
 {
-	return *__pImageProcessor;
-}
-
-GPUVolume *System::SystemContents::getVolume()
-{
-	return __pVolume;
-}
-
-void System::SystemContents::setVolume(GPUVolume *const pVolume)
-{
-	__pVolume = pVolume;
-	__pEventBroadcaster->notifySetVolume(pVolume);
+	__pEventBroadcaster->notifyLoadVolume(volumeData);
 }
 
 void System::SystemContents::__release()
 {
-	if (__pRenderingEngine)
-	{
-		delete __pRenderingEngine;
-		__pRenderingEngine = nullptr;
-	}
-
 	if (__pEventBroadcaster)
 	{
 		delete __pEventBroadcaster;
