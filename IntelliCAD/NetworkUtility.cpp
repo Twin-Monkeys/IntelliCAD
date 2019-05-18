@@ -8,7 +8,6 @@
 *	네트워크용 유틸리티 함수 모음
 */
 
-#include "stdafx.h"
 #include "NetworkUtility.h"
 #include "StringTokenizer.h"
 #include "NumberUtility.hpp"

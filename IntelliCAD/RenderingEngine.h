@@ -1,51 +1,91 @@
+/*
+*	Copyright (C) 2019 Jin Won. All right reserved.
+*
+*	파일명			: RenderingEngine.h
+*	작성자			: 원진
+*	최종 수정일		: 19.04.07
+*/
+
 #pragma once
 
 #include "Pixel.h"
 #include "Size2D.hpp"
 #include "VolumeLoadingListener.h"
+#include "TransferFunction.h"
+#include "Camera.h"
+#include "Light.h"
 
 class RenderingEngine : public VolumeLoadingListener
 {
-private:
-	static RenderingEngine __instance;
-	VolumeMeta __volumeMeta;
-
-	RenderingEngine();
-
 public:
 	class VolumeRenderer
 	{
+	public:
+		/* member function */
+		void render(Pixel* const pScreen, const int screenWidth, const int screenHeight);
+
+		/* member variable */
+		Camera camera;
+
 	private:
 		friend RenderingEngine;
-		const VolumeMeta &__volumeMeta;
 
-		VolumeRenderer(const VolumeMeta &volumeMeta);
+		/* constructor */
+		VolumeRenderer(const VolumeMeta& volumeMeta, const bool &initFlag);
 
+		/* member function */
 		void __onLoadVolume();
+		void __initTransferFunc();
+		void __initLight();
+		void __initCamera();
 
-	public:
-		void render(Pixel *const pScreen, const int screenWidth, const int screenHeight);
+		/* member variable */
+		TransferFunction* __pTransferFunc = nullptr;
+		Light __light[3];
+		float __imgBasedSamplingStep = 1.f;
+		float __objectBasedSamplingStep = 1.f;
+		float __shininess = 40.f;
+		bool __transferFuncDirty = true;
+
+		const VolumeMeta& __volumeMeta;
+		const bool &__initialized;
 	};
 
 	class ImageProcessor
 	{
+	public:
+		/* member function */
+		void render(Pixel* const pScreen, const int screenWidth, const int screenHeight);
+
 	private:
-		friend RenderingEngine;
-		const VolumeMeta &__volumeMeta;
+		/* constructor */
+		ImageProcessor(const VolumeMeta& volumeMeta, const bool &initFlag);
 
-		ImageProcessor(const VolumeMeta &volumeMeta);
-
+		/* member function */
 		void __onLoadVolume();
 
-	public:
-		void render(Pixel *const pScreen, const int screenWidth, const int screenHeight);
+		/* member variable */
+		friend RenderingEngine;
+		const VolumeMeta& __volumeMeta;
+		const bool &__initialized;
 	};
 
+	/* member function */
+	void loadVolume(const VolumeData &volumeData);
+	virtual void onLoadVolume(const VolumeData &volumeData) override;
+	static RenderingEngine& getInstance();
+
+	/* member variable */
 	VolumeRenderer volumeRenderer;
 	ImageProcessor imageProcessor;
 
-	void loadVolume(const VolumeData &volumeData);
-	virtual void onLoadVolume(const VolumeData &volumeData) override;
+private:
+	/* constructor */
+	RenderingEngine();
 
-	static RenderingEngine &getInstance();
+	/* member variable */
+	static RenderingEngine __instance;
+	VolumeMeta __volumeMeta;
+
+	bool __initialized = false;
 };

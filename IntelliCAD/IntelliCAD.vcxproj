@@ -207,10 +207,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AsyncTaskManager.hpp" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="CCustomRibbonBar.h" />
     <ClInclude Include="CCustomSplitterWnd.h" />
     <ClInclude Include="CInspecterView.h" />
+    <CudaCompile Include="Color.hpp" />
+    <ClInclude Include="Constant.h" />
     <ClInclude Include="CRenderingView.h" />
+    <ClInclude Include="CudaHelper.h" />
     <ClInclude Include="CVolumeRenderingView.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="EventBroadcaster.h" />
@@ -218,17 +222,22 @@
     <ClInclude Include="IntelliCAD.h" />
     <ClInclude Include="IntelliCADDoc.h" />
     <ClInclude Include="IntelliCADView.h" />
+    <CudaCompile Include="Light.h" />
     <ClInclude Include="MacroTransaction.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="NetworkUtility.h" />
-    <ClInclude Include="NumberUtility.hpp" />
+    <CudaCompile Include="NumberUtility.hpp" />
+    <CudaCompile Include="OrthoBasis.h" />
     <ClInclude Include="Parser.hpp" />
     <CudaCompile Include="Pixel.h" />
     <ClInclude Include="Point3D.h" />
+    <CudaCompile Include="Range.hpp" />
+    <CudaCompile Include="RayBoxInstersector.h" />
     <ClInclude Include="RenderingEngine.h" />
     <ClInclude Include="Resource.h" />
     <CudaCompile Include="Size2D.hpp" />
     <CudaCompile Include="Size3D.hpp" />
+    <ClInclude Include="TransferFunction.h" />
     <ClInclude Include="VolumeData.h" />
     <ClInclude Include="VolumeLoadingListener.h" />
     <ClInclude Include="stdafx.h" />
@@ -238,27 +247,35 @@
     <ClInclude Include="TaskType.h" />
     <ClInclude Include="tstring.h" />
     <ClInclude Include="TypeEx.h" />
-    <ClInclude Include="Vector3D.h" />
+    <CudaCompile Include="Vector3D.h" />
     <ClInclude Include="VolumeMeta.h" />
     <ClInclude Include="VolumeReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsyncTaskManager.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CCustomRibbonBar.cpp" />
     <ClCompile Include="CCustomSplitterWnd.cpp" />
     <ClCompile Include="CInspecterView.cpp" />
+    <ClCompile Include="Constant.cpp" />
     <ClCompile Include="CRenderingView.cpp" />
+    <ClCompile Include="CudaHelper.cpp" />
     <ClCompile Include="CVolumeRenderingView.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="EventBroadcaster.cpp" />
     <ClCompile Include="IntelliCAD.cpp" />
     <ClCompile Include="IntelliCADDoc.cpp" />
     <ClCompile Include="IntelliCADView.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="NetworkUtility.cpp" />
+    <CudaCompile Include="OrthoBasis.cpp" />
+    <CudaCompile Include="NumberUtility.cpp" />
     <ClCompile Include="Parser.cpp" />
-    <ClCompile Include="RenderingEngine.cpp" />
-    <ClCompile Include="Vector3D.cpp" />
+    <CudaCompile Include="RenderingEngine.cpp" />
+    <CudaCompile Include="RayBoxIntersector.cpp" />
+    <ClCompile Include="TransferFunction.cpp" />
+    <CudaCompile Include="Vector3D.cpp" />
     <ClCompile Include="VolumeReader.cpp" />
     <CudaCompile Include="Pixel.cpp" />
     <ClCompile Include="StringTokenizer.cpp" />
