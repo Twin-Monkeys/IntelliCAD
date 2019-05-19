@@ -397,4 +397,7 @@ healthchecksdb
 # Backup folder for Package Reference Convert tool in Visual iStudio 2017
 MigrationBackup/
 
+# data file
+IntelliCAD/data/
+
 # End of https://www.gitignore.io/api/c++,windows,visualstudio

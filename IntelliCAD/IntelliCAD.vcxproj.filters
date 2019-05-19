@@ -129,9 +129,6 @@
     <ClInclude Include="NetworkUtility.h">
       <Filter>헤더 파일\util</Filter>
     </ClInclude>
-    <ClInclude Include="NumberUtility.hpp">
-      <Filter>헤더 파일\util</Filter>
-    </ClInclude>
     <ClInclude Include="Parser.hpp">
       <Filter>헤더 파일\util</Filter>
     </ClInclude>
@@ -156,12 +153,6 @@
     <ClInclude Include="CInspecterView.h">
       <Filter>헤더 파일\ui</Filter>
     </ClInclude>
-    <ClInclude Include="Point3D.h">
-      <Filter>헤더 파일\data_structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3D.h">
-      <Filter>헤더 파일\data_structure</Filter>
-    </ClInclude>
     <ClInclude Include="VolumeMeta.h">
       <Filter>헤더 파일\rendering_engine</Filter>
     </ClInclude>
@@ -176,6 +167,21 @@
     </ClInclude>
     <ClInclude Include="CCustomRibbonBar.h">
       <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="TransferFunction.h">
+      <Filter>헤더 파일\rendering_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>헤더 파일\rendering_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Constant.h">
+      <Filter>헤더 파일\common</Filter>
+    </ClInclude>
+    <ClInclude Include="Point3D.h">
+      <Filter>헤더 파일\data_structure</Filter>
+    </ClInclude>
+    <ClInclude Include="CudaHelper.h">
+      <Filter>헤더 파일\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -218,23 +224,32 @@
     <ClCompile Include="System.cpp">
       <Filter>소스 파일\system</Filter>
     </ClCompile>
-    <ClCompile Include="RenderingEngine.cpp">
-      <Filter>소스 파일\rendering_engine</Filter>
-    </ClCompile>
     <ClCompile Include="CCustomSplitterWnd.cpp">
       <Filter>소스 파일\ui</Filter>
     </ClCompile>
     <ClCompile Include="CInspecterView.cpp">
       <Filter>소스 파일\ui</Filter>
     </ClCompile>
-    <ClCompile Include="Vector3D.cpp">
-      <Filter>소스 파일\data_structure</Filter>
-    </ClCompile>
     <ClCompile Include="VolumeReader.cpp">
       <Filter>소스 파일\util</Filter>
     </ClCompile>
     <ClCompile Include="CCustomRibbonBar.cpp">
       <Filter>소스 파일\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="TransferFunction.cpp">
+      <Filter>소스 파일\rendering_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>소스 파일\rendering_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>소스 파일\rendering_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Constant.cpp">
+      <Filter>소스 파일\common</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaHelper.cpp">
+      <Filter>소스 파일\util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -294,6 +309,42 @@
     </CudaCompile>
     <CudaCompile Include="Pixel.cpp">
       <Filter>소스 파일\data_structure</Filter>
+    </CudaCompile>
+    <CudaCompile Include="RenderingEngine.cpp">
+      <Filter>소스 파일\rendering_engine</Filter>
+    </CudaCompile>
+    <CudaCompile Include="OrthoBasis.h">
+      <Filter>헤더 파일\data_structure</Filter>
+    </CudaCompile>
+    <CudaCompile Include="OrthoBasis.cpp">
+      <Filter>소스 파일\data_structure</Filter>
+    </CudaCompile>
+    <CudaCompile Include="RayBoxIntersector.cpp">
+      <Filter>소스 파일\rendering_engine</Filter>
+    </CudaCompile>
+    <CudaCompile Include="RayBoxInstersector.h">
+      <Filter>헤더 파일\rendering_engine</Filter>
+    </CudaCompile>
+    <CudaCompile Include="NumberUtility.hpp">
+      <Filter>헤더 파일\util</Filter>
+    </CudaCompile>
+    <CudaCompile Include="NumberUtility.cpp">
+      <Filter>소스 파일\util</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Color.hpp">
+      <Filter>헤더 파일\data_structure</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Vector3D.cpp">
+      <Filter>소스 파일\data_structure</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Range.hpp">
+      <Filter>헤더 파일\data_structure</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Light.h">
+      <Filter>헤더 파일\rendering_engine</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Vector3D.h">
+      <Filter>헤더 파일\data_structure</Filter>
     </CudaCompile>
   </ItemGroup>
 </Project>

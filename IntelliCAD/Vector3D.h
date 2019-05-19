@@ -1,3 +1,11 @@
+/*
+*	Copyright (C) 2019 Jin Won. All right reserved.
+*
+*	파일명			: Vector.h
+*	작성자			: 원진, 이세인
+*	최종 수정일		: 19.03.04
+*/
+
 #pragma once
 
 #include <cuda_runtime.h>
@@ -16,10 +24,6 @@ public:
 
 		float xyz[3];
 	};
-
-	static const Vector3D AXIS_X;
-	static const Vector3D AXIS_Y;
-	static const Vector3D AXIS_Z;
 
 	Vector3D() = default;
 
@@ -62,6 +66,15 @@ public:
 	__host__ __device__
 	Vector3D getUnit() const;
 
+	/// <summary>
+	/// 영벡터인지 여부를 조사한다.
+	/// </summary>
+	/// <returns>
+	/// 영벡터인지 여부
+	/// </returns>
+	__host__ __device__
+	bool isZero() const;
+
 	__host__ __device__
 	Vector3D operator+(const Vector3D &another) const;
 	
@@ -88,6 +101,30 @@ public:
 	
 	__host__ __device__
 	Vector3D& operator/=(float ratio);
+
+	/// <summary>
+	/// 두 벡터의 대응하는 원소 값이 모두 일치하는지 여부를 검사한다
+	/// </summary>
+	/// <param name="operand">
+	/// 비교 대상
+	/// </param>
+	/// <returns>
+	/// 일치 여부
+	/// </returns>
+	__host__ __device__
+	bool operator==(const Vector3D& operand) const;
+
+	/// <summary>
+	/// 두 벡터의 대응하는 원소 값이 일치하지 않는지 여부를 검사한다
+	/// </summary>
+	/// <param name="operand">
+	/// 비교 대상
+	/// </param>
+	/// <returns>
+	/// 불일치 여부
+	/// </returns>
+	__host__ __device__
+	bool operator!=(const Vector3D& operand) const;
 };
 
 __host__ __device__

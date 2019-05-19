@@ -1,9 +1,14 @@
-#include <cmath>
-#include "Vector3D.h"
+/*
+*	Copyright (C) 2019 Jin Won. All right reserved.
+*
+*	파일명			: Vector.h
+*	작성자			: 원진, 이세인
+*	최종 수정일		: 19.03.04
+*/
 
-const Vector3D Vector3D::AXIS_X = { 1.f, 0.f, 0.f };
-const Vector3D Vector3D::AXIS_Y = { 0.f, 1.f, 0.f };
-const Vector3D Vector3D::AXIS_Z = { 0.f, 0.f, -1.f };
+#include "Vector3D.h"
+#include "NumberUtility.hpp"
+#include <cmath>
 
 __host__ __device__
 Vector3D::Vector3D(const float x, const float y, const float z)
@@ -115,6 +120,12 @@ Vector3D Vector3D::getUnit() const
 }
 
 __host__ __device__
+bool Vector3D::isZero() const 
+{
+	return (*this == Vector3D(0.f, 0.f, 0.f));
+}
+
+__host__ __device__
 Vector3D Vector3D::operator+(const Vector3D &another) const
 {
 	return Vector3D(x + another.x, y + another.y, z + another.z);
@@ -190,6 +201,26 @@ Vector3D& Vector3D::operator/=(const float ratio)
 	z *= ratioInv;
 
 	return *this;
+}
+
+__host__ __device__
+bool Vector3D::operator==(const Vector3D& operand) const 
+{
+	if (NumberUtility::nearEqual(x, operand.x) &&
+		NumberUtility::nearEqual(y, operand.y) &&
+		NumberUtility::nearEqual(z, operand.z))
+		return true;
+
+	return false;
+}
+
+__host__ __device__
+bool Vector3D::operator!=(const Vector3D& operand) const 
+{
+	if (operator==(operand))
+		return false;
+
+	return true;
 }
 
 __host__ __device__

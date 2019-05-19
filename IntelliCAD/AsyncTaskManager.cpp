@@ -8,7 +8,6 @@
 *	작업의 비동기 처리를 위한 작업 관리 클래스
 */
 
-#include "stdafx.h"
 #include "AsyncTaskManager.hpp"
 
 using namespace std;

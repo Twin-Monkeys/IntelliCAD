@@ -132,7 +132,8 @@ void CRenderingView::__render()
 	Pixel* pDevScreen = nullptr;
 	cudaGraphicsResourceGetMappedPointer(reinterpret_cast<void**>(&pDevScreen), nullptr, __pCudaRes);
 
-	_onRender(pDevScreen, __screenSize.cx, __screenSize.cy);
+	if (pDevScreen)
+		_onRender(pDevScreen, __screenSize.cx, __screenSize.cy);
 
 	// 버퍼의 주도권을 GL로 가져온다.
 	cudaGraphicsUnmapResources(1, &__pCudaRes, nullptr);
