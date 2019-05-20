@@ -214,6 +214,7 @@
     <CudaCompile Include="Color.hpp" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="CRenderingView.h" />
+    <ClInclude Include="CTestView.h" />
     <ClInclude Include="CudaHelper.h" />
     <ClInclude Include="CVolumeRenderingView.h" />
     <ClInclude Include="Debugger.h" />
@@ -259,6 +260,7 @@
     <ClCompile Include="CInspecterView.cpp" />
     <ClCompile Include="Constant.cpp" />
     <ClCompile Include="CRenderingView.cpp" />
+    <ClCompile Include="CTestView.cpp" />
     <ClCompile Include="CudaHelper.cpp" />
     <ClCompile Include="CVolumeRenderingView.cpp" />
     <ClCompile Include="Debugger.cpp" />

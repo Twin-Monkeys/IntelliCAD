@@ -583,6 +583,16 @@ void RenderingEngine::VolumeRenderer::render(
 	}
 }
 
+void RenderingEngine::VolumeRenderer::adjustImgBasedSamplingStep(const float delta) 
+{
+	__imgBasedSamplingStep += delta;
+
+	if (__imgBasedSamplingStep < 0.1f)
+		__imgBasedSamplingStep = 0.1f;
+	else if (__imgBasedSamplingStep > 4.f)
+		__imgBasedSamplingStep = 4.f;
+}
+
 void RenderingEngine::VolumeRenderer::__onLoadVolume()
 {
 	// 새로운 볼륨이 렌더링 엔진에 적재된 후 나중에 호출되는 콜백 함수

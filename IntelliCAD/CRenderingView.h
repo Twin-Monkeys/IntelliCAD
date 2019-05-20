@@ -26,13 +26,14 @@ private:
 	/* member function */
 	void __createDeviceBuffer(const int width, const int height);
 	void __deleteDeviceBuffer();
-	void __render();
 
 	/* member variable */
-	CPoint __prevPos;
 	HDC __hDeviceContext = nullptr;
 	HGLRC __hRenderingContext = nullptr;
 	CSize __screenSize;
 	GLuint __bufferObject = 0;
 	cudaGraphicsResource* __pCudaRes = nullptr;
+
+public:
+	void render();
 };
