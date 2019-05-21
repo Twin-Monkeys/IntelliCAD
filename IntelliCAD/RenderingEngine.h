@@ -23,6 +23,7 @@ public:
 	public:
 		/* member function */
 		void render(Pixel* const pScreen, const int screenWidth, const int screenHeight);
+		void adjustImgBasedSamplingStep(const float delta);
 
 		/* member variable */
 		Camera camera;

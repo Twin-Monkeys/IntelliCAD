@@ -22,6 +22,7 @@
 #include "Parser.hpp"
 #include "System.h"
 #include "VolumeReader.h"
+#include "CTestView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -129,9 +130,9 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 		__parentSplitterWnd.IdFromRowCol(0, 0));
 
 	// 좌, 우측 윈도우에 View를 할당한다.
-	__childSplitterWnd.CreateView(0, 0, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
-	__childSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
-	__childSplitterWnd.CreateView(1, 0, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
+	__childSplitterWnd.CreateView(0, 0, RUNTIME_CLASS(CTestView), {}, pContext);
+	__childSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CTestView), {}, pContext);
+	__childSplitterWnd.CreateView(1, 0, RUNTIME_CLASS(CTestView), {}, pContext);
 	__childSplitterWnd.CreateView(1, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
 	__parentSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CInspecterView), {}, pContext);
 
@@ -157,5 +158,7 @@ void CMainFrame::OnFileOpen()
 		const VolumeData RESULT = VolumeReader::readDen(PATH, 512, 512, 326);
 
 		System::getSystemContents().loadVolume(RESULT);
+
+		static_cast<CRenderingView *>(__childSplitterWnd.GetPane(1, 1))->render();
 	}
 }

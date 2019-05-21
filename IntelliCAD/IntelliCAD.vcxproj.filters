@@ -183,6 +183,9 @@
     <ClInclude Include="CudaHelper.h">
       <Filter>헤더 파일\util</Filter>
     </ClInclude>
+    <ClInclude Include="CTestView.h">
+      <Filter>헤더 파일\ui\rendering_view</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IntelliCAD.cpp">
@@ -250,6 +253,9 @@
     </ClCompile>
     <ClCompile Include="CudaHelper.cpp">
       <Filter>소스 파일\util</Filter>
+    </ClCompile>
+    <ClCompile Include="CTestView.cpp">
+      <Filter>소스 파일\ui\rendering_view</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

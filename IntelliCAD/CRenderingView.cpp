@@ -28,7 +28,7 @@ void CRenderingView::OnSize(UINT nType, int cx, int cy)
 
 	__deleteDeviceBuffer();
 	__createDeviceBuffer(cx, cy);
-	__render();
+	render();
 }
 
 int CRenderingView::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -123,7 +123,7 @@ void CRenderingView::__deleteDeviceBuffer()
 	}
 }
 
-void CRenderingView::__render()
+void CRenderingView::render()
 {
 	// 버퍼의 주도권을 CUDA로 가져온다.
 	cudaGraphicsMapResources(1, &__pCudaRes, nullptr);
