@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CRenderingView.h"
+#include "CCustomSplitterWnd.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -10,6 +11,7 @@ ON_WM_SIZE()
 ON_WM_CREATE()
 ON_WM_DESTROY()
 ON_WM_ERASEBKGND()
+ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 /* member function */
@@ -88,6 +90,38 @@ BOOL CRenderingView::OnEraseBkgnd(CDC* pDC)
 	// return CView::OnEraseBkgnd(pDC);
 }
 
+void CRenderingView::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	CCustomSplitterWnd* pSplitterWnd = (CCustomSplitterWnd*)GetParentSplitter(this, false);
+	pSplitterWnd->maximized = !(pSplitterWnd->maximized);
+
+	if (pSplitterWnd->maximized) 
+		pSplitterWnd->maximizeActiveView(index);
+	else
+		pSplitterWnd->updateView();
+
+	CView::OnLButtonDblClk(nFlags, point);
+}
+
+void CRenderingView::render()
+{
+	// 버퍼의 주도권을 CUDA로 가져온다.
+	cudaGraphicsMapResources(1, &__pCudaRes, nullptr);
+
+	// 핸들이 가리키는 버퍼의 시작 포인터를 가져온다.
+	Pixel* pDevScreen = nullptr;
+	cudaGraphicsResourceGetMappedPointer(reinterpret_cast<void**>(&pDevScreen), nullptr, __pCudaRes);
+
+	if (pDevScreen)
+		_onRender(pDevScreen, __screenSize.cx, __screenSize.cy);
+
+	// 버퍼의 주도권을 GL로 가져온다.
+	cudaGraphicsUnmapResources(1, &__pCudaRes, nullptr);
+
+	// 화면 갱신을 요청한다.
+	Invalidate();
+}
+
 void CRenderingView::__createDeviceBuffer(const int width, const int height)
 {
 	__screenSize.cx = width;
@@ -121,23 +155,4 @@ void CRenderingView::__deleteDeviceBuffer()
 		glDeleteBuffers(1, &__bufferObject);
 		__bufferObject = 0;
 	}
-}
-
-void CRenderingView::render()
-{
-	// 버퍼의 주도권을 CUDA로 가져온다.
-	cudaGraphicsMapResources(1, &__pCudaRes, nullptr);
-
-	// 핸들이 가리키는 버퍼의 시작 포인터를 가져온다.
-	Pixel* pDevScreen = nullptr;
-	cudaGraphicsResourceGetMappedPointer(reinterpret_cast<void**>(&pDevScreen), nullptr, __pCudaRes);
-
-	if (pDevScreen)
-		_onRender(pDevScreen, __screenSize.cx, __screenSize.cy);
-
-	// 버퍼의 주도권을 GL로 가져온다.
-	cudaGraphicsUnmapResources(1, &__pCudaRes, nullptr);
-
-	// 화면 갱신을 요청한다.
-	Invalidate();
 }

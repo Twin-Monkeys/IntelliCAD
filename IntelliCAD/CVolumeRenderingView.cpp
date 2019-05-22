@@ -10,6 +10,7 @@ BEGIN_MESSAGE_MAP(CVolumeRenderingView, CRenderingView)
 	ON_WM_MBUTTONDOWN()
 	ON_WM_MOUSEMOVE()
 	ON_WM_MOUSEWHEEL()
+	ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 /* member function */
@@ -46,14 +47,19 @@ void CVolumeRenderingView::OnMouseMove(UINT nFlags, CPoint point)
 		{
 		case MK_LBUTTON:
 		{
-			const float DELTA_X = (static_cast<float>(point.x - __prevPos.x) * 0.007f);
-			const float DELTA_Y = (static_cast<float>(point.y - __prevPos.y) * 0.007f);
+			if (__dblClickSemaphore)
+				__dblClickSemaphore = false;
+			else
+			{
+				const float DELTA_X = (static_cast<float>(point.x - __prevPos.x) * 0.007f);
+				const float DELTA_Y = (static_cast<float>(point.y - __prevPos.y) * 0.007f);
 
-			camera.orbitYaw(Constant::Volume::PIVOT, -DELTA_X);
-			camera.orbitPitch(Constant::Volume::PIVOT, DELTA_Y);
+				camera.orbitYaw(Constant::Volume::PIVOT, -DELTA_X);
+				camera.orbitPitch(Constant::Volume::PIVOT, DELTA_Y);
 
-			__prevPos.x = point.x;
-			__prevPos.y = point.y;
+				__prevPos.x = point.x;
+				__prevPos.y = point.y;
+			}
 		}
 		break;
 
@@ -63,7 +69,7 @@ void CVolumeRenderingView::OnMouseMove(UINT nFlags, CPoint point)
 			const float DELTA_Y = static_cast<float>(point.y - __prevPos.y);
 
 			camera.adjustHorizontal(-DELTA_X);
-			camera.adjustVertical(DELTA_Y);
+			camera.adjustVertical(-DELTA_Y);
 
 			__prevPos.x = point.x;
 			__prevPos.y = point.y;
@@ -95,7 +101,6 @@ void CVolumeRenderingView::_onRender(Pixel* const pDevScreen, const int screenWi
 
 BOOL CVolumeRenderingView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	RenderingEngine& renderingEngine = RenderingEngine::getInstance();
 
 	if (zDelta > 0)
@@ -106,4 +111,12 @@ BOOL CVolumeRenderingView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	render();
 
 	return CRenderingView::OnMouseWheel(nFlags, zDelta, pt);
+}
+
+
+void CVolumeRenderingView::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	__dblClickSemaphore = true;
+
+	CRenderingView::OnLButtonDblClk(nFlags, point);
 }
