@@ -126,7 +126,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	// 좌측 윈도우를 2 * 2로 분할한다.
 	__childSplitterWnd.CreateStatic(
 		&__parentSplitterWnd, 2, 2,
-		(WS_CHILD | WS_VISIBLE | WS_BORDER), 
+		(WS_CHILD | WS_VISIBLE | WS_BORDER),
 		__parentSplitterWnd.IdFromRowCol(0, 0));
 
 	// 좌, 우측 윈도우에 View를 할당한다.
@@ -135,6 +135,12 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	__childSplitterWnd.CreateView(1, 0, RUNTIME_CLASS(CTestView), {}, pContext);
 	__childSplitterWnd.CreateView(1, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
 	__parentSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CInspecterView), {}, pContext);
+
+	// 좌측 윈도우 View를 구분하기 위하여 인덱스를 설정한다.
+	__childSplitterWnd.getChildView<CRenderingView>(0, 0)->index = 0; // Top-Left
+	__childSplitterWnd.getChildView<CRenderingView>(0, 1)->index = 1; // Top-Right
+	__childSplitterWnd.getChildView<CRenderingView>(1, 0)->index = 2; // Bottom-Left
+	__childSplitterWnd.getChildView<CRenderingView>(1, 1)->index = 3; // Bottom-Right
 
 	// 분할 윈도우를 만들었다.
 	__parentSplitterWnd.splitted = true;

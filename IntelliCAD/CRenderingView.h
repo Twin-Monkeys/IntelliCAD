@@ -17,6 +17,11 @@ public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+	void render();
+
+	/* member variable */
+	int index;
 
 protected:
 	/* member function */
@@ -33,7 +38,4 @@ private:
 	CSize __screenSize;
 	GLuint __bufferObject = 0;
 	cudaGraphicsResource* __pCudaRes = nullptr;
-
-public:
-	void render();
 };

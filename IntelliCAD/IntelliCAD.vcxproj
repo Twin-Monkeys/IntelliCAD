@@ -212,6 +212,7 @@
     <ClInclude Include="CCustomSplitterWnd.h" />
     <ClInclude Include="CInspecterView.h" />
     <CudaCompile Include="Color.hpp" />
+    <ClInclude Include="CLoginDlg.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="CRenderingView.h" />
     <ClInclude Include="CTestView.h" />
@@ -258,6 +259,7 @@
     <ClCompile Include="CCustomRibbonBar.cpp" />
     <ClCompile Include="CCustomSplitterWnd.cpp" />
     <ClCompile Include="CInspecterView.cpp" />
+    <ClCompile Include="CLoginDlg.cpp" />
     <ClCompile Include="Constant.cpp" />
     <ClCompile Include="CRenderingView.cpp" />
     <ClCompile Include="CTestView.cpp" />
@@ -287,6 +289,9 @@
     <ResourceCompile Include="IntelliCAD.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="C:\Users\GODJIN\Downloads\doctor.jpg" />
+    <Image Include="C:\Users\GODJIN\Downloads\icons8-doctor-male-100.png" />
+    <Image Include="res\bitmap1.bmp" />
     <Image Include="res\buttons.bmp" />
     <Image Include="res\filelarge.bmp" />
     <Image Include="res\filesmall.bmp" />

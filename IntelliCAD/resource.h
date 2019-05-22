@@ -23,6 +23,7 @@
 #define IDS_EDIT_MENU                   306
 #define IDR_RIBBON                      307
 #define IDD_DIALOG1                     310
+#define IDD_DIALOG2                     312
 #define IDC_STATIC_GBOX_volInfo         1000
 #define IDC_STATIC_GBOX_volSize         1001
 #define IDC_STATIC_LABEL_volSizeX       1002
@@ -33,15 +34,18 @@
 #define IDC_STATIC_STEXT_volSizeZ       1007
 #define IDC_STATIC_LABEL_volPath        1008
 #define IDC_STATIC_STEXT_volPath        1009
+#define IDC_BUTTON1                     1012
+#define IDC_EDIT3                       1013
+#define IDC_EDIT4                       1014
 #define ID_WRITE_PASTEASHYPERLINK       32770
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        312
+#define _APS_NEXT_RESOURCE_VALUE        320
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1010
+#define _APS_NEXT_CONTROL_VALUE         1015
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

@@ -186,6 +186,9 @@
     <ClInclude Include="CTestView.h">
       <Filter>헤더 파일\ui\rendering_view</Filter>
     </ClInclude>
+    <ClInclude Include="CLoginDlg.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IntelliCAD.cpp">
@@ -257,6 +260,9 @@
     <ClCompile Include="CTestView.cpp">
       <Filter>소스 파일\ui\rendering_view</Filter>
     </ClCompile>
+    <ClCompile Include="CLoginDlg.cpp">
+      <Filter>소스 파일\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IntelliCAD.rc">
@@ -292,6 +298,15 @@
       <Filter>리소스 파일</Filter>
     </Image>
     <Image Include="res\Toolbar256.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\bitmap1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="C:\Users\GODJIN\Downloads\icons8-doctor-male-100.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="C:\Users\GODJIN\Downloads\doctor.jpg">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>

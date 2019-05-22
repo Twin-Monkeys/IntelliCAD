@@ -22,6 +22,9 @@ protected:
 private:
 	/* member variable */
 	CPoint __prevPos;
+	bool __dblClickSemaphore = false;
+
 public:
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 };
 

@@ -17,7 +17,7 @@
 #include "afxdialogex.h"
 #include "IntelliCAD.h"
 #include "MainFrm.h"
-
+#include "CLoginDlg.h"
 #include "IntelliCADDoc.h"
 #include "IntelliCADView.h"
 #include "System.h"
@@ -72,6 +72,10 @@ BOOL CIntelliCADApp::InitInstance()
 
 	CWinAppEx::InitInstance();
 
+	// 로그인 화면을 보여준다.
+	CLoginDlg loginDlg;
+	if (loginDlg.DoModal() != SIGN_IN)
+		return FALSE;
 
 	// OLE 라이브러리를 초기화합니다.
 	if (!AfxOleInit())
@@ -123,16 +127,15 @@ BOOL CIntelliCADApp::InitInstance()
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine(cmdInfo);
 
-
-
 	// 명령줄에 지정된 명령을 디스패치합니다.
 	// 응용 프로그램이 /RegServer, /Register, /Unregserver 또는 /Unregister로 시작된 경우 FALSE를 반환합니다.
 	if (!ProcessShellCommand(cmdInfo))
 		return FALSE;
 
-	// 창 하나만 초기화되었으므로 이를 표시하고 업데이트합니다.
+	// 메인 화면을 보여준다.
 	m_pMainWnd->ShowWindow(SW_SHOW);
 	m_pMainWnd->UpdateWindow();
+
 	return TRUE;
 }
 
