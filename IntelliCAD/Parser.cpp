@@ -60,6 +60,11 @@ namespace Parser
 		return string(CT2CA(str.c_str()));
 	}
 
+	tstring string$tstring(const std::string &str)
+	{
+		return tstring(CA2CT(str.c_str()));
+	}
+
 	tstring sin_addr$ipString(const IN_ADDR sin_addr)
 	{
 		char buffer[32];

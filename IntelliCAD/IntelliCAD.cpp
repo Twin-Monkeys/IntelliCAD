@@ -72,11 +72,6 @@ BOOL CIntelliCADApp::InitInstance()
 
 	CWinAppEx::InitInstance();
 
-	// 로그인 화면을 보여준다.
-	CLoginDlg loginDlg;
-	if (loginDlg.DoModal() != SIGN_IN)
-		return FALSE;
-
 	// OLE 라이브러리를 초기화합니다.
 	if (!AfxOleInit())
 	{

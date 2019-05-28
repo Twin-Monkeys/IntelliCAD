@@ -60,6 +60,10 @@ private:
 public:
 	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
 	afx_msg void OnFileOpen();
+	afx_msg void OnButtonCloudService();
+	afx_msg void OnButtonLight1();
+	afx_msg void OnButtonLight2();
+	afx_msg void OnButtonLight3();
 };
 
 

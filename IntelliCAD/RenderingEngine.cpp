@@ -6,15 +6,14 @@
 *	최종 수정일		: 19.04.07
 */
 
+#include "custom_cudart.h"
 #include "RenderingEngine.h"
+#include "SystemIndirectAccessor.h"
 #include "RayBoxInstersector.h"
 #include "NumberUtility.hpp"
 #include "Constant.h"
-#include "CudaHelper.h"
-#include <cuda_texture_types.h>
-#include <texture_fetch_functions.h>
-#include <device_launch_parameters.h>
 #include <limits>
+#include "Index2D.hpp"
 
 RenderingEngine RenderingEngine::__instance;
 
@@ -59,17 +58,23 @@ namespace Device
 
 			// 볼륨 메타 데이터를 CPU에서 GPU 변수로 복사한다.  
 			cudaMemcpyToSymbol(__meta, &volumeData.meta, sizeof(VolumeMeta));
-			const Size3D<size_t> VOL_SIZE = volumeData.meta.size.castTo<size_t>();
+
+			// 볼륨의 크기
+			const cudaExtent VOL_SIZE =
+				make_cudaExtent(volumeData.meta.size.width, volumeData.meta.size.height, volumeData.meta.size.depth);
 
 			// 볼륨 3차원 배열 메모리를 GPU에 할당한다.
-			cudaMalloc3DArray(&__pBuffer, &DESC, { VOL_SIZE.width, VOL_SIZE.height, VOL_SIZE.depth });
+			cudaMalloc3DArray(&__pBuffer, &DESC, VOL_SIZE);
 
 			// 메모리 복사 파라미터를 설정한다.
-			cudaMemcpy3DParms params = { 0 };
+			cudaMemcpy3DParms params;
+			ZeroMemory(&params, sizeof(cudaMemcpy3DParms));
+
 			params.srcPtr = make_cudaPitchedPtr(
 				volumeData.pBuffer.get(), (VOL_SIZE.width * sizeof(ushort)), VOL_SIZE.width, VOL_SIZE.height);
+			
 			params.dstArray = __pBuffer;
-			params.extent = { VOL_SIZE.width, VOL_SIZE.height, VOL_SIZE.depth };
+			params.extent = VOL_SIZE;
 
 			// 볼륨 데이터를 CPU에서 GPU 배열로 복사한다.
 			cudaMemcpy3D(&params);
@@ -78,10 +83,9 @@ namespace Device
 			__texMem.addressMode[1] = cudaAddressModeBorder;
 			__texMem.addressMode[2] = cudaAddressModeBorder;
 			__texMem.filterMode = cudaFilterModeLinear;
-			__texMem.normalized = false;
 
 			// 텍스처 참조자와 볼륨 3차원 배열을 바인딩한다.
-			cudaBindTextureToArray(__texMem, __pBuffer, DESC);
+			cudaBindTextureToArray(__texMem, __pBuffer);
 		}
 
 		/// <summary>
@@ -131,28 +135,28 @@ namespace Device
 		/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
 		/// <para>이때 대응되는 값은 red 필터를 선형 보간하여 가져온다.</para>
 		/// </summary>
-		static texture<float, 1, cudaReadModeElementType> __texMemRed;
+		static texture<float> __texMemRed;
 
 		/// <summary>
 		/// <para>GPU green 필터와 바인딩 된 텍스처 접근자</para>
 		/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
 		/// <para>이때 대응되는 값은 green 필터를 선형 보간하여 가져온다.</para>
 		/// </summary>
-		static texture<float, 1, cudaReadModeElementType> __texMemGreen;
+		static texture<float> __texMemGreen;
 
 		/// <summary>
 		/// <para>GPU blue 필터와 바인딩 된 텍스처 접근자</para>
 		/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
 		/// <para>이때 대응되는 값은 blue 필터를 선형 보간하여 가져온다.</para>
 		/// </summary>
-		static texture<float, 1, cudaReadModeElementType> __texMemBlue;
+		static texture<float> __texMemBlue;
 
 		/// <summary>
 		/// <para>GPU alpha 필터와 바인딩 된 텍스처 접근자</para>
 		/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
 		/// <para>이때 대응되는 값은 alpha 필터를 선형 보간하여 가져온다.</para>
 		/// </summary>
-		static texture<float, 1, cudaReadModeElementType> __texMemAlpha;
+		static texture<float> __texMemAlpha;
 
 		/* function */
 		/// <summary>
@@ -163,13 +167,12 @@ namespace Device
 		/// </param>
 		static void __memcpy(const TransferFunction& transferFunc)
 		{
-			const size_t SIZE =
-				(sizeof(float) * static_cast<size_t>(transferFunc.PRECISION));
+			const size_t MEM_SIZE = (transferFunc.PRECISION * sizeof(float));
 
-			cudaMemcpyToArray(__pRed, 0, 0, transferFunc.getRed(), SIZE, cudaMemcpyHostToDevice);
-			cudaMemcpyToArray(__pGreen, 0, 0, transferFunc.getGreen(), SIZE, cudaMemcpyHostToDevice);
-			cudaMemcpyToArray(__pBlue, 0, 0, transferFunc.getBlue(), SIZE, cudaMemcpyHostToDevice);
-			cudaMemcpyToArray(__pAlpha, 0, 0, transferFunc.getAlpha(), SIZE, cudaMemcpyHostToDevice);
+			cudaMemcpyToArray(__pRed, 0, 0, transferFunc.getRed(), MEM_SIZE, cudaMemcpyHostToDevice);
+			cudaMemcpyToArray(__pGreen, 0, 0, transferFunc.getGreen(), MEM_SIZE, cudaMemcpyHostToDevice);
+			cudaMemcpyToArray(__pBlue, 0, 0, transferFunc.getBlue(), MEM_SIZE, cudaMemcpyHostToDevice);
+			cudaMemcpyToArray(__pAlpha, 0, 0, transferFunc.getAlpha(), MEM_SIZE, cudaMemcpyHostToDevice);
 		}
 
 		/// <summary>
@@ -181,34 +184,26 @@ namespace Device
 		static void __malloc(const TransferFunction& transferFunc)
 		{
 			const cudaChannelFormatDesc DESC = cudaCreateChannelDesc<float>();
-			const size_t PRECISION = static_cast<size_t>(transferFunc.PRECISION);
+			const size_t MEM_SIZE = (transferFunc.PRECISION * sizeof(float));
 
-			cudaMallocArray(&__pRed, &DESC, PRECISION, 1);
-			cudaMallocArray(&__pGreen, &DESC, PRECISION, 1);
-			cudaMallocArray(&__pBlue, &DESC, PRECISION, 1);
-			cudaMallocArray(&__pAlpha, &DESC, PRECISION, 1);
+			cudaMallocArray(&__pRed, &DESC, MEM_SIZE);
+			cudaMallocArray(&__pGreen, &DESC, MEM_SIZE);
+			cudaMallocArray(&__pBlue, &DESC, MEM_SIZE);
+			cudaMallocArray(&__pAlpha, &DESC, MEM_SIZE);
 
 			__memcpy(transferFunc);
 
-			__texMemRed.normalized = true;
 			__texMemRed.filterMode = cudaFilterModeLinear;
-			__texMemRed.addressMode[0] = cudaAddressModeClamp;
-			cudaBindTextureToArray(__texMemRed, __pRed, DESC);
+			cudaBindTextureToArray(__texMemRed, __pRed);
 
-			__texMemGreen.normalized = true;
 			__texMemGreen.filterMode = cudaFilterModeLinear;
-			__texMemGreen.addressMode[0] = cudaAddressModeClamp;
-			cudaBindTextureToArray(__texMemGreen, __pGreen, DESC);
+			cudaBindTextureToArray(__texMemGreen, __pGreen);
 
-			__texMemBlue.normalized = true;
 			__texMemBlue.filterMode = cudaFilterModeLinear;
-			__texMemBlue.addressMode[0] = cudaAddressModeClamp;
-			cudaBindTextureToArray(__texMemBlue, __pBlue, DESC);
+			cudaBindTextureToArray(__texMemBlue, __pBlue);
 
-			__texMemAlpha.normalized = true;
 			__texMemAlpha.filterMode = cudaFilterModeLinear;
-			__texMemAlpha.addressMode[0] = cudaAddressModeClamp;
-			cudaBindTextureToArray(__texMemAlpha, __pAlpha, DESC);
+			cudaBindTextureToArray(__texMemAlpha, __pAlpha);
 		}
 
 		/// <summary>
@@ -249,6 +244,8 @@ namespace Device
 			}
 		}
 	}
+
+
 
 	/* function */
 	/// <summary>
@@ -310,19 +307,24 @@ namespace Device
 	__device__ 
 	static Vector3D __getNormal(const Point3D& samplePoint)
 	{
-		const float X_LEFT = tex3D(Volume::__texMem, (samplePoint.x - 1.f), samplePoint.y, samplePoint.z);
-		const float X_RIGHT = tex3D(Volume::__texMem, (samplePoint.x + 1.f), samplePoint.y, samplePoint.z);
+		const Point3D ADJ_POINT =
+		{
+			samplePoint.x + .5f,
+			samplePoint.y + .5f,
+			samplePoint.z + .5f
+		};
 
-		const float Y_LEFT = tex3D(Volume::__texMem, samplePoint.x, (samplePoint.y - 1.f), samplePoint.z);
-		const float Y_RIGHT = tex3D(Volume::__texMem, samplePoint.x, (samplePoint.y + 1.f), samplePoint.z);
+		const float X_LEFT = tex3D(Volume::__texMem, (ADJ_POINT.x - 1.f), ADJ_POINT.y, ADJ_POINT.z);
+		const float X_RIGHT = tex3D(Volume::__texMem, (ADJ_POINT.x + 1.f), ADJ_POINT.y, ADJ_POINT.z);
 
-		const float Z_LEFT = tex3D(Volume::__texMem, samplePoint.x, samplePoint.y, (samplePoint.z - 1.f));
-		const float Z_RIGHT = tex3D(Volume::__texMem, samplePoint.x, samplePoint.y, (samplePoint.z + 1.f));
+		const float Y_LEFT = tex3D(Volume::__texMem, ADJ_POINT.x, (ADJ_POINT.y - 1.f), ADJ_POINT.z);
+		const float Y_RIGHT = tex3D(Volume::__texMem, ADJ_POINT.x, (ADJ_POINT.y + 1.f), ADJ_POINT.z);
+
+		const float Z_LEFT = tex3D(Volume::__texMem, ADJ_POINT.x, ADJ_POINT.y, (ADJ_POINT.z - 1.f));
+		const float Z_RIGHT = tex3D(Volume::__texMem, ADJ_POINT.x, ADJ_POINT.y, (ADJ_POINT.z + 1.f));
 
 		return NumberUtility::inverseGradient(
-			X_LEFT, X_RIGHT,
-			Y_LEFT, Y_RIGHT,
-			Z_LEFT, Z_RIGHT);
+			X_LEFT, X_RIGHT, Y_LEFT, Y_RIGHT, Z_LEFT, Z_RIGHT);
 	}
 
 	/// <summary>
@@ -360,9 +362,9 @@ namespace Device
 		const Vector3D& camDirection)
 	{
 		// 볼륨 데이터 값을 transfer function에 넣어 albedo 정보를 가져온다.
-		const float RED = tex1D(TransferFunc::__texMemRed, intensity);
-		const float GREEN = tex1D(TransferFunc::__texMemGreen, intensity);
-		const float BLUE = tex1D(TransferFunc::__texMemBlue, intensity);
+		const float RED = tex1D(TransferFunc::__texMemRed, intensity + .5f);
+		const float GREEN = tex1D(TransferFunc::__texMemGreen, intensity + .5f);
+		const float BLUE = tex1D(TransferFunc::__texMemBlue, intensity + .5f);
 
 		const Color<float> ALBEDO(RED, GREEN, BLUE);
 
@@ -381,7 +383,7 @@ namespace Device
 				const Vector3D N = __getNormal(samplePoint);
 				const Vector3D L = (LIGHTS[i].position - samplePoint).getUnit();
 				const Vector3D V = -camDirection;
-				const Vector3D H = ((L + V) / 2.f);
+				const Vector3D H = ((L + V) * .5f);
 
 				// ambient
 				retVal += (ALBEDO * LIGHTS[i].ambient);
@@ -473,17 +475,20 @@ namespace Device
 		float transparency = 1.f; // 누적 투명도
 		Color<float> color(0.f); // 누적 RGB 세기
 
+		const Vector3D STEP_VECTOR = (orthoBasis.u * objectBasedSamplingStep);
 		for (float t = RANGE.start; t < RANGE.end; t += objectBasedSamplingStep)
 		{
 			// 현재 샘플 위치에서 볼륨 데이터 값을 선형 보간하여 가져온다.
-			float INTENSITY = tex3D(Volume::__texMem, samplePoint.x, samplePoint.y, samplePoint.z);
+			// 0.5를 더하는 것은 CUDA의 텍스처 메모리 특성 때문. 지우지 말 것
+			const float INTENSITY = tex3D(
+				Volume::__texMem, samplePoint.x + .5f, samplePoint.y + .5f, samplePoint.z + .5f);
 
 			// 볼륨 데이터 값을 보정한다.
-			const float CORRECTION_VALUE = (USHRT_MAX / Volume::__meta->voxelPrecision);
-			const float CORRECTED_INTENSITY = (INTENSITY * CORRECTION_VALUE);
+			const float CORRECTED_INTENSITY = (INTENSITY * USHRT_MAX);
 
 			// alpha transfer function에 위의 값을 넣어 alpha 값을 알아낸다.
-			const float ALPHA = tex1D(TransferFunc::__texMemAlpha, CORRECTED_INTENSITY);
+			// 세인 변경: 이제 normalized 인덱스가 아님. 실제 값을 넣자 (RGB transfer function 모두에게 해당됨)
+			const float ALPHA = tex1D(TransferFunc::__texMemAlpha, CORRECTED_INTENSITY + .5f);
 
 			// 시야 광선 전진 단위에 따라 alpha 값을 보정한다.
 			// (전진 단위가 작아지면 alpha 값이 금방 누적되어 원하는 결과를 얻을 수 없다.)
@@ -497,11 +502,11 @@ namespace Device
 					samplePoint, CORRECTED_INTENSITY, CORRECTED_ALPHA, shininess, light0, light1, light2, orthoBasis.u);
 
 				// alpha-blending
-				const float VALUE = (transparency * CORRECTED_ALPHA);
+				const float CUR_ALPHA = (transparency * CORRECTED_ALPHA);
 
-				color.red += (VALUE * SHADING_RESULT.red);
-				color.green += (VALUE * SHADING_RESULT.green);
-				color.blue += (VALUE * SHADING_RESULT.blue);
+				color.red += (CUR_ALPHA * SHADING_RESULT.red);
+				color.green += (CUR_ALPHA * SHADING_RESULT.green);
+				color.blue += (CUR_ALPHA * SHADING_RESULT.blue);
 
 				transparency *= (1.f - CORRECTED_ALPHA);
 
@@ -512,7 +517,7 @@ namespace Device
 			}
 
 			// 시야 광선을 전진한다.
-			samplePoint += orthoBasis.u;
+			samplePoint += STEP_VECTOR;
 		}
 
 		// 픽셀 값을 alpha-blending compositing 연산 결과로 설정한다.
@@ -546,6 +551,11 @@ void RenderingEngine::loadVolume(const VolumeData& volumeData)
 	__initialized = true;
 }
 
+void RenderingEngine::onSystemInit()
+{
+	SystemIndirectAccessor::getEventBroadcaster().addVolumeLoadingListener(*this);
+}
+
 void RenderingEngine::onLoadVolume(const VolumeData& volumeData)
 {
 	loadVolume(volumeData);
@@ -563,9 +573,7 @@ RenderingEngine& RenderingEngine::getInstance()
 /* constructor */
 RenderingEngine::VolumeRenderer::VolumeRenderer(const VolumeMeta &volumeMeta, const bool &initFlag) :
 	__volumeMeta(volumeMeta), __initialized(initFlag)
-{
-
-}
+{}
 
 /* member function */
 void RenderingEngine::VolumeRenderer::render(
@@ -607,10 +615,18 @@ void RenderingEngine::VolumeRenderer::__initTransferFunc()
 {
 	__pTransferFunc = new TransferFunction(__volumeMeta.voxelPrecision);
 
-	__pTransferFunc->setRed({ 0, __volumeMeta.voxelPrecision });
+	/*__pTransferFunc->setRed({ 0, __volumeMeta.voxelPrecision });
 	__pTransferFunc->setGreen({ 0, __volumeMeta.voxelPrecision });
 	__pTransferFunc->setBlue({ 0, __volumeMeta.voxelPrecision });
-	__pTransferFunc->setAlpha({ 0, __volumeMeta.voxelPrecision });
+	__pTransferFunc->setAlpha({ 0, __volumeMeta.voxelPrecision });*/
+
+	ushort minVal = 3300;
+	ushort maxVal = 4000;
+
+	__pTransferFunc->setRed({ minVal, maxVal });
+	__pTransferFunc->setGreen({ minVal, maxVal });
+	__pTransferFunc->setBlue({ minVal, maxVal });
+	__pTransferFunc->setAlpha({ minVal, maxVal });
 
 	Device::TransferFunc::__malloc(*__pTransferFunc);
 }
@@ -622,14 +638,14 @@ void RenderingEngine::VolumeRenderer::__initLight()
 	__light[2].position = Constant::Light::Position::BACK;
 
 	__light[0].ambient = { 0.03f, 0.02f, 0.01f };
-	__light[0].diffuse = { 0.6f, 0.1f, 0.1f };
+	__light[0].diffuse = { 0.4f, 0.1f, 0.1f };
 	__light[0].specular = { 0.5f, 0.1f, 0.1f };
 
 	__light[1].ambient = { 0.02f, 0.03f, 0.01f };
 	__light[1].diffuse = { 0.1f, 0.6f, 0.1f };
 	__light[1].specular = { 0.1f, 0.5f, 0.1f };
 
-	__light[2].ambient = { 0.1f, 0.2f, 0.3f };
+	__light[2].ambient = { 0.01f, 0.02f, 0.03f };
 	__light[2].diffuse = { 0.2f, 0.4f, 0.6f };
 	__light[2].specular = { 0.3f, 0.4f, 0.5f };
 }
@@ -643,19 +659,236 @@ void RenderingEngine::VolumeRenderer::__initCamera()
 //// IMAGE PROCESSOR START ////
 ///////////////////////////////
 
+namespace __Device
+{
+	namespace __ImgProc
+	{
+		texture<float> __transferTable;
+
+		__global__
+		void __kernel_imgProcRender_top(
+			Pixel* const pScreen, const Size2D<> screenSize,
+			const float samplingStep, const float volumeSlicingZ)
+		{
+			using Device::Volume::__meta;
+
+			const Index2D<> SCR_IDX = Index2D<>::getKernelIndex();
+
+			const int TEX_Y = ((screenSize.height - 1) - SCR_IDX.y);
+			const int SCR_OFFSET = ((TEX_Y * screenSize.width) + SCR_IDX.x);
+
+			const float VOL_X =
+				(static_cast<float>(SCR_IDX.x) +
+				(static_cast<float>(__meta->size.width - screenSize.width) * .5f));
+
+			const float VOL_Y =
+				(static_cast<float>((__meta->size.height - 1) - SCR_IDX.y) -
+				(static_cast<float>(__meta->size.height - screenSize.height) * .5f));
+
+			const float INTENSITY =
+				(tex3D(Device::Volume::__texMem, VOL_X + .5f, VOL_Y + .5f, volumeSlicingZ + .5f) *
+				static_cast<float>(USHRT_MAX));
+
+			const float RET_VAL = tex1D(__transferTable, INTENSITY + .5f);
+
+			pScreen[SCR_OFFSET].set(
+				static_cast<ubyte>(NumberUtility::truncate(RET_VAL * 255.f, 0.f, 255.f)));
+		}
+
+		__global__
+		void __kernel_imgProcRender_front(
+			Pixel* const pScreen, const Size2D<> screenSize,
+			const float samplingStep, const float volumeSlicingY)
+		{
+			using Device::Volume::__meta;
+
+			Index2D<> SCR_IDX = Index2D<>::getKernelIndex();
+			SCR_IDX.y = ((screenSize.height - 1) - SCR_IDX.y);
+
+			const int TEX_Y = ((screenSize.height - 1) - SCR_IDX.y);
+			const int SCR_OFFSET = ((TEX_Y * screenSize.width) + SCR_IDX.x);
+
+			const float VOL_X =
+				(static_cast<float>(SCR_IDX.x) +
+				(static_cast<float>(__meta->size.width - screenSize.width) * .5f));
+
+			const float VOL_Z =
+				(static_cast<float>(SCR_IDX.y) +
+				(static_cast<float>(__meta->size.depth - screenSize.height) * .5f));
+
+			const float INTENSITY =
+				(tex3D(Device::Volume::__texMem, VOL_X + .5f, volumeSlicingY + .5f, VOL_Z + .5f) *
+				static_cast<float>(USHRT_MAX));
+
+			const float RET_VAL = tex1D(__transferTable, INTENSITY + .5f);
+
+			pScreen[SCR_OFFSET].set(
+				static_cast<ubyte>(NumberUtility::truncate(RET_VAL * 255.f, 0.f, 255.f)));
+		}
+
+		__global__
+		void __kernel_imgProcRender_right(
+			Pixel* const pScreen, const Size2D<> screenSize,
+			const float samplingStep, const float volumeSlicingX)
+		{
+			using Device::Volume::__meta;
+
+			const Index2D<> SCR_IDX = Index2D<>::getKernelIndex();
+
+			const int TEX_Y = ((screenSize.height - 1) - SCR_IDX.y);
+			const int SCR_OFFSET = ((TEX_Y * screenSize.width) + SCR_IDX.x);
+
+			const float VOL_Y =
+				(static_cast<float>(SCR_IDX.x) +
+				(static_cast<float>(__meta->size.height - screenSize.width) * .5f));
+
+			const float VOL_Z =
+				(static_cast<float>(SCR_IDX.y) +
+				(static_cast<float>(__meta->size.depth - screenSize.height) * .5f));
+
+			const float INTENSITY =
+				(tex3D(Device::Volume::__texMem, volumeSlicingX + .5f, VOL_Y + .5f, VOL_Z + .5f) *
+				static_cast<float>(USHRT_MAX));
+
+			const float RET_VAL = tex1D(__transferTable, INTENSITY + .5f);
+
+			pScreen[SCR_OFFSET].set(
+				static_cast<ubyte>(NumberUtility::truncate(RET_VAL * 255.f, 0.f, 255.f)));
+		}
+	}
+}
+
 RenderingEngine::ImageProcessor::ImageProcessor(const VolumeMeta &volumeMeta, const bool &initFlag) :
 	__volumeMeta(volumeMeta), __initialized(initFlag)
 {
-
+	using namespace __Device::__ImgProc;
+	
+	__transferTable.filterMode = cudaTextureFilterMode::cudaFilterModeLinear;
 }
 
 void RenderingEngine::ImageProcessor::__onLoadVolume()
 {
+	__init();
+}
 
+void RenderingEngine::ImageProcessor::__sync()
+{
+	if (__transferTableDirty)
+		__syncTransferFunction();
+}
+
+void RenderingEngine::ImageProcessor::__syncTransferFunction()
+{
+	const float RANGE_INV =
+		(1.f / static_cast<float>(_transferTableBoundary.end - _transferTableBoundary.start));
+
+	const Range<int> BOUNDARY = _transferTableBoundary.castTo<int>();
+
+	const int ITER = __volumeMeta.voxelPrecision;
+	for (int i = 0; i < ITER; i++)
+	{
+		if (i < BOUNDARY.start)
+			__pHostTransferTableBuffer[i] = 0.f;
+		else if (i < BOUNDARY.end)
+			__pHostTransferTableBuffer[i] = (static_cast<float>(i - BOUNDARY.start) * RANGE_INV);
+		else
+			__pHostTransferTableBuffer[i] = 1.f;
+	}
+
+	cudaMemcpyToArray(
+		__transferTableBuffer, 0, 0, __pHostTransferTableBuffer,
+		__volumeMeta.voxelPrecision * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
+
+	__transferTableDirty = false;
+}
+
+void RenderingEngine::ImageProcessor::__init()
+{
+	__release();
+
+	__pHostTransferTableBuffer = new float[__volumeMeta.voxelPrecision];
+
+	const cudaChannelFormatDesc DESC = cudaCreateChannelDesc<float>();
+
+	cudaMallocArray(
+		&__transferTableBuffer, &DESC, __volumeMeta.voxelPrecision * sizeof(float));
+
+	using namespace __Device::__ImgProc;
+	cudaBindTextureToArray(__transferTable, __transferTableBuffer);
+
+	const Size3D<float> DIVISION_POINT = (__volumeMeta.size.castTo<float>() * .5f);
+	__slicingPoint.set(
+		DIVISION_POINT.width, DIVISION_POINT.height, DIVISION_POINT.depth);
+
+	_transferTableBoundary.set(0, __volumeMeta.voxelPrecision);
+	__transferTableDirty = true;
+}
+
+void RenderingEngine::ImageProcessor::__release()
+{
+
+	if (__transferTableBuffer)
+	{
+		using namespace __Device::__ImgProc;
+		cudaUnbindTexture(__transferTable);
+
+		cudaFreeArray(__transferTableBuffer);
+		__transferTableBuffer = nullptr;
+
+		delete[] __pHostTransferTableBuffer;
+		__pHostTransferTableBuffer = nullptr;
+	}
+}
+
+void RenderingEngine::ImageProcessor::setTransferFunction(const ushort startInc, const ushort endExc)
+{
+	_transferTableBoundary.set(startInc, endExc);
+	__transferTableDirty = true;
+}
+
+void RenderingEngine::ImageProcessor::setTransferFunction(const Range<ushort> &range)
+{
+	setTransferFunction(range.start, range.end);
 }
 
 void RenderingEngine::ImageProcessor::render(
-	Pixel* const pScreen, const int screenWidth, const int screenHeight)
+	Pixel *const pScreen, const int screenWidth, const int screenHeight,
+	const float samplingStep, const SliceAxis axis)
 {
-	
+	if (__initialized)
+	{
+		__sync();
+
+		using namespace __Device::__ImgProc;
+
+		const dim3 gridDim =
+		{
+			static_cast<uint>(screenWidth / 16),
+			static_cast<uint>(screenHeight / 16)
+		};
+		const dim3 blockDim = { 16, 16 };
+
+		switch (axis)
+		{
+		case SliceAxis::TOP:
+			__kernel_imgProcRender_top<<<gridDim, blockDim>>>(
+				pScreen, { screenWidth, screenHeight }, samplingStep, __slicingPoint.z);
+			break;
+
+		case SliceAxis::FRONT:
+			__kernel_imgProcRender_front<<<gridDim, blockDim>>>(
+				pScreen, { screenWidth, screenHeight }, samplingStep, __slicingPoint.y);
+			break;
+
+		case SliceAxis::RIGHT:
+			__kernel_imgProcRender_right<<<gridDim, blockDim>>>(
+				pScreen, { screenWidth, screenHeight }, samplingStep, __slicingPoint.x);
+			break;
+		}
+	}
+}
+
+RenderingEngine::ImageProcessor::~ImageProcessor()
+{
+	__release();
 }

@@ -26,9 +26,14 @@ void System::SystemContents::__init()
 {
 	__pTaskMgr = new AsyncTaskManager();
 	__pEventBroadcaster = new EventBroadcaster();
+	__pRemoteAccessAuthorizer = new RemoteAccessAuthorizer();
 	__pRenderingEngine = &RenderingEngine::getInstance();
+	__pClientNetwork = &ClientNetwork::getInstance();
 
-	__pEventBroadcaster->addVolumeLoadingListener(*__pRenderingEngine);
+	// SystemInitListeners
+	__pEventBroadcaster->__addSystemInitListener(*__pRenderingEngine);
+	__pEventBroadcaster->__addSystemInitListener(*__pClientNetwork);
+	__pEventBroadcaster->__notifySystemInit();
 }
 
 AsyncTaskManager &System::SystemContents::getTaskManager()
@@ -41,9 +46,19 @@ EventBroadcaster &System::SystemContents::getEventBroadcaster()
 	return *__pEventBroadcaster;
 }
 
+RemoteAccessAuthorizer &System::SystemContents::getRemoteAccessAuthorizer()
+{
+	return *__pRemoteAccessAuthorizer;
+}
+
 RenderingEngine &System::SystemContents::getRenderingEngine()
 {
 	return *__pRenderingEngine;
+}
+
+ClientNetwork &System::SystemContents::getClientNetwork()
+{
+	return *__pClientNetwork;
 }
 
 void System::SystemContents::loadVolume(const VolumeData &volumeData)
@@ -63,6 +78,12 @@ void System::SystemContents::__release()
 	{
 		delete __pTaskMgr;
 		__pTaskMgr = nullptr;
+	}
+
+	if (__pRemoteAccessAuthorizer)
+	{
+		delete __pRemoteAccessAuthorizer;
+		__pRemoteAccessAuthorizer = nullptr;
 	}
 }
 

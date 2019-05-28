@@ -121,6 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -180,6 +181,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -208,38 +210,62 @@
   <ItemGroup>
     <ClInclude Include="AsyncTaskManager.hpp" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CCloudServiceDlg.h" />
     <ClInclude Include="CCustomRibbonBar.h" />
     <ClInclude Include="CCustomSplitterWnd.h" />
     <ClInclude Include="CInspecterView.h" />
     <CudaCompile Include="Color.hpp" />
+    <ClInclude Include="ClientNetwork.h" />
+    <ClInclude Include="CLightingView.h" />
     <ClInclude Include="CLoginDlg.h" />
+    <ClInclude Include="ConnectionCheckListener.h" />
+    <ClInclude Include="ConnectionClosedListener.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="CRenderingView.h" />
-    <ClInclude Include="CTestView.h" />
+    <ClInclude Include="CSliceView.h" />
     <ClInclude Include="CudaHelper.h" />
+    <ClInclude Include="custom_cudart.h" />
     <ClInclude Include="CVolumeRenderingView.h" />
     <ClInclude Include="Debugger.h" />
+    <ClInclude Include="ElementMeta.h" />
     <ClInclude Include="EventBroadcaster.h" />
+    <ClInclude Include="FileStream.h" />
+    <ClInclude Include="FinishedTask.h" />
     <ClInclude Include="GenericListener.h" />
+    <CudaCompile Include="Index2D.hpp" />
     <ClInclude Include="IntelliCAD.h" />
     <ClInclude Include="IntelliCADDoc.h" />
     <ClInclude Include="IntelliCADView.h" />
     <CudaCompile Include="Light.h" />
     <ClInclude Include="MacroTransaction.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MetaImageHeader.h" />
+    <ClInclude Include="NetworkStream.h" />
     <ClInclude Include="NetworkUtility.h" />
     <CudaCompile Include="NumberUtility.hpp" />
     <CudaCompile Include="OrthoBasis.h" />
+    <ClInclude Include="ObjectStream.h" />
+    <ClInclude Include="PacketHeader.h" />
     <ClInclude Include="Parser.hpp" />
     <CudaCompile Include="Pixel.h" />
     <ClInclude Include="Point3D.h" />
     <CudaCompile Include="Range.hpp" />
     <CudaCompile Include="RayBoxInstersector.h" />
+    <ClInclude Include="ReadStream.hpp" />
+    <ClInclude Include="RemoteAccessAuthorizer.h" />
     <ClInclude Include="RenderingEngine.h" />
     <ClInclude Include="Resource.h" />
     <CudaCompile Include="Size2D.hpp" />
     <CudaCompile Include="Size3D.hpp" />
+    <ClInclude Include="Serializable.h" />
+    <ClInclude Include="ServerConnectingListener.h" />
+    <ClInclude Include="SliceAxis.h" />
+    <ClInclude Include="Socket.h" />
+    <ClInclude Include="StreamAnchorType.h" />
+    <ClInclude Include="SystemIndirectAccessor.h" />
+    <ClInclude Include="SystemInitListener.h" />
     <ClInclude Include="TransferFunction.h" />
+    <ClInclude Include="UserInfo.h" />
     <ClInclude Include="VolumeData.h" />
     <ClInclude Include="VolumeLoadingListener.h" />
     <ClInclude Include="stdafx.h" />
@@ -256,28 +282,41 @@
   <ItemGroup>
     <ClCompile Include="AsyncTaskManager.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CCloudServiceDlg.cpp" />
     <ClCompile Include="CCustomRibbonBar.cpp" />
     <ClCompile Include="CCustomSplitterWnd.cpp" />
     <ClCompile Include="CInspecterView.cpp" />
+    <ClCompile Include="ClientNetwork.cpp" />
+    <ClCompile Include="CLightingView.cpp" />
     <ClCompile Include="CLoginDlg.cpp" />
     <ClCompile Include="Constant.cpp" />
     <ClCompile Include="CRenderingView.cpp" />
-    <ClCompile Include="CTestView.cpp" />
+    <ClCompile Include="CSliceView.cpp" />
     <ClCompile Include="CudaHelper.cpp" />
     <ClCompile Include="CVolumeRenderingView.cpp" />
     <ClCompile Include="Debugger.cpp" />
+    <ClCompile Include="ElementMeta.cpp" />
     <ClCompile Include="EventBroadcaster.cpp" />
+    <ClCompile Include="FileStream.cpp" />
     <ClCompile Include="IntelliCAD.cpp" />
     <ClCompile Include="IntelliCADDoc.cpp" />
     <ClCompile Include="IntelliCADView.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MetaImageHeader.cpp" />
+    <ClCompile Include="NetworkStream.cpp" />
     <ClCompile Include="NetworkUtility.cpp" />
     <CudaCompile Include="OrthoBasis.cpp" />
     <CudaCompile Include="NumberUtility.cpp" />
+    <ClCompile Include="ObjectStream.cpp" />
+    <ClCompile Include="PacketHeader.cpp" />
     <ClCompile Include="Parser.cpp" />
     <CudaCompile Include="RenderingEngine.cpp" />
     <CudaCompile Include="RayBoxIntersector.cpp" />
+    <ClCompile Include="RemoteAccessAuthorizer.cpp" />
+    <ClCompile Include="Serializable.cpp" />
+    <ClCompile Include="Socket.cpp" />
+    <ClCompile Include="SystemIndirectAccessor.cpp" />
     <ClCompile Include="TransferFunction.cpp" />
     <CudaCompile Include="Vector3D.cpp" />
     <ClCompile Include="VolumeReader.cpp" />
@@ -297,6 +336,8 @@
     <Image Include="res\filesmall.bmp" />
     <Image Include="res\IntelliCAD.ico" />
     <Image Include="res\IntelliCADDoc.ico" />
+    <Image Include="res\IntelliCAD_Img_Resource_Custom_Large.png" />
+    <Image Include="res\logo.bmp" />
     <Image Include="res\main.bmp" />
     <Image Include="res\Toolbar.bmp" />
     <Image Include="res\Toolbar256.bmp" />

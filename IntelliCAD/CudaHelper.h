@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cuda_runtime.h>
 #include "TypeEx.h"
 #include "Size2D.hpp"
 #include "Size3D.hpp"

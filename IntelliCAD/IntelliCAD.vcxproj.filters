@@ -79,6 +79,42 @@
     <Filter Include="헤더 파일\fileio">
       <UniqueIdentifier>{6441f0ac-558d-4cab-8b76-6dbe4df14718}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\ui\form_view">
+      <UniqueIdentifier>{c15d2ec5-3ac7-408a-a0b9-243151cdda5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\ui\form_view">
+      <UniqueIdentifier>{e9e585b4-d32d-4259-948f-516f6bf238a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\db">
+      <UniqueIdentifier>{bfbb11ae-5ab7-41ee-8a73-24bdd2cda517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\db">
+      <UniqueIdentifier>{6a80c131-a5ee-4f01-ae20-321bbd1add9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\network">
+      <UniqueIdentifier>{52f17b22-6903-43a9-9f91-8ee200718635}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\network">
+      <UniqueIdentifier>{298cf416-86b0-4a4c-8b42-85943b2cf2d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\stream">
+      <UniqueIdentifier>{cac7c857-c978-4587-a09e-37803d7cfaa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\stream">
+      <UniqueIdentifier>{9fe31798-4325-4299-90de-0233e7976ad8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\rendering_engine\volume_renderer">
+      <UniqueIdentifier>{f934b818-b8ef-4709-a069-819ccc1fece0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\rendering_engine\volume_renderer">
+      <UniqueIdentifier>{3ee506e8-3707-4084-9d9d-3d5c117c8d2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\util\volume_reader">
+      <UniqueIdentifier>{cb7fa4ed-3cf7-4bac-bf00-ceae29f2c70f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\util\volume_reader">
+      <UniqueIdentifier>{10719c80-a3fb-42c1-871d-7498b6a92061}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IntelliCAD.h">
@@ -150,29 +186,14 @@
     <ClInclude Include="CCustomSplitterWnd.h">
       <Filter>헤더 파일\ui</Filter>
     </ClInclude>
-    <ClInclude Include="CInspecterView.h">
-      <Filter>헤더 파일\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="VolumeMeta.h">
-      <Filter>헤더 파일\rendering_engine</Filter>
-    </ClInclude>
     <ClInclude Include="VolumeLoadingListener.h">
       <Filter>헤더 파일\event</Filter>
-    </ClInclude>
-    <ClInclude Include="VolumeReader.h">
-      <Filter>헤더 파일\util</Filter>
     </ClInclude>
     <ClInclude Include="VolumeData.h">
       <Filter>헤더 파일\data_structure</Filter>
     </ClInclude>
     <ClInclude Include="CCustomRibbonBar.h">
       <Filter>헤더 파일\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="TransferFunction.h">
-      <Filter>헤더 파일\rendering_engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>헤더 파일\rendering_engine</Filter>
     </ClInclude>
     <ClInclude Include="Constant.h">
       <Filter>헤더 파일\common</Filter>
@@ -183,11 +204,95 @@
     <ClInclude Include="CudaHelper.h">
       <Filter>헤더 파일\util</Filter>
     </ClInclude>
-    <ClInclude Include="CTestView.h">
-      <Filter>헤더 파일\ui\rendering_view</Filter>
-    </ClInclude>
     <ClInclude Include="CLoginDlg.h">
       <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="CInspecterView.h">
+      <Filter>헤더 파일\ui\form_view</Filter>
+    </ClInclude>
+    <ClInclude Include="CLightingView.h">
+      <Filter>헤더 파일\ui\form_view</Filter>
+    </ClInclude>
+    <ClInclude Include="CCloudServiceDlg.h">
+      <Filter>헤더 파일\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInfo.h">
+      <Filter>헤더 파일\db</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteAccessAuthorizer.h">
+      <Filter>헤더 파일\system</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientNetwork.h">
+      <Filter>헤더 파일\network</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHeader.h">
+      <Filter>헤더 파일\network</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>헤더 파일\network</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionCheckListener.h">
+      <Filter>헤더 파일\event</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionClosedListener.h">
+      <Filter>헤더 파일\event</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerConnectingListener.h">
+      <Filter>헤더 파일\event</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemInitListener.h">
+      <Filter>헤더 파일\event</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamAnchorType.h">
+      <Filter>헤더 파일\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="ElementMeta.h">
+      <Filter>헤더 파일\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="FileStream.h">
+      <Filter>헤더 파일\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkStream.h">
+      <Filter>헤더 파일\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectStream.h">
+      <Filter>헤더 파일\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="ReadStream.hpp">
+      <Filter>헤더 파일\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="Serializable.h">
+      <Filter>헤더 파일\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="FinishedTask.h">
+      <Filter>헤더 파일\task</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemIndirectAccessor.h">
+      <Filter>헤더 파일\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>헤더 파일\rendering_engine\volume_renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="TransferFunction.h">
+      <Filter>헤더 파일\rendering_engine\volume_renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="VolumeMeta.h">
+      <Filter>헤더 파일\rendering_engine\volume_renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="custom_cudart.h">
+      <Filter>헤더 파일\util</Filter>
+    </ClInclude>
+    <ClInclude Include="CSliceView.h">
+      <Filter>헤더 파일\ui\rendering_view</Filter>
+    </ClInclude>
+    <ClInclude Include="VolumeReader.h">
+      <Filter>헤더 파일\util\volume_reader</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaImageHeader.h">
+      <Filter>헤더 파일\util\volume_reader</Filter>
+    </ClInclude>
+    <ClInclude Include="SliceAxis.h">
+      <Filter>헤더 파일\rendering_engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -202,12 +307,6 @@
     </ClCompile>
     <ClCompile Include="MainFrm.cpp">
       <Filter>소스 파일\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="CRenderingView.cpp">
-      <Filter>소스 파일\ui\rendering_view</Filter>
-    </ClCompile>
-    <ClCompile Include="CVolumeRenderingView.cpp">
-      <Filter>소스 파일\ui\rendering_view</Filter>
     </ClCompile>
     <ClCompile Include="AsyncTaskManager.cpp">
       <Filter>소스 파일\task</Filter>
@@ -233,23 +332,8 @@
     <ClCompile Include="CCustomSplitterWnd.cpp">
       <Filter>소스 파일\ui</Filter>
     </ClCompile>
-    <ClCompile Include="CInspecterView.cpp">
-      <Filter>소스 파일\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="VolumeReader.cpp">
-      <Filter>소스 파일\util</Filter>
-    </ClCompile>
     <ClCompile Include="CCustomRibbonBar.cpp">
       <Filter>소스 파일\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="TransferFunction.cpp">
-      <Filter>소스 파일\rendering_engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>소스 파일\rendering_engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>소스 파일\rendering_engine</Filter>
     </ClCompile>
     <ClCompile Include="Constant.cpp">
       <Filter>소스 파일\common</Filter>
@@ -257,11 +341,71 @@
     <ClCompile Include="CudaHelper.cpp">
       <Filter>소스 파일\util</Filter>
     </ClCompile>
-    <ClCompile Include="CTestView.cpp">
+    <ClCompile Include="CInspecterView.cpp">
+      <Filter>소스 파일\ui\form_view</Filter>
+    </ClCompile>
+    <ClCompile Include="CLightingView.cpp">
+      <Filter>소스 파일\ui\form_view</Filter>
+    </ClCompile>
+    <ClCompile Include="CCloudServiceDlg.cpp">
+      <Filter>소스 파일\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoteAccessAuthorizer.cpp">
+      <Filter>소스 파일\system</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientNetwork.cpp">
+      <Filter>소스 파일\network</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketHeader.cpp">
+      <Filter>소스 파일\network</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>소스 파일\network</Filter>
+    </ClCompile>
+    <ClCompile Include="ElementMeta.cpp">
+      <Filter>소스 파일\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="FileStream.cpp">
+      <Filter>소스 파일\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkStream.cpp">
+      <Filter>소스 파일\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectStream.cpp">
+      <Filter>소스 파일\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="Serializable.cpp">
+      <Filter>소스 파일\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemIndirectAccessor.cpp">
+      <Filter>소스 파일\util</Filter>
+    </ClCompile>
+    <ClCompile Include="CVolumeRenderingView.cpp">
+      <Filter>소스 파일\ui\rendering_view</Filter>
+    </ClCompile>
+    <ClCompile Include="CRenderingView.cpp">
       <Filter>소스 파일\ui\rendering_view</Filter>
     </ClCompile>
     <ClCompile Include="CLoginDlg.cpp">
       <Filter>소스 파일\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>소스 파일\rendering_engine\volume_renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>소스 파일\rendering_engine\volume_renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="TransferFunction.cpp">
+      <Filter>소스 파일\rendering_engine\volume_renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="CSliceView.cpp">
+      <Filter>소스 파일\ui\rendering_view</Filter>
+    </ClCompile>
+    <ClCompile Include="VolumeReader.cpp">
+      <Filter>소스 파일\util\volume_reader</Filter>
+    </ClCompile>
+    <ClCompile Include="MetaImageHeader.cpp">
+      <Filter>소스 파일\util\volume_reader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -309,6 +453,12 @@
     <Image Include="C:\Users\GODJIN\Downloads\doctor.jpg">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="res\logo.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\IntelliCAD_Img_Resource_Custom_Large.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\ribbon.mfcribbon-ms">
@@ -340,12 +490,6 @@
     <CudaCompile Include="OrthoBasis.cpp">
       <Filter>소스 파일\data_structure</Filter>
     </CudaCompile>
-    <CudaCompile Include="RayBoxIntersector.cpp">
-      <Filter>소스 파일\rendering_engine</Filter>
-    </CudaCompile>
-    <CudaCompile Include="RayBoxInstersector.h">
-      <Filter>헤더 파일\rendering_engine</Filter>
-    </CudaCompile>
     <CudaCompile Include="NumberUtility.hpp">
       <Filter>헤더 파일\util</Filter>
     </CudaCompile>
@@ -361,11 +505,20 @@
     <CudaCompile Include="Range.hpp">
       <Filter>헤더 파일\data_structure</Filter>
     </CudaCompile>
-    <CudaCompile Include="Light.h">
-      <Filter>헤더 파일\rendering_engine</Filter>
-    </CudaCompile>
     <CudaCompile Include="Vector3D.h">
       <Filter>헤더 파일\data_structure</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Light.h">
+      <Filter>헤더 파일\rendering_engine\volume_renderer</Filter>
+    </CudaCompile>
+    <CudaCompile Include="RayBoxInstersector.h">
+      <Filter>헤더 파일\rendering_engine\volume_renderer</Filter>
+    </CudaCompile>
+    <CudaCompile Include="RayBoxIntersector.cpp">
+      <Filter>소스 파일</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Index2D.hpp">
+      <Filter>헤더 파일</Filter>
     </CudaCompile>
   </ItemGroup>
 </Project>

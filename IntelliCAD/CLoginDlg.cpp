@@ -4,17 +4,19 @@
 #include "stdafx.h"
 #include "IntelliCAD.h"
 #include "CLoginDlg.h"
-#include "afxdialogex.h"
-#include "Constant.h"
+#include "tstring.h"
+#include "Parser.hpp"
+#include "System.h"
+
+using namespace std;
 
 // CLoginDlg 대화 상자
 
 IMPLEMENT_DYNAMIC(CLoginDlg, CDialogEx)
 
 CLoginDlg::CLoginDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_DIALOG2, pParent)
+	: CDialogEx(IDD_DIALOG_LOGIN, pParent)
 {
-	__loadLogo();
 }
 
 CLoginDlg::~CLoginDlg()
@@ -24,35 +26,17 @@ CLoginDlg::~CLoginDlg()
 void CLoginDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LOGINDLG_EDIT_ID, __ddxc_id);
+	DDX_Control(pDX, IDC_LOGINDLG_EDIT_PW, __ddxc_pw);
 }
 
 
 BEGIN_MESSAGE_MAP(CLoginDlg, CDialogEx)
-	ON_BN_CLICKED(IDC_BUTTON1, &CLoginDlg::OnBnClickedButton1)
-	ON_WM_PAINT()
+	ON_BN_CLICKED(IDC_LOGINDLG_BUTTON_SIGN_IN, &CLoginDlg::OnBnClickedButtonSignIn)
 END_MESSAGE_MAP()
 
 
 // CLoginDlg 메시지 처리기
-
-void CLoginDlg::OnBnClickedButton1()
-{
-	EndDialog(SIGN_IN);
-}
-
-void CLoginDlg::OnPaint()
-{
-	CPaintDC dc(this); 
-	
-	::SetStretchBltMode(dc.m_hDC, COLORONCOLOR);
-	__logo.StretchBlt(dc.m_hDC, 190, 0, 100, 150, SRCCOPY);
-}
-
-void CLoginDlg::__loadLogo() 
-{
-	__logo.Destroy();
-	__logo.Load(TEXT("res/logo.png"));
-}
 
 BOOL CLoginDlg::PreTranslateMessage(MSG* pMsg)
 {
@@ -61,4 +45,25 @@ BOOL CLoginDlg::PreTranslateMessage(MSG* pMsg)
 		return TRUE;
 
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+void CLoginDlg::OnBnClickedButtonSignIn()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CString tmp;
+	__ddxc_id.GetWindowText(tmp);
+	tstring id = Parser::CString$tstring(tmp);
+
+	__ddxc_pw.GetWindowText(tmp);
+	tstring pw = Parser::CString$tstring(tmp);
+
+	RemoteAccessAuthorizer &accessAuthorizer =
+		System::getSystemContents().getRemoteAccessAuthorizer();
+
+	if (accessAuthorizer.authorize(id, pw))
+		AfxMessageBox(_T("승인"));
+	else
+		AfxMessageBox(_T("접근 불가"));
+	
+	EndDialog(0);
 }

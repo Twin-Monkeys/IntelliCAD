@@ -127,12 +127,14 @@ namespace NumberUtility
 	}
 
 	template <typename T>
+	__host__ __device__
 	bool isInOfBound(const T value, const T lowerInc, const T upperExc)
 	{
 		return !isOutOfBound(value, lowerInc, upperExc);
 	}
 
 	template <typename T>
+	__host__ __device__
 	T truncate(const T value, const T lower, const T upper)
 	{
 		if (value < lower)

@@ -83,6 +83,8 @@ namespace Parser
 	/// <returns>string 타입 문자열</returns>
 	std::string tstring$string(const std::tstring &str);
 
+	std::tstring string$tstring(const std::string &str);
+
 	/// <summary>
 	/// IN_ADDR 값으로 표현되어 있는 ip 정보를 tstring 타입의 문자열로 변환한다.
 	/// </summary>

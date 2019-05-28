@@ -22,7 +22,8 @@
 #include "Parser.hpp"
 #include "System.h"
 #include "VolumeReader.h"
-#include "CTestView.h"
+#include "CSliceView.h"
+#include "CLoginDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,6 +38,10 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWndEx)
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
 	ON_COMMAND(ID_FILE_OPEN, &CMainFrame::OnFileOpen)
+	ON_COMMAND(ID_BUTTON_CLOUD, &CMainFrame::OnButtonCloudService)
+	ON_COMMAND(ID_BUTTON_LIGHT1, &CMainFrame::OnButtonLight1)
+	ON_COMMAND(ID_BUTTON_LIGHT2, &CMainFrame::OnButtonLight2)
+	ON_COMMAND(ID_BUTTON_LIGHT3, &CMainFrame::OnButtonLight3)
 END_MESSAGE_MAP()
 
 // CMainFrame 생성/소멸
@@ -130,17 +135,36 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 		__parentSplitterWnd.IdFromRowCol(0, 0));
 
 	// 좌, 우측 윈도우에 View를 할당한다.
-	__childSplitterWnd.CreateView(0, 0, RUNTIME_CLASS(CTestView), {}, pContext);
-	__childSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CTestView), {}, pContext);
-	__childSplitterWnd.CreateView(1, 0, RUNTIME_CLASS(CTestView), {}, pContext);
+	__childSplitterWnd.CreateView(0, 0, RUNTIME_CLASS(CSliceView), {}, pContext);
+	__childSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CSliceView), {}, pContext);
+	__childSplitterWnd.CreateView(1, 0, RUNTIME_CLASS(CSliceView), {}, pContext);
 	__childSplitterWnd.CreateView(1, 1, RUNTIME_CLASS(CVolumeRenderingView), {}, pContext);
 	__parentSplitterWnd.CreateView(0, 1, RUNTIME_CLASS(CInspecterView), {}, pContext);
 
 	// 좌측 윈도우 View를 구분하기 위하여 인덱스를 설정한다.
-	__childSplitterWnd.getChildView<CRenderingView>(0, 0)->index = 0; // Top-Left
-	__childSplitterWnd.getChildView<CRenderingView>(0, 1)->index = 1; // Top-Right
-	__childSplitterWnd.getChildView<CRenderingView>(1, 0)->index = 2; // Bottom-Left
-	__childSplitterWnd.getChildView<CRenderingView>(1, 1)->index = 3; // Bottom-Right
+
+	// Top-Left
+	CSliceView &topView = *__childSplitterWnd.getChildView<CSliceView>(0, 0);
+
+	// Top-Right
+	CSliceView &frontView = *__childSplitterWnd.getChildView<CSliceView>(0, 1);
+
+	// Bottom-Left
+	CSliceView &rightView = *__childSplitterWnd.getChildView<CSliceView>(1, 0);
+
+	// Bottom-Right
+	CVolumeRenderingView &volumeRenderingView = *__childSplitterWnd.getChildView<CVolumeRenderingView>(1, 1);
+
+	// 렌더링 뷰 인덱스 설정
+	topView.index = 0;					
+	frontView.index = 1;				
+	rightView.index = 2;				
+	volumeRenderingView.index = 3;		
+
+	// 슬라이스 축 설정
+	topView.sliceAxis = SliceAxis::TOP;
+	frontView.sliceAxis = SliceAxis::FRONT;
+	rightView.sliceAxis = SliceAxis::RIGHT;
 
 	// 분할 윈도우를 만들었다.
 	__parentSplitterWnd.splitted = true;
@@ -153,18 +177,53 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 void CMainFrame::OnFileOpen()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	TCHAR *filter = _T("Density File (*.den) |*.den|");
-	CFileDialog fileDlg(true, _T("Density File (*.den)"), nullptr, OFN_FILEMUSTEXIST, filter, nullptr);
+	const TCHAR *const szFilter = _T("MetaImage (*.mhd) |*.mhd|");
+	CFileDialog fileDlg(true, _T("MetaImage(*.mhd)"), nullptr, OFN_FILEMUSTEXIST, szFilter, nullptr);
 
 	if (fileDlg.DoModal() == IDOK)
 	{
 		AfxGetApp()->AddToRecentFileList(fileDlg.GetPathName());
 
 		const tstring PATH = Parser::CString$tstring(fileDlg.GetPathName());
-		const VolumeData RESULT = VolumeReader::readDen(PATH, 512, 512, 326);
+		const VolumeData RESULT = VolumeReader::readMetaImage(PATH);
 
 		System::getSystemContents().loadVolume(RESULT);
 
-		static_cast<CRenderingView *>(__childSplitterWnd.GetPane(1, 1))->render();
+		__childSplitterWnd.getChildView<CRenderingView>(0, 0)->render();
+		__childSplitterWnd.getChildView<CRenderingView>(0, 1)->render();
+		__childSplitterWnd.getChildView<CRenderingView>(1, 0)->render();
+		__childSplitterWnd.getChildView<CRenderingView>(1, 1)->render();
 	}
+}
+
+
+void CMainFrame::OnButtonCloudService()
+{
+	RemoteAccessAuthorizer &accessAuthorizer =
+		System::getSystemContents().getRemoteAccessAuthorizer();
+
+	if (!accessAuthorizer.isAuthorized())
+	{
+		CLoginDlg loginDlg;
+		loginDlg.DoModal();
+	}
+
+}
+
+
+void CMainFrame::OnButtonLight1()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CMainFrame::OnButtonLight2()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CMainFrame::OnButtonLight3()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 }

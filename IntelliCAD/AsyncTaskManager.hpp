@@ -11,13 +11,9 @@
 #pragma once
 
 #include <vector>
-#include <any>
-#include <utility>
 #include <thread>
 #include <mutex>
-#include "TaskType.h"
-
-using FinishedTask = std::pair<TaskType, std::any>;
+#include "FinishedTask.h"
 
 /// <summary>
 /// 비동기 작업에 대한 스케줄링을 관장하는 작업 관리자 클래스이다.

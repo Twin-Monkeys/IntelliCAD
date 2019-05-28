@@ -2,7 +2,9 @@
 
 #include "AsyncTaskManager.hpp"
 #include "EventBroadcaster.h"
+#include "RemoteAccessAuthorizer.h"
 #include "RenderingEngine.h"
+#include "ClientNetwork.h"
 
 class System
 {
@@ -24,7 +26,9 @@ public:
 
 		AsyncTaskManager *__pTaskMgr = nullptr;
 		EventBroadcaster *__pEventBroadcaster = nullptr;
+		RemoteAccessAuthorizer *__pRemoteAccessAuthorizer = nullptr;
 		RenderingEngine *__pRenderingEngine = nullptr;
+		ClientNetwork *__pClientNetwork = nullptr;
 
 		void __init();
 		void __release();
@@ -32,7 +36,9 @@ public:
 	public:
 		AsyncTaskManager &getTaskManager();
 		EventBroadcaster &getEventBroadcaster();
+		RemoteAccessAuthorizer &getRemoteAccessAuthorizer();
 		RenderingEngine &getRenderingEngine();
+		ClientNetwork &getClientNetwork();
 		
 		void loadVolume(const VolumeData &volumeData);
 	}

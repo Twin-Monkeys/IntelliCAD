@@ -29,6 +29,12 @@ public:
 	template <typename T2>
 	__host__ __device__
 	Size3D<T2> castTo() const;
+
+	__host__ __device__
+	Size3D<T> &operator*(const T ratio);
+
+	__host__ __device__
+	Size3D<T> &operator/(const T ratio);
 };
 
 template <typename T>
@@ -64,4 +70,26 @@ Size3D<T2> Size3D<T>::castTo() const
 		static_cast<T2>(height),
 		static_cast<T2>(depth)
 	};
+}
+
+template <typename T>
+__host__ __device__
+Size3D<T> &Size3D<T>::operator*(const T ratio)
+{
+	width *= ratio;
+	height *= ratio;
+	depth *= ratio;
+
+	return *this;
+}
+
+template <typename T>
+__host__ __device__
+Size3D<T> &Size3D<T>::operator/(const T ratio)
+{
+	width /= ratio;
+	height /= ratio;
+	depth /= ratio;
+
+	return *this;
 }

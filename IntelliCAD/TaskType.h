@@ -29,5 +29,10 @@ enum class TaskType
 	/// <summary>
 	/// 비동기 처리를 요청하되, 처리 결과를 보고받고 싶지 않을 때 사용한다.
 	/// </summary>
-	INGNORED
+	INGNORED,
+
+	/// <summary>
+	/// 연결종료 필요
+	/// </summary>
+	CONNECTION_CLOSED
 };
