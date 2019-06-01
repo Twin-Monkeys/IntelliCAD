@@ -11,6 +11,7 @@
 #include "Point3D.h"
 #include "Range.hpp"
 #include "Color.hpp"
+#include "tstring.h"
 
 namespace Constant
 {
@@ -58,5 +59,10 @@ namespace Constant
 		extern const Vector3D EYE;
 		extern const Vector3D AT;
 		extern const Vector3D UP;
+	}
+
+	namespace Database
+	{
+		extern const std::tstring DB_ROOT;
 	}
 }

@@ -27,7 +27,7 @@ public:
 	/// red, green, blue를 초기화할 값
 	/// </param>
 	__host__ __device__
-	explicit Color(const T intensity);
+	explicit constexpr Color(const T intensity);
 
 	/// <summary>
 	/// 생성자
@@ -42,7 +42,7 @@ public:
 	///	blue 값을 초기화 한다
 	/// </param>
 	__host__ __device__
-	Color(const T red, const T green, const T blue);
+	constexpr Color(const T red, const T green, const T blue);
 
 	/* member function */
 	/// <summary>
@@ -113,13 +113,13 @@ public:
 
 template <typename T>
 __host__ __device__ 
-Color<T>::Color(const T intensity) :
+constexpr Color<T>::Color(const T intensity) :
 	red(intensity), green(intensity), blue(intensity)
 {}
 
 template <typename T>
 __host__ __device__ 
-Color<T>::Color(const T red, const T green, const T blue) :
+constexpr Color<T>::Color(const T red, const T green, const T blue) :
 	red(red), green(green), blue(blue)
 {}
 

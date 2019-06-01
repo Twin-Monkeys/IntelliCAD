@@ -208,7 +208,9 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnchorManager.h" />
     <ClInclude Include="AsyncTaskManager.hpp" />
+    <ClInclude Include="AuthorizingResult.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CCloudServiceDlg.h" />
     <ClInclude Include="CCustomRibbonBar.h" />
@@ -218,6 +220,7 @@
     <ClInclude Include="ClientNetwork.h" />
     <ClInclude Include="CLightingView.h" />
     <ClInclude Include="CLoginDlg.h" />
+    <ClInclude Include="ConfigSectionType.h" />
     <ClInclude Include="ConnectionCheckListener.h" />
     <ClInclude Include="ConnectionClosedListener.h" />
     <ClInclude Include="Constant.h" />
@@ -226,6 +229,8 @@
     <ClInclude Include="CudaHelper.h" />
     <ClInclude Include="custom_cudart.h" />
     <ClInclude Include="CVolumeRenderingView.h" />
+    <ClInclude Include="DatabaseManager.h" />
+    <ClInclude Include="DBSectionType.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="ElementMeta.h" />
     <ClInclude Include="EventBroadcaster.h" />
@@ -248,6 +253,7 @@
     <ClInclude Include="PacketHeader.h" />
     <ClInclude Include="Parser.hpp" />
     <CudaCompile Include="Pixel.h" />
+    <ClInclude Include="Point2D.h" />
     <ClInclude Include="Point3D.h" />
     <CudaCompile Include="Range.hpp" />
     <CudaCompile Include="RayBoxInstersector.h" />
@@ -260,13 +266,17 @@
     <ClInclude Include="Serializable.h" />
     <ClInclude Include="ServerConnectingListener.h" />
     <ClInclude Include="SliceAxis.h" />
+    <ClInclude Include="SlicingPointManager.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="StreamAnchorType.h" />
     <ClInclude Include="SystemIndirectAccessor.h" />
     <ClInclude Include="SystemInitListener.h" />
+    <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="TransferFunction.h" />
     <ClInclude Include="UserInfo.h" />
+    <ClInclude Include="Vector2D.h" />
     <ClInclude Include="VolumeData.h" />
+    <CudaCompile Include="VolumeIndicator.h" />
     <ClInclude Include="VolumeLoadingListener.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringTokenizer.h" />
@@ -280,6 +290,7 @@
     <ClInclude Include="VolumeReader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnchorManager.cpp" />
     <ClCompile Include="AsyncTaskManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CCloudServiceDlg.cpp" />
@@ -294,6 +305,7 @@
     <ClCompile Include="CSliceView.cpp" />
     <ClCompile Include="CudaHelper.cpp" />
     <ClCompile Include="CVolumeRenderingView.cpp" />
+    <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="ElementMeta.cpp" />
     <ClCompile Include="EventBroadcaster.cpp" />
@@ -315,10 +327,15 @@
     <CudaCompile Include="RayBoxIntersector.cpp" />
     <ClCompile Include="RemoteAccessAuthorizer.cpp" />
     <ClCompile Include="Serializable.cpp" />
+    <ClCompile Include="SlicingPointManager.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SystemIndirectAccessor.cpp" />
+    <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="TransferFunction.cpp" />
     <CudaCompile Include="Vector3D.cpp" />
+    <ClCompile Include="UserInfo.cpp" />
+    <ClCompile Include="Vector2D.cpp" />
+    <CudaCompile Include="VolumeIndicator.cpp" />
     <ClCompile Include="VolumeReader.cpp" />
     <CudaCompile Include="Pixel.cpp" />
     <ClCompile Include="StringTokenizer.cpp" />

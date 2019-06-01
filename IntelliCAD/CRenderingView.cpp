@@ -1,6 +1,6 @@
-#include "stdafx.h"
 #include "CRenderingView.h"
 #include "CCustomSplitterWnd.h"
+#include "System.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -18,8 +18,30 @@ END_MESSAGE_MAP()
 void CRenderingView::OnDraw(CDC* /*pDC*/)
 {
 	wglMakeCurrent(__hDeviceContext, __hRenderingContext);
+
+	if (__initialized)
+	{
+		__onDeviceDraw();
+
+		wglMakeCurrent(__hDeviceContext, nullptr);
+		__onHostDraw();
+
+		wglMakeCurrent(__hDeviceContext, __hRenderingContext);
+	}
+	else
+		SwapBuffers(__hDeviceContext);
+}
+
+void CRenderingView::__onDeviceDraw()
+{
 	glDrawPixels(__screenSize.cx, __screenSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 	SwapBuffers(__hDeviceContext);
+}
+
+void CRenderingView::__onHostDraw()
+{
+	CDC *const pDCInterface = CDC::FromHandle(__hDeviceContext);
+	_onHostRender(pDCInterface, __screenSize.cx, __screenSize.cy);
 }
 
 void CRenderingView::OnSize(UINT nType, int cx, int cy)
@@ -28,8 +50,8 @@ void CRenderingView::OnSize(UINT nType, int cx, int cy)
 
 	wglMakeCurrent(__hDeviceContext, __hRenderingContext);
 
-	__deleteDeviceBuffer();
-	__createDeviceBuffer(cx, cy);
+	__deleteBuffer();
+	__createBuffer(cx, cy);
 	render();
 }
 
@@ -37,6 +59,8 @@ int CRenderingView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
+
+	System::getSystemContents().getEventBroadcaster().addVolumeLoadingListener(*this);
 
 	// openGL 초기화 시작
 	PIXELFORMATDESCRIPTOR pixelDesc;
@@ -51,6 +75,13 @@ int CRenderingView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// 렌더링 용으로 쓸 device context를 만든다.
 	__hDeviceContext = ::GetDC(GetSafeHwnd());
+
+	/*
+		DC에 의해 그려지는 영역(사각형)에 포함되나,
+		픽셀이 갱신되지 않는 영역을 처리하는 방법을 정의한다. (투명으로 처리)
+		이 작업은 hostRender() 함수를 위한 작업임.
+	*/
+	SetBkMode(__hDeviceContext, TRANSPARENT);
 
 	// pixelDesc가 대변하는 pixel format의 번호를 얻어 온다.
 	int format = ChoosePixelFormat(__hDeviceContext, &pixelDesc);
@@ -72,7 +103,7 @@ void CRenderingView::OnDestroy()
 {
 	CView::OnDestroy();
 
-	__deleteDeviceBuffer();
+	__deleteBuffer();
 
 	// device context 제어권을 돌려 받는다.
 	wglMakeCurrent(__hDeviceContext, nullptr);
@@ -113,7 +144,7 @@ void CRenderingView::render()
 	cudaGraphicsResourceGetMappedPointer(reinterpret_cast<void**>(&pDevScreen), nullptr, __pCudaRes);
 
 	if (pDevScreen)
-		_onRender(pDevScreen, __screenSize.cx, __screenSize.cy);
+		_onDeviceRender(pDevScreen, __screenSize.cx, __screenSize.cy);
 
 	// 버퍼의 주도권을 GL로 가져온다.
 	cudaGraphicsUnmapResources(1, &__pCudaRes, nullptr);
@@ -122,7 +153,15 @@ void CRenderingView::render()
 	Invalidate();
 }
 
-void CRenderingView::__createDeviceBuffer(const int width, const int height)
+void CRenderingView::_onHostRender(CDC *const pDC, const int screenWidth, const int screenHeight)
+{}
+
+const CSize &CRenderingView::_getScreenSize() const
+{
+	return __screenSize;
+}
+
+void CRenderingView::__createBuffer(const int width, const int height)
 {
 	__screenSize.cx = width;
 	__screenSize.cy = height;
@@ -140,7 +179,7 @@ void CRenderingView::__createDeviceBuffer(const int width, const int height)
 	cudaGraphicsGLRegisterBuffer(&__pCudaRes, __bufferObject, cudaGraphicsMapFlags::cudaGraphicsMapFlagsWriteDiscard);
 }
 
-void CRenderingView::__deleteDeviceBuffer()
+void CRenderingView::__deleteBuffer()
 {
 	if (__pCudaRes)
 	{
@@ -155,4 +194,9 @@ void CRenderingView::__deleteDeviceBuffer()
 		glDeleteBuffers(1, &__bufferObject);
 		__bufferObject = 0;
 	}
+}
+
+void CRenderingView::onLoadVolume(const VolumeData &volumeData)
+{
+	__initialized = true;
 }

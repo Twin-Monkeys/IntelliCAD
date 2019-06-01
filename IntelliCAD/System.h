@@ -5,6 +5,7 @@
 #include "RemoteAccessAuthorizer.h"
 #include "RenderingEngine.h"
 #include "ClientNetwork.h"
+#include "DatabaseManager.h"
 
 class System
 {
@@ -26,6 +27,7 @@ public:
 
 		AsyncTaskManager *__pTaskMgr = nullptr;
 		EventBroadcaster *__pEventBroadcaster = nullptr;
+		DatabaseManager *__pDatabaseManager = nullptr;
 		RemoteAccessAuthorizer *__pRemoteAccessAuthorizer = nullptr;
 		RenderingEngine *__pRenderingEngine = nullptr;
 		ClientNetwork *__pClientNetwork = nullptr;
@@ -36,6 +38,7 @@ public:
 	public:
 		AsyncTaskManager &getTaskManager();
 		EventBroadcaster &getEventBroadcaster();
+		DatabaseManager &getDatabaseManager();
 		RemoteAccessAuthorizer &getRemoteAccessAuthorizer();
 		RenderingEngine &getRenderingEngine();
 		ClientNetwork &getClientNetwork();

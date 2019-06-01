@@ -59,4 +59,9 @@ namespace Constant
 		const Vector3D AT = Volume::PIVOT;
 		const Vector3D UP = { 0.f, 0.f, -1.f };
 	}
+
+	namespace Database
+	{
+		const std::tstring DB_ROOT = _T("db/");
+	}
 }

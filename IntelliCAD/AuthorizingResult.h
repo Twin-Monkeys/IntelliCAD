@@ -1,0 +1,11 @@
+#pragma once
+
+enum class AuthorizingResult
+{
+	FAILED_DB_ERROR,
+	FAILED_NETWORK_ERROR,
+	FAILED_INVALID_ID,
+	FAILED_WRONG_PASSWORD,
+
+	SUCCESS
+};

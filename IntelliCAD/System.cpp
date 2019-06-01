@@ -26,6 +26,7 @@ void System::SystemContents::__init()
 {
 	__pTaskMgr = new AsyncTaskManager();
 	__pEventBroadcaster = new EventBroadcaster();
+	__pDatabaseManager = new DatabaseManager();
 	__pRemoteAccessAuthorizer = new RemoteAccessAuthorizer();
 	__pRenderingEngine = &RenderingEngine::getInstance();
 	__pClientNetwork = &ClientNetwork::getInstance();
@@ -44,6 +45,11 @@ AsyncTaskManager &System::SystemContents::getTaskManager()
 EventBroadcaster &System::SystemContents::getEventBroadcaster()
 {
 	return *__pEventBroadcaster;
+}
+
+DatabaseManager &System::SystemContents::getDatabaseManager()
+{
+	return *__pDatabaseManager;
 }
 
 RemoteAccessAuthorizer &System::SystemContents::getRemoteAccessAuthorizer()
@@ -72,6 +78,12 @@ void System::SystemContents::__release()
 	{
 		delete __pEventBroadcaster;
 		__pEventBroadcaster = nullptr;
+	}
+
+	if (__pDatabaseManager)
+	{
+		delete __pDatabaseManager;
+		__pDatabaseManager = nullptr;
 	}
 
 	if (__pTaskMgr)

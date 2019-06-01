@@ -11,8 +11,8 @@
 #include <cmath>
 
 __host__ __device__
-Vector3D::Vector3D(const float x, const float y, const float z)
-	: x(x), y(y), z(z)
+Vector3D::Vector3D(const float x, const float y, const float z) :
+	x(x), y(y), z(z)
 {}
 
 __host__ __device__

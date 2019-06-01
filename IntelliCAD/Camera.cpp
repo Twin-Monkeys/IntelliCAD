@@ -11,10 +11,17 @@
 #include "Camera.h"
 
 /* constructor */
+
+Camera::Camera(const float &imgBasedSamplingStep) :
+	__imgBasedSamplingStep(imgBasedSamplingStep)
+{}
+
 Camera::Camera(
+	const float &imageBasedSamplingStep,
 	const Point3D& eye,
 	const Point3D& at,
-	const Point3D& upVector) 
+	const Vector3D& upVector) :
+	Camera(imageBasedSamplingStep)
 {
 	set(eye, at, upVector);
 }
@@ -48,12 +55,12 @@ void Camera::adjustForward(const float delta)
 
 void Camera::adjustHorizontal(const float delta)
 {
-	__position += (__orthoBasis.v * delta);
+	__position += (__orthoBasis.v * (delta * __imgBasedSamplingStep));
 }
 
 void Camera::adjustVertical(const float delta)
 {
-	__position += (__orthoBasis.w * delta);
+	__position += (__orthoBasis.w * (delta * __imgBasedSamplingStep));
 }
 
 void Camera::moveTo(const Point3D& position)
@@ -63,50 +70,62 @@ void Camera::moveTo(const Point3D& position)
 
 void Camera::adjustPitch(const float angle)
 {
-	__orthoBasis.u = __orthoBasis.u.rotate(__orthoBasis.v, angle).getUnit();
+	const float ADJ_ANGLE = (angle * __imgBasedSamplingStep);
+
+	__orthoBasis.u = __orthoBasis.u.rotate(__orthoBasis.v, ADJ_ANGLE).getUnit();
 	__orthoBasis.w = __orthoBasis.v.cross(__orthoBasis.u).getUnit();
 }
 
 void Camera::adjustYaw(const float angle)
 {
-	__orthoBasis.u = __orthoBasis.u.rotate(__orthoBasis.w, angle).getUnit();
-	__orthoBasis.v = __orthoBasis.v.rotate(__orthoBasis.w, angle).getUnit();
+	const float ADJ_ANGLE = (angle * __imgBasedSamplingStep);
+
+	__orthoBasis.u = __orthoBasis.u.rotate(__orthoBasis.w, ADJ_ANGLE).getUnit();
+	__orthoBasis.v = __orthoBasis.v.rotate(__orthoBasis.w, ADJ_ANGLE).getUnit();
 	__orthoBasis.w = __orthoBasis.v.cross(__orthoBasis.u).getUnit();
 }
 
 void Camera::adjustRoll(const float angle)
 {
-	__orthoBasis.v = __orthoBasis.v.rotate(__orthoBasis.u, angle).getUnit();
+	const float ADJ_ANGLE = (angle * __imgBasedSamplingStep);
+
+	__orthoBasis.v = __orthoBasis.v.rotate(__orthoBasis.u, ADJ_ANGLE).getUnit();
 	__orthoBasis.w = __orthoBasis.v.cross(__orthoBasis.u).getUnit();
 }
 
 void Camera::orbitPitch(const Point3D& pivot, const float angle)
 {
+	const float ADJ_ANGLE = (angle * __imgBasedSamplingStep);
+
 	__position -= pivot;
-	__position = __position.rotate(__orthoBasis.v, angle);
+	__position = __position.rotate(__orthoBasis.v, ADJ_ANGLE);
 	__position += pivot;
 
-	__orthoBasis.u = __orthoBasis.u.rotate(__orthoBasis.v, angle).getUnit();
+	__orthoBasis.u = __orthoBasis.u.rotate(__orthoBasis.v, ADJ_ANGLE).getUnit();
 	__orthoBasis.w = __orthoBasis.v.cross(__orthoBasis.u).getUnit();
 }
 
 void Camera::orbitYaw(const Point3D& pivot, const float angle)
 {
+	const float ADJ_ANGLE = (angle * __imgBasedSamplingStep);
+
 	__position -= pivot;
-	__position = __position.rotate(__orthoBasis.w, angle);
+	__position = __position.rotate(__orthoBasis.w, ADJ_ANGLE);
 	__position += pivot;
 
-	__orthoBasis.u = __orthoBasis.u.rotate(__orthoBasis.w, angle).getUnit();
-	__orthoBasis.v = __orthoBasis.v.rotate(__orthoBasis.w, angle).getUnit();
+	__orthoBasis.u = __orthoBasis.u.rotate(__orthoBasis.w, ADJ_ANGLE).getUnit();
+	__orthoBasis.v = __orthoBasis.v.rotate(__orthoBasis.w, ADJ_ANGLE).getUnit();
 	__orthoBasis.w = __orthoBasis.v.cross(__orthoBasis.u).getUnit();
 }
 
 void Camera::orbitRoll(const Point3D& pivot, const float angle)
 {
+	const float ADJ_ANGLE = (angle * __imgBasedSamplingStep);
+
 	__position -= pivot;
-	__position = __position.rotate(__orthoBasis.u, angle);
+	__position = __position.rotate(__orthoBasis.u, ADJ_ANGLE);
 	__position += pivot;
 
-	__orthoBasis.v = __orthoBasis.v.rotate(__orthoBasis.u, angle).getUnit();
+	__orthoBasis.v = __orthoBasis.v.rotate(__orthoBasis.u, ADJ_ANGLE).getUnit();
 	__orthoBasis.w = __orthoBasis.v.cross(__orthoBasis.u).getUnit();
 }

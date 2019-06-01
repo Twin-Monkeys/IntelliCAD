@@ -28,6 +28,9 @@ public:
 	template <typename T2>
 	__host__ __device__
 	Size2D<T2> castTo() const;
+
+	__host__ __device__
+	Size2D<T> operator/(const T divider) const;
 };
 
 template <typename T>
@@ -60,5 +63,16 @@ Size2D<T2> Size2D<T>::castTo() const
 	return {
 		static_cast<T2>(width),
 		static_cast<T2>(height)
+	};
+}
+
+template <typename T>
+__host__ __device__
+Size2D<T> Size2D<T>::operator/(const T divider) const
+{
+	return
+	{
+		width / divider,
+		height / divider
 	};
 }

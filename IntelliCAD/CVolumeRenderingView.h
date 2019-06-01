@@ -17,14 +17,21 @@ public:
 
 protected:
 	/* member function */
-	virtual void _onRender(Pixel* const pDevScreen, const int screenWidth, const int screenHeight) override;
+	virtual void _onDeviceRender(Pixel* const pDevScreen, const int screenWidth, const int screenHeight) override;
 
 private:
 	/* member variable */
+	bool __lButtonDown = false;
+	bool __mButtonDown = false;
+	bool __rButtonDown = false;
 	CPoint __prevPos;
+
 	bool __dblClickSemaphore = false;
 
 public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 };
 

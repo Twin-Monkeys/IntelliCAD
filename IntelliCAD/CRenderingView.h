@@ -1,12 +1,13 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Pixel.h"
 #include <GL/glew.h>
 #include <GL/wglew.h>
 #include <cuda_gl_interop.h>
+#include "Pixel.h"
+#include "VolumeLoadingListener.h"
 
-class CRenderingView : public CView
+class CRenderingView : public CView, public VolumeLoadingListener
 {
 	DECLARE_MESSAGE_MAP()
 
@@ -20,17 +21,25 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	void render();
 
+	virtual void onLoadVolume(const VolumeData &volumeData) override;
+
 	/* member variable */
 	int index;
 
 protected:
 	/* member function */
-	virtual void _onRender(Pixel* const pDevScreen, const int screenWidth, const int screenHeight) = 0;
+	virtual void _onDeviceRender(Pixel* const pDevScreen, const int screenWidth, const int screenHeight) = 0;
+	virtual void _onHostRender(CDC *const pDC, const int screenWidth, const int screenHeight);
+
+	const CSize &_getScreenSize() const;
 
 private:
 	/* member function */
-	void __createDeviceBuffer(const int width, const int height);
-	void __deleteDeviceBuffer();
+	void __createBuffer(const int width, const int height);
+	void __deleteBuffer();
+
+	void __onDeviceDraw();
+	void __onHostDraw();
 
 	/* member variable */
 	HDC __hDeviceContext = nullptr;
@@ -38,4 +47,6 @@ private:
 	CSize __screenSize;
 	GLuint __bufferObject = 0;
 	cudaGraphicsResource* __pCudaRes = nullptr;
+
+	bool __initialized = false;
 };

@@ -50,6 +50,8 @@
 #define IDC_EDIT1                       1017
 #define IDC_STATIC_AMBIENT              1018
 #define IDC_SLIDER4                     1019
+#define IDC_BUTTON2                     1019
+#define IDC_BUTTON_CLOSE                1019
 #define IDC_SLIDER5                     1020
 #define IDC_EDIT2                       1021
 #define IDC_EDIT5                       1022
@@ -86,7 +88,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        326
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

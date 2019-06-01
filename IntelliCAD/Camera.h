@@ -17,7 +17,7 @@ class Camera
 {
 public:
 	/* constructor */
-	Camera() = default;
+	Camera(const float &imgBasedSamplingStep);
 
 	/// <summary>
 	/// 생성자
@@ -32,6 +32,7 @@ public:
 	/// 카메라 머리가 향하는 방향
 	/// </param>
 	Camera(
+		const float &imgBasedSamplingStep,
 		const Point3D& eye,
 		const Point3D& at,
 		const Vector3D& upVector);
@@ -173,4 +174,6 @@ private:
 	/// 카메라의 직교 기저
 	/// </summary>
 	OrthoBasis __orthoBasis;
+
+	const float &__imgBasedSamplingStep;
 };

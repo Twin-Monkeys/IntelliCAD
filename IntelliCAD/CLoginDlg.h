@@ -24,4 +24,6 @@ public:
 private:
 	CEdit __ddxc_id;
 	CEdit __ddxc_pw;
+public:
+	afx_msg void OnBnClickedButtonClose();
 };

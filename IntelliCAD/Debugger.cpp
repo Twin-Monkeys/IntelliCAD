@@ -9,7 +9,6 @@
 */
 
 #include "stdafx.h"
-#include <Windows.h>
 #include "Debugger.h"
 
 using namespace std;

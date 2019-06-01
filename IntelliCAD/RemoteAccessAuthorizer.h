@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UserInfo.h"
+#include "AuthorizingResult.h"
 
 class RemoteAccessAuthorizer
 {
@@ -12,7 +13,8 @@ private:
 	UserInfo __userInfo;
 
 public:
-	bool authorize(const std::tstring &id, const std::tstring &password);
+	AuthorizingResult authorize(const std::tstring &id, const std::tstring &password);
+
 	bool isAuthorized() const;
 	const UserInfo &getUserInfo() const;
 };

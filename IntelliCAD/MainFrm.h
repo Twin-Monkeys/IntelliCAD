@@ -64,6 +64,8 @@ public:
 	afx_msg void OnButtonLight1();
 	afx_msg void OnButtonLight2();
 	afx_msg void OnButtonLight3();
+
+	void renderSliceViews();
 };
 
 

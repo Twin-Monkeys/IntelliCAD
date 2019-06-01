@@ -1,16 +1,16 @@
 /*
 *	Copyright (C) 2019 Jin Won. All right reserved.
 *
-*	파일명			: Vector.h
-*	작성자			: 원진, 이세인
-*	최종 수정일		: 19.03.04
+*	파일명			: Vector2D.h
+*	작성자			: 이세인
+*	최종 수정일		: 19.05.30
 */
 
 #pragma once
 
 #include <cuda_runtime.h>
 
-class Vector3D
+class Vector2D
 {
 public:
 	union
@@ -19,43 +19,33 @@ public:
 		{
 			float x;
 			float y;
-			float z;
 		};
 
-		float xyz[3];
+		float xy[2];
 	};
 
-	Vector3D() = default;
+	Vector2D() = default;
 
 	__host__ __device__
-	Vector3D(const float x, const float y, const float z);
+	Vector2D(float x, float y);
 
 	__host__ __device__
-	Vector3D(float value);
+	Vector2D(float value);
 
 	__host__ __device__
-	void set(float x, float y, float z);
+	void set(float x, float y);
 
 	__host__ __device__
-	void set(const Vector3D &another);
+	void set(const Vector2D &another);
 
 	__host__ __device__
 	void normalize();
 
 	__host__ __device__
-	float dot(float x, float y, float z) const;
+	float dot(float x, float y) const;
 
 	__host__ __device__
-	float dot(const Vector3D &another) const;
-
-	__host__ __device__
-	Vector3D cross(float x, float y, float z) const;
-
-	__host__ __device__
-	Vector3D cross(const Vector3D &another) const;
-
-	__host__ __device__
-	Vector3D rotate(const Vector3D &axis, float angle) const;
+	float dot(const Vector2D &another) const;
 
 	__host__ __device__
 	float getLengthSq() const;
@@ -64,7 +54,7 @@ public:
 	float getLength() const;
 
 	__host__ __device__
-	Vector3D getUnit() const;
+	Vector2D getUnit() const;
 
 	/// <summary>
 	/// 영벡터인지 여부를 조사한다.
@@ -76,31 +66,31 @@ public:
 	bool isZero() const;
 
 	__host__ __device__
-	Vector3D operator+(const Vector3D &another) const;
-	
+	Vector2D operator+(const Vector2D &another) const;
+
 	__host__ __device__
-	Vector3D& operator+=(const Vector3D &another);
-	
+	Vector2D& operator+=(const Vector2D &another);
+
 	__host__ __device__
-	Vector3D operator-(const Vector3D &another) const;
-	
+	Vector2D operator-(const Vector2D &another) const;
+
 	__host__ __device__
-	Vector3D operator-() const;
-	
+	Vector2D operator-() const;
+
 	__host__ __device__
-	Vector3D& operator-=(const Vector3D &another);
-	
+	Vector2D& operator-=(const Vector2D &another);
+
 	__host__ __device__
-	Vector3D operator*(float ratio) const;
-	
+	Vector2D operator*(float ratio) const;
+
 	__host__ __device__
-	Vector3D& operator*=(float ratio);
-	
+	Vector2D& operator*=(float ratio);
+
 	__host__ __device__
-	Vector3D operator/(float ratio) const;
-	
+	Vector2D operator/(float ratio) const;
+
 	__host__ __device__
-	Vector3D& operator/=(float ratio);
+	Vector2D& operator/=(float ratio);
 
 	/// <summary>
 	/// 두 벡터의 대응하는 원소 값이 모두 일치하는지 여부를 검사한다
@@ -112,7 +102,7 @@ public:
 	/// 일치 여부
 	/// </returns>
 	__host__ __device__
-	bool operator==(const Vector3D& operand) const;
+	bool operator==(const Vector2D& operand) const;
 
 	/// <summary>
 	/// 두 벡터의 대응하는 원소 값이 일치하지 않는지 여부를 검사한다
@@ -124,8 +114,8 @@ public:
 	/// 불일치 여부
 	/// </returns>
 	__host__ __device__
-	bool operator!=(const Vector3D& operand) const;
+	bool operator!=(const Vector2D& operand) const;
 };
 
 __host__ __device__
-Vector3D operator*(float ratio, const Vector3D &vector);
+Vector2D operator*(float ratio, const Vector2D &vector);

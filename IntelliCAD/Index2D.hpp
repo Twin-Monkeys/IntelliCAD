@@ -25,6 +25,10 @@ public:
 	__host__ __device__
 	T getIndex1D() const;
 
+	template <typename T2>
+	__host__ __device__
+	Index2D<T2> castTo() const;
+
 	__device__
 	static Index2D getKernelIndex();
 
@@ -51,6 +55,17 @@ __host__ __device__
 T Index2D<T>::getIndex1D() const
 {
 	return ((y * gridDim.x * blockDim.x) + x);
+}
+
+template <typename T>
+template <typename T2>
+__host__ __device__
+Index2D<T2> Index2D<T>::castTo() const
+{
+	return {
+		static_cast<T2>(x),
+		static_cast<T2>(y)
+	};
 }
 
 template <typename T>

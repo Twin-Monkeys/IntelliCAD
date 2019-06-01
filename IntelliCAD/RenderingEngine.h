@@ -16,6 +16,8 @@
 #include "Camera.h"
 #include "Light.h"
 #include "SliceAxis.h"
+#include "SlicingPointManager.h"
+#include "AnchorManager.h"
 
 class RenderingEngine : public SystemInitListener, public VolumeLoadingListener
 {
@@ -26,6 +28,9 @@ public:
 		/* member function */
 		void render(Pixel* const pScreen, const int screenWidth, const int screenHeight);
 		void adjustImgBasedSamplingStep(const float delta);
+
+		void setIndicatorLength(const float length);
+		void setIndicatorThickness(const float thickness);
 
 		/* member variable */
 		Camera camera;
@@ -42,11 +47,13 @@ public:
 		void __initLight();
 		void __initCamera();
 
+		~VolumeRenderer();
+
 		/* member variable */
 		TransferFunction* __pTransferFunc = nullptr;
-		Light __light[3];
-		float __imgBasedSamplingStep = 1.f;
-		float __objectBasedSamplingStep = 1.f;
+		Light __lights[3];
+		float __imgBasedSamplingStep;
+		float __objectBasedSamplingStep;
 		float __shininess = 40.f;
 		bool __transferFuncDirty = true;
 
@@ -69,7 +76,14 @@ public:
 		Range<ushort> _transferTableBoundary;
 		bool __transferTableDirty;
 
-		Point3D __slicingPoint;
+		Size3D<float> volumeHalfSize;
+
+		SlicingPointManager __slicingPointMgr;
+		AnchorManager __anchorMgr;
+
+		float __samplingStep_top;
+		float __samplingStep_front;
+		float __samplingStep_right;
 
 		/* constructor */
 		ImageProcessor(const VolumeMeta& volumeMeta, const bool &initFlag);
@@ -85,12 +99,19 @@ public:
 
 	public:
 		/* member function */
+		Index2D<> getSlicingPointForScreen(const Size2D<> &screenSize, const SliceAxis axis);
+
 		void setTransferFunction(const ushort startInc, const ushort endExc);
 		void setTransferFunction(const Range<ushort> &boundary);
 
+		void setSlicingPointFromScreen(const Size2D<> &screenSize, const Index2D<> &screenIdx, const SliceAxis axis);
+		void adjustSlicingPoint(const float delta, const SliceAxis axis);
+		
+		void adjustSamplingStep(const float delta, const SliceAxis axis);
+		void adjustAnchor(const float deltaHoriz, const float deltaVert, const SliceAxis axis);
+
 		void render(
-			Pixel *const pScreen, const int screenWidth, const int screenHeight,
-			const float samplingStep, const SliceAxis axis);
+			Pixel *const pScreen, const int screenWidth, const int screenHeight, const SliceAxis axis);
 
 		~ImageProcessor();
 	};

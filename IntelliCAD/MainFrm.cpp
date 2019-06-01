@@ -227,3 +227,10 @@ void CMainFrame::OnButtonLight3()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 }
+
+void CMainFrame::renderSliceViews()
+{
+	__childSplitterWnd.getChildView<CRenderingView>(0, 0)->render();
+	__childSplitterWnd.getChildView<CRenderingView>(0, 1)->render();
+	__childSplitterWnd.getChildView<CRenderingView>(1, 0)->render();
+}

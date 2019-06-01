@@ -73,12 +73,6 @@
     <Filter Include="소스 파일\machine_learning">
       <UniqueIdentifier>{c38eecbf-a581-494e-a53e-851b999baa13}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\fileio">
-      <UniqueIdentifier>{f528da09-df21-438a-9db4-017685866487}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="헤더 파일\fileio">
-      <UniqueIdentifier>{6441f0ac-558d-4cab-8b76-6dbe4df14718}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\ui\form_view">
       <UniqueIdentifier>{c15d2ec5-3ac7-408a-a0b9-243151cdda5a}</UniqueIdentifier>
     </Filter>
@@ -114,6 +108,18 @@
     </Filter>
     <Filter Include="소스 파일\util\volume_reader">
       <UniqueIdentifier>{10719c80-a3fb-42c1-871d-7498b6a92061}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\rendering_engine\image_processor">
+      <UniqueIdentifier>{cdb2f31a-fe71-4b58-8cd0-450c25b869f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\rendering_engine\image_processor">
+      <UniqueIdentifier>{ba6a2219-c2d8-49b2-9702-d3f2f5824641}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\security">
+      <UniqueIdentifier>{e1bcef80-c952-406a-b596-310365ae746c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\security">
+      <UniqueIdentifier>{700fff21-de91-4ea3-9a3f-fbb4449a051b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -219,9 +225,6 @@
     <ClInclude Include="UserInfo.h">
       <Filter>헤더 파일\db</Filter>
     </ClInclude>
-    <ClInclude Include="RemoteAccessAuthorizer.h">
-      <Filter>헤더 파일\system</Filter>
-    </ClInclude>
     <ClInclude Include="ClientNetwork.h">
       <Filter>헤더 파일\network</Filter>
     </ClInclude>
@@ -292,7 +295,37 @@
       <Filter>헤더 파일\util\volume_reader</Filter>
     </ClInclude>
     <ClInclude Include="SliceAxis.h">
-      <Filter>헤더 파일\rendering_engine</Filter>
+      <Filter>헤더 파일\rendering_engine\image_processor</Filter>
+    </ClInclude>
+    <ClInclude Include="AnchorManager.h">
+      <Filter>헤더 파일\rendering_engine\image_processor</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2D.h">
+      <Filter>헤더 파일\data_structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Point2D.h">
+      <Filter>헤더 파일\data_structure</Filter>
+    </ClInclude>
+    <ClInclude Include="SlicingPointManager.h">
+      <Filter>헤더 파일\rendering_engine\image_processor</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseManager.h">
+      <Filter>헤더 파일\db</Filter>
+    </ClInclude>
+    <ClInclude Include="DBSectionType.h">
+      <Filter>헤더 파일\db</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml2.h">
+      <Filter>헤더 파일\db</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteAccessAuthorizer.h">
+      <Filter>헤더 파일\security</Filter>
+    </ClInclude>
+    <ClInclude Include="AuthorizingResult.h">
+      <Filter>헤더 파일\security</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigSectionType.h">
+      <Filter>헤더 파일\db</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -350,9 +383,6 @@
     <ClCompile Include="CCloudServiceDlg.cpp">
       <Filter>소스 파일\ui</Filter>
     </ClCompile>
-    <ClCompile Include="RemoteAccessAuthorizer.cpp">
-      <Filter>소스 파일\system</Filter>
-    </ClCompile>
     <ClCompile Include="ClientNetwork.cpp">
       <Filter>소스 파일\network</Filter>
     </ClCompile>
@@ -406,6 +436,27 @@
     </ClCompile>
     <ClCompile Include="MetaImageHeader.cpp">
       <Filter>소스 파일\util\volume_reader</Filter>
+    </ClCompile>
+    <ClCompile Include="AnchorManager.cpp">
+      <Filter>소스 파일\rendering_engine\image_processor</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector2D.cpp">
+      <Filter>소스 파일\data_structure</Filter>
+    </ClCompile>
+    <ClCompile Include="SlicingPointManager.cpp">
+      <Filter>소스 파일\rendering_engine\image_processor</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml2.cpp">
+      <Filter>소스 파일\db</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseManager.cpp">
+      <Filter>소스 파일\db</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoteAccessAuthorizer.cpp">
+      <Filter>소스 파일\security</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInfo.cpp">
+      <Filter>소스 파일\db</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -514,11 +565,17 @@
     <CudaCompile Include="RayBoxInstersector.h">
       <Filter>헤더 파일\rendering_engine\volume_renderer</Filter>
     </CudaCompile>
-    <CudaCompile Include="RayBoxIntersector.cpp">
-      <Filter>소스 파일</Filter>
-    </CudaCompile>
     <CudaCompile Include="Index2D.hpp">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\data_structure</Filter>
+    </CudaCompile>
+    <CudaCompile Include="RayBoxIntersector.cpp">
+      <Filter>소스 파일\rendering_engine\volume_renderer</Filter>
+    </CudaCompile>
+    <CudaCompile Include="VolumeIndicator.h">
+      <Filter>헤더 파일\rendering_engine\volume_renderer</Filter>
+    </CudaCompile>
+    <CudaCompile Include="VolumeIndicator.cpp">
+      <Filter>소스 파일\rendering_engine\volume_renderer</Filter>
     </CudaCompile>
   </ItemGroup>
 </Project>
