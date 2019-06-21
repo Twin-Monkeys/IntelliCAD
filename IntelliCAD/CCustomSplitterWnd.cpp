@@ -34,19 +34,17 @@ void CCustomSplitterWnd::OnSize(UINT nType, int cx, int cy)
 {
 	CSplitterWnd::OnSize(nType, cx, cy);
 
-	if (splitted) // 분할 윈도우가 생성된 경우
-	{
-		// 클라이언트 윈도우 크기 정보를 가져온다.
-		GetWindowRect(&__clientWindow); 
+	if (!splitted)
+		return;
 
-		if (maximized)
-			__maximizeActiveView();
-		else
-			updateView();
-	}
+	// 분할 윈도우가 생성된 경우 클라이언트 윈도우 크기 정보를 가져온다.
+	GetWindowRect(&__clientWindow); 
+
+	if (maximized)
+		__maximizeActiveView();
+	else
+		updateView();
 }
-
-
 
 void CCustomSplitterWnd::OnLButtonUp(UINT nFlags, CPoint point)
 {

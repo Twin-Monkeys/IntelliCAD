@@ -3,21 +3,26 @@
 #include "AsyncTaskManager.hpp"
 #include "EventBroadcaster.h"
 #include "RemoteAccessAuthorizer.h"
-#include "RenderingEngine.h"
+#include "RenderingEngine.hpp"
 #include "ClientNetwork.h"
-#include "DatabaseManager.h"
+#include "ClientDBManager.h"
 
 class System
 {
 private:
 	friend class CIntelliCADApp;
+	friend class CLogDialog;
+
+	CLogDialog *__pLogDlg = nullptr;
 
 	static System __instance;
 
 	System() = default;
 
-	static void __init();
-	static void __release();
+	void __setLogDlgReference(CLogDialog &dlg);
+
+	void __init();
+	void __release();
 
 public:
 	class SystemContents
@@ -27,7 +32,7 @@ public:
 
 		AsyncTaskManager *__pTaskMgr = nullptr;
 		EventBroadcaster *__pEventBroadcaster = nullptr;
-		DatabaseManager *__pDatabaseManager = nullptr;
+		ClientDBManager *__pClientDBManager = nullptr;
 		RemoteAccessAuthorizer *__pRemoteAccessAuthorizer = nullptr;
 		RenderingEngine *__pRenderingEngine = nullptr;
 		ClientNetwork *__pClientNetwork = nullptr;
@@ -38,14 +43,14 @@ public:
 	public:
 		AsyncTaskManager &getTaskManager();
 		EventBroadcaster &getEventBroadcaster();
-		DatabaseManager &getDatabaseManager();
+		ClientDBManager &getClientDBManager();
 		RemoteAccessAuthorizer &getRemoteAccessAuthorizer();
 		RenderingEngine &getRenderingEngine();
 		ClientNetwork &getClientNetwork();
-		
-		void loadVolume(const VolumeData &volumeData);
 	}
 	systemContents;
+
+	bool printLog(const std::tstring &message);
 
 	static System& getInstance();
 	static System::SystemContents& getSystemContents();

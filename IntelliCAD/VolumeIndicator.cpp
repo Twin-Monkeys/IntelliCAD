@@ -66,26 +66,24 @@ namespace VolumeIndicator
 	}
 
 	__device__
-	bool recognize(const Size3D<> &volSize, const Point3D &target, const float lineLength, const float lineThickness)
+	bool recognize(const Size3D<float> &volSize, const Point3D &target, const float lineLength, const float lineThickness)
 	{
-		const Size3D<float> VOL_SIZE = volSize.castTo<float>();
-
 		// X
 		IF_T_RET_T(__recognize_axis(
 			target.y, target.z, target.x,
-			VOL_SIZE.height, VOL_SIZE.depth, VOL_SIZE.width,
+			volSize.height, volSize.depth, volSize.width,
 			lineLength, lineThickness));
 
 		// Y
 		IF_T_RET_T(__recognize_axis(
 			target.z, target.x, target.y,
-			VOL_SIZE.depth, VOL_SIZE.width, VOL_SIZE.height,
+			volSize.depth, volSize.width, volSize.height,
 			lineLength, lineThickness));
 
 		// Z
 		return __recognize_axis(
 			target.x, target.y, target.z,
-			VOL_SIZE.width, VOL_SIZE.height, VOL_SIZE.depth,
+			volSize.width, volSize.height, volSize.depth,
 			lineLength, lineThickness);
 	}
 }

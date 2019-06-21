@@ -1,6 +1,6 @@
 #pragma once
 
-enum class SliceAxis
+enum SliceAxis
 {
 	TOP,
 	FRONT,

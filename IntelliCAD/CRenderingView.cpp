@@ -14,12 +14,16 @@ ON_WM_ERASEBKGND()
 ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
+CRenderingView::CRenderingView() :
+	_volumeLoaded(__volumeLoaded)
+{}
+
 /* member function */
 void CRenderingView::OnDraw(CDC* /*pDC*/)
 {
 	wglMakeCurrent(__hDeviceContext, __hRenderingContext);
 
-	if (__initialized)
+	if (__volumeLoaded)
 	{
 		__onDeviceDraw();
 
@@ -52,15 +56,13 @@ void CRenderingView::OnSize(UINT nType, int cx, int cy)
 
 	__deleteBuffer();
 	__createBuffer(cx, cy);
-	render();
+	_render();
 }
 
 int CRenderingView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
-
-	System::getSystemContents().getEventBroadcaster().addVolumeLoadingListener(*this);
 
 	// openGL 초기화 시작
 	PIXELFORMATDESCRIPTOR pixelDesc;
@@ -95,6 +97,11 @@ int CRenderingView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// 수직 동기화(모니터 최대 주사율에 프레임 계산 성능을 제한)를 해제한다.
 	wglSwapIntervalEXT(0);
+
+	EventBroadcaster &eventBroadcaster = System::getSystemContents().getEventBroadcaster();
+
+	eventBroadcaster.addVolumeLoadedListener(*this);
+	eventBroadcaster.addRequestScreenUpdateListener(*this);
 
 	return 0;
 }
@@ -134,7 +141,7 @@ void CRenderingView::OnLButtonDblClk(UINT nFlags, CPoint point)
 	CView::OnLButtonDblClk(nFlags, point);
 }
 
-void CRenderingView::render()
+void CRenderingView::_render()
 {
 	// 버퍼의 주도권을 CUDA로 가져온다.
 	cudaGraphicsMapResources(1, &__pCudaRes, nullptr);
@@ -196,7 +203,19 @@ void CRenderingView::__deleteBuffer()
 	}
 }
 
-void CRenderingView::onLoadVolume(const VolumeData &volumeData)
+void CRenderingView::init(const int viewIndex)
 {
-	__initialized = true;
+	index = viewIndex;
+}
+
+void CRenderingView::onVolumeLoaded(const VolumeMeta &volumeMeta)
+{
+	__volumeLoaded = true;
+	_render();
+}
+
+void CRenderingView::onRequestScreenUpdate(const RenderingScreenType targetType)
+{
+	if (targetType == screenType)
+		_render();
 }

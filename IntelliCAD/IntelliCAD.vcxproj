@@ -23,20 +23,20 @@
     <ProjectGuid>{8745A91C-3364-4226-9258-B5D8545D7224}</ProjectGuid>
     <Keyword>MFCProj</Keyword>
     <RootNamespace>IntelliCAD</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
@@ -44,21 +44,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.0.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.1.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -80,16 +80,16 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>glew\inc;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>glew\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+    <IncludePath>ChartDirector\inc;glew\inc;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>ChartDirector\lib;glew\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>glew\inc;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>glew\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+    <IncludePath>ChartDirector\inc;glew\inc;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>ChartDirector\lib;glew\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -120,12 +120,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;cudart.lib;cudadevrt.lib;</AdditionalDependencies>
+      <AdditionalDependencies>chartdir60.lib;opengl32.lib;glew32.lib;cudart.lib;cudadevrt.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -180,14 +180,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;cudart.lib;cudadevrt.lib;</AdditionalDependencies>
+      <AdditionalDependencies>chartdir60.lib;opengl32.lib;glew32.lib;cudart.lib;cudadevrt.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -208,29 +208,57 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Account.h" />
     <ClInclude Include="AnchorManager.h" />
     <ClInclude Include="AsyncTaskManager.hpp" />
     <ClInclude Include="AuthorizingResult.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="CCloudServiceDlg.h" />
     <ClInclude Include="CCustomRibbonBar.h" />
     <ClInclude Include="CCustomSplitterWnd.h" />
+    <ClInclude Include="ChangeSlicingPointListener.h" />
+    <ClInclude Include="ChartViewer.h" />
+    <ClInclude Include="CImageInfoDialog.h" />
     <ClInclude Include="CInspecterView.h" />
+    <ClInclude Include="CLogDialog.h" />
+    <ClInclude Include="ColorTransferFunction.h" />
+    <ClInclude Include="ConfigDBManager.h" />
+    <ClInclude Include="CServerInteractionActiveDlg.h" />
+    <ClInclude Include="CServerInteractionInactiveDlg.h" />
+    <ClInclude Include="CTFChartBuilder.h" />
+    <ClInclude Include="CVolumeRenderingFilterDlg.h" />
+    <ClInclude Include="DBManager.h" />
+    <ClInclude Include="InitLightListener.h" />
+    <ClInclude Include="InitSliceViewAnchorListener.h" />
+    <ClInclude Include="InitSlicingPointListener.h" />
+    <ClInclude Include="LesionAnalyzer.h" />
+    <ClInclude Include="RequestingServerDBResult.h" />
+    <ClInclude Include="ServerFileDBSectionType.h" />
+    <ClInclude Include="LoginSuccessListener.h" />
+    <ClInclude Include="MTFChartBuilder.h" />
+    <ClInclude Include="TFChartBuilder.h" />
+    <ClInclude Include="tfstream.h" />
+    <ClInclude Include="InitSliceTransferFunctionListener.h" />
+    <ClInclude Include="UpdateAnchorFromViewListener.h" />
+    <ClInclude Include="UpdateLightListener.h" />
+    <ClInclude Include="UpdateSlicingPointFromViewListener.h" />
+    <ClInclude Include="VolumeMeta.h" />
+    <ClInclude Include="InitVolumeTransferFunctionListener.h" />
+    <ClInclude Include="UpdateVolumeTransferFunctionListener.h" />
+    <ClInclude Include="XMLBasedDBManager.h" />
     <CudaCompile Include="Color.hpp" />
     <ClInclude Include="ClientNetwork.h" />
-    <ClInclude Include="CLightingView.h" />
     <ClInclude Include="CLoginDlg.h" />
-    <ClInclude Include="ConfigSectionType.h" />
+    <ClInclude Include="ConfigDBSectionType.h" />
     <ClInclude Include="ConnectionCheckListener.h" />
     <ClInclude Include="ConnectionClosedListener.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="CRenderingView.h" />
     <ClInclude Include="CSliceView.h" />
+    <ClInclude Include="CSliceFilterDlg.h" />
     <ClInclude Include="CudaHelper.h" />
     <ClInclude Include="custom_cudart.h" />
     <ClInclude Include="CVolumeRenderingView.h" />
-    <ClInclude Include="DatabaseManager.h" />
-    <ClInclude Include="DBSectionType.h" />
+    <ClInclude Include="ClientDBManager.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="ElementMeta.h" />
     <ClInclude Include="EventBroadcaster.h" />
@@ -245,6 +273,7 @@
     <ClInclude Include="MacroTransaction.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MetaImageHeader.h" />
+    <ClInclude Include="MonoTransferFunction.h" />
     <ClInclude Include="NetworkStream.h" />
     <ClInclude Include="NetworkUtility.h" />
     <CudaCompile Include="NumberUtility.hpp" />
@@ -259,25 +288,31 @@
     <CudaCompile Include="RayBoxInstersector.h" />
     <ClInclude Include="ReadStream.hpp" />
     <ClInclude Include="RemoteAccessAuthorizer.h" />
-    <ClInclude Include="RenderingEngine.h" />
+    <ClInclude Include="RenderingEngine.hpp" />
     <ClInclude Include="Resource.h" />
     <CudaCompile Include="Size2D.hpp" />
     <CudaCompile Include="Size3D.hpp" />
+    <ClInclude Include="RequestScreenUpdateListener.h" />
     <ClInclude Include="Serializable.h" />
     <ClInclude Include="ServerConnectingListener.h" />
     <ClInclude Include="SliceAxis.h" />
     <ClInclude Include="SlicingPointManager.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="StreamAnchorType.h" />
+    <ClInclude Include="StreamTransmissionFinishedListener.h" />
+    <ClInclude Include="StreamTransmittingListener.h" />
+    <ClInclude Include="SystemDestroyListener.h" />
     <ClInclude Include="SystemIndirectAccessor.h" />
     <ClInclude Include="SystemInitListener.h" />
+    <ClInclude Include="RenderingScreenType.h" />
     <ClInclude Include="tinyxml2.h" />
-    <ClInclude Include="TransferFunction.h" />
-    <ClInclude Include="UserInfo.h" />
+    <ClInclude Include="ColorChannelType.h" />
+    <ClInclude Include="UpdateSliceTransferFunctionListener.h" />
+    <ClInclude Include="TransmittingDirectionType.h" />
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="VolumeData.h" />
     <CudaCompile Include="VolumeIndicator.h" />
-    <ClInclude Include="VolumeLoadingListener.h" />
+    <ClInclude Include="VolumeLoadedListener.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringTokenizer.h" />
     <ClInclude Include="System.h" />
@@ -286,26 +321,36 @@
     <ClInclude Include="tstring.h" />
     <ClInclude Include="TypeEx.h" />
     <CudaCompile Include="Vector3D.h" />
-    <ClInclude Include="VolumeMeta.h" />
+    <ClInclude Include="VolumeNumericMeta.h" />
     <ClInclude Include="VolumeReader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Account.cpp" />
     <ClCompile Include="AnchorManager.cpp" />
     <ClCompile Include="AsyncTaskManager.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CCloudServiceDlg.cpp" />
     <ClCompile Include="CCustomRibbonBar.cpp" />
     <ClCompile Include="CCustomSplitterWnd.cpp" />
+    <ClCompile Include="ChartViewer.cpp" />
+    <ClCompile Include="CImageInfoDialog.cpp" />
     <ClCompile Include="CInspecterView.cpp" />
     <ClCompile Include="ClientNetwork.cpp" />
-    <ClCompile Include="CLightingView.cpp" />
+    <ClCompile Include="CLogDialog.cpp" />
     <ClCompile Include="CLoginDlg.cpp" />
+    <ClCompile Include="ColorTransferFunction.cpp" />
+    <ClCompile Include="ConfigDBManager.cpp" />
     <ClCompile Include="Constant.cpp" />
     <ClCompile Include="CRenderingView.cpp" />
+    <ClCompile Include="CServerInteractionActiveDlg.cpp" />
+    <ClCompile Include="CServerInteractionInactiveDlg.cpp" />
     <ClCompile Include="CSliceView.cpp" />
+    <ClCompile Include="CSliceFilterDlg.cpp" />
+    <ClCompile Include="CTFChartBuilder.cpp" />
     <ClCompile Include="CudaHelper.cpp" />
+    <ClCompile Include="CVolumeRenderingFilterDlg.cpp" />
     <ClCompile Include="CVolumeRenderingView.cpp" />
-    <ClCompile Include="DatabaseManager.cpp" />
+    <ClCompile Include="ClientDBManager.cpp" />
+    <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="ElementMeta.cpp" />
     <ClCompile Include="EventBroadcaster.cpp" />
@@ -316,8 +361,12 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MetaImageHeader.cpp" />
+    <ClCompile Include="MonoTransferFunction.cpp" />
+    <ClCompile Include="MTFChartBuilder.cpp" />
     <ClCompile Include="NetworkStream.cpp" />
     <ClCompile Include="NetworkUtility.cpp" />
+    <ClCompile Include="TFChartBuilder.cpp" />
+    <ClCompile Include="XMLBasedDBManager.cpp" />
     <CudaCompile Include="OrthoBasis.cpp" />
     <CudaCompile Include="NumberUtility.cpp" />
     <ClCompile Include="ObjectStream.cpp" />
@@ -331,9 +380,7 @@
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SystemIndirectAccessor.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
-    <ClCompile Include="TransferFunction.cpp" />
     <CudaCompile Include="Vector3D.cpp" />
-    <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="Vector2D.cpp" />
     <CudaCompile Include="VolumeIndicator.cpp" />
     <ClCompile Include="VolumeReader.cpp" />
@@ -345,6 +392,7 @@
     <ResourceCompile Include="IntelliCAD.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\이미지 작업\IntelliCAD_Resource_Img_DignosisPanel.png" />
     <Image Include="C:\Users\GODJIN\Downloads\doctor.jpg" />
     <Image Include="C:\Users\GODJIN\Downloads\icons8-doctor-male-100.png" />
     <Image Include="res\bitmap1.bmp" />
@@ -354,8 +402,17 @@
     <Image Include="res\IntelliCAD.ico" />
     <Image Include="res\IntelliCADDoc.ico" />
     <Image Include="res\IntelliCAD_Img_Resource_Custom_Large.png" />
+    <Image Include="res\IntelliCAD_Resource_Img_DignosisPanel.png" />
+    <Image Include="res\IntelliCAD_Resource_Img_File.png" />
+    <Image Include="res\IntelliCAD_Resource_Img_ImgProcPanel.png" />
+    <Image Include="res\IntelliCAD_Resource_Img_ImgProcPanel_Small.png" />
+    <Image Include="res\IntelliCAD_Resource_Img_MainLogo.png" />
+    <Image Include="res\IntelliCAD_Resource_Img_NetworkPanel.png" />
+    <Image Include="res\IntelliCAD_Resource_Img_VolumeRenderingPanel.png" />
+    <Image Include="res\IntelliCAD_Resource_Img_VolumeRenderingPanel_Small.png" />
     <Image Include="res\logo.bmp" />
     <Image Include="res\main.bmp" />
+    <Image Include="res\main.png" />
     <Image Include="res\Toolbar.bmp" />
     <Image Include="res\Toolbar256.bmp" />
     <Image Include="res\writelarge.bmp" />
@@ -367,6 +424,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.0.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.1.targets" />
   </ImportGroup>
 </Project>

@@ -14,6 +14,7 @@
 #include <atlstr.h>
 #include <WinSock2.h>
 #include "tstring.h"
+#include "Color.hpp"
 
 namespace Parser
 {
@@ -41,7 +42,7 @@ namespace Parser
 	/// <param name="str">정수로 바꿀 문자열</param>
 	/// <returns>주어진 문자열을 정수로 변환한 값</returns>
 	template <typename T = int>
-	T tstring$Int(const std::tstring &str);
+	T tstring$int(const std::tstring &str);
 
 	/// <summary>
 	/// <para>CString 타입의 문자열을 정수로 변환한다.</para>
@@ -53,7 +54,10 @@ namespace Parser
 	/// <param name="str">정수로 바꿀 문자열</param>
 	/// <returns>주어진 문자열을 정수로 변환한 값</returns>
 	template <typename T = int>
-	int CString$Int(const CString &str);
+	int CString$int(const CString &str);
+
+	template <typename T>
+	T CString$float(const CString& str);
 
 	/// <summary>
 	/// LPCSTR 타입의 문자열을 tstring 타입의 문자열로 변환한다.
@@ -61,6 +65,8 @@ namespace Parser
 	/// <param name="str">LPCSTR 타입 문자열</param>
 	/// <returns>tstring 타입 문자열</returns>
 	std::tstring LPCSTR$tstring(const LPCSTR str);
+
+	std::tstring charString$tstring(const char *const str);
 
 	/// <summary>
 	/// CString 타입의 문자열을 tstring 타입의 문자열로 변환한다.
@@ -82,6 +88,8 @@ namespace Parser
 	/// <param name="str">tstring 타입 문자열</param>
 	/// <returns>string 타입 문자열</returns>
 	std::string tstring$string(const std::tstring &str);
+
+	CString tstring$CString(const std::tstring &str);
 
 	std::tstring string$tstring(const std::string &str);
 
@@ -113,8 +121,11 @@ namespace Parser
 	/// <returns>USHORT 값으로 표현되어 있는 포트</returns>
 	USHORT portString$sin_port(const std::tstring &portString);
 
+	Color<float> COLORREF$Color(const COLORREF color);
+	COLORREF Color$COLORREF(const Color<float> &color);
+
 	template <typename T>
-	T tstring$Int(const std::tstring &str)
+	T tstring$int(const std::tstring &str)
 	{
 		static_assert(std::is_integral_v<T>,
 			"The type parameter T must be sort of integer");
@@ -123,11 +134,20 @@ namespace Parser
 	}
 
 	template <typename T>
-	T CString$Int(const CString &str)
+	T CString$int(const CString& str)
 	{
 		static_assert(std::is_integral_v<T>,
 			"The type parameter T must be sort of integer");
 
 		return static_cast<T>(_ttoi(str));
+	}
+
+	template <typename T>
+	T CString$float(const CString& str) 
+	{
+		static_assert(std::is_floating_point_v<T>,
+			"The type parameter T must be sort of float");
+
+		return static_cast<T>(_ttof(str));
 	}
 };

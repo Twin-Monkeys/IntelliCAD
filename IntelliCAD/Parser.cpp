@@ -12,6 +12,8 @@
 #include <ws2tcpip.h>
 #include "Parser.hpp"
 #include "MacroTransaction.h"
+#include "NumberUtility.hpp"
+#include "TypeEx.h"
 
 using namespace std;
 
@@ -45,6 +47,11 @@ namespace Parser
 		return tstring(CA2CT(str));
 	}
 
+	tstring charString$tstring(const char *const str)
+	{
+		return LPCSTR$tstring(str);
+	}
+
 	tstring CString$tstring(const CString &str)
 	{
 		return str.GetString();
@@ -60,7 +67,12 @@ namespace Parser
 		return string(CT2CA(str.c_str()));
 	}
 
-	tstring string$tstring(const std::string &str)
+	CString tstring$CString(const tstring &str)
+	{
+		return CString(str.c_str());
+	}
+
+	tstring string$tstring(const string &str)
 	{
 		return tstring(CA2CT(str.c_str()));
 	}
@@ -93,6 +105,24 @@ namespace Parser
 
 	USHORT portString$sin_port(const tstring &portString)
 	{
-		return htons(tstring$Int<u_short>(portString));
+		return htons(tstring$int<u_short>(portString));
+	}
+
+	Color<float> COLORREF$Color(const COLORREF color) 
+	{
+		const float RED = (static_cast<float>(GetRValue(color)) / 255.f);
+		const float GREEN = (static_cast<float>(GetGValue(color)) / 255.f);
+		const float BLUE = (static_cast<float>(GetBValue(color)) / 255.f);
+
+		return { RED, GREEN, BLUE };
+	}
+
+	COLORREF Color$COLORREF(const Color<float> &color)
+	{
+		const ubyte RED = static_cast<ubyte>(NumberUtility::truncate(color.red * 255.f, 0.f, 255.f));
+		const ubyte GREEN = static_cast<ubyte>(NumberUtility::truncate(color.green * 255.f, 0.f, 255.f));
+		const ubyte BLUE = static_cast<ubyte>(NumberUtility::truncate(color.blue * 255.f, 0.f, 255.f));
+
+		return RGB(RED, GREEN, BLUE);
 	}
 };

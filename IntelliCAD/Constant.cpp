@@ -8,6 +8,8 @@
 
 #include "Constant.h"
 
+using namespace std;
+
 namespace Constant
 {
 	namespace Window
@@ -60,8 +62,19 @@ namespace Constant
 		const Vector3D UP = { 0.f, 0.f, -1.f };
 	}
 
-	namespace Database
+	namespace DB
 	{
-		const std::tstring DB_ROOT = _T("db/");
+		const tstring ROOT_DIR = _T("db/");
+		const tstring CONFIG_SUBPATH = _T("config.xml");
+	}
+
+	namespace UI
+	{
+		const tstring TAB_NAMES[] =
+		{
+			_T("기본 정보"),
+			_T("클라우드"),
+			_T("로그")
+		};
 	}
 }

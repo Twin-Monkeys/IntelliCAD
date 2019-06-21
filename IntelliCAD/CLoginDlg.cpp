@@ -40,15 +40,6 @@ END_MESSAGE_MAP()
 
 // CLoginDlg 메시지 처리기
 
-BOOL CLoginDlg::PreTranslateMessage(MSG* pMsg)
-{
-	// Enter, ESC key를 누르면 프로그램이 종료되는 것을 막는다.
-	if ((pMsg->wParam == VK_RETURN) || (pMsg->wParam == VK_ESCAPE))
-		return TRUE;
-
-	return CDialogEx::PreTranslateMessage(pMsg);
-}
-
 void CLoginDlg::OnBnClickedButtonSignIn()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
@@ -76,30 +67,53 @@ void CLoginDlg::OnBnClickedButtonSignIn()
 	RemoteAccessAuthorizer &accessAuthorizer =
 		System::getSystemContents().getRemoteAccessAuthorizer();
 
-	switch (accessAuthorizer.authorize(ID, PASSWORD))
+	AuthorizingResult result;
+
+	bool loop;
+	do
 	{
-	case AuthorizingResult::FAILED_DB_ERROR:
-		Debugger::popMessageBox(_T("Authorize 결과: FAILED_DB_ERROR"));
-		break;
+		loop = false;
+		result = accessAuthorizer.authorize(ID, PASSWORD);
 
-	case AuthorizingResult::FAILED_INVALID_ID:
-		Debugger::popMessageBox(_T("Authorize 결과: FAILED_INVALID_ID"));
-		break;
+		switch (result)
+		{
+		case AuthorizingResult::FAILED_DB_ERROR:
+		{
+			const int MB_RET =
+				MessageBox(
+					_T("설정 DB 정보를 불러올 수 없습니다."), _T("로그인 오류"),
+					MB_RETRYCANCEL | MB_ICONEXCLAMATION);
 
-	case AuthorizingResult::FAILED_NETWORK_ERROR:
-		Debugger::popMessageBox(_T("Authorize 결과: FAILED_NETWORK_ERROR"));
-		break;
+			if (MB_RET == IDRETRY)
+				loop = true;
+		}
+			break;
 
-	case AuthorizingResult::FAILED_WRONG_PASSWORD:
-		Debugger::popMessageBox(_T("Authorize 결과: FAILED_WRONG_PASSWORD"));
-		break;
+		case AuthorizingResult::FAILED_NETWORK_ERROR:
+		{
+			const int MB_RET =
+				MessageBox(
+					_T("서버 접속에 실패하였습니다."), _T("로그인 오류"),
+					MB_RETRYCANCEL | MB_ICONEXCLAMATION);
 
-	case AuthorizingResult::SUCCESS:
-		Debugger::popMessageBox(_T("Authorize 결과: SUCCESS"));
-		break;
+			if (MB_RET == IDRETRY)
+				loop = true;
+		}
+			break;
+
+		case AuthorizingResult::FAILED_INVALID_ID:
+			MessageBox(_T("존재하지 않는 ID입니다."), _T("로그인 오류"), MB_ICONEXCLAMATION);
+			break;
+
+		case AuthorizingResult::FAILED_WRONG_PASSWORD:
+			MessageBox(_T("비밀번호가 올바르지 않습니다."), _T("로그인 오류"), MB_ICONEXCLAMATION);
+			break;
+		}
 	}
-	
-	EndDialog(0);
+	while (loop);
+
+	if (result == AuthorizingResult::SUCCESS)
+		EndDialog(LOGIN_DLG_LOGIN_SUCCESS);
 }
 
 
@@ -107,4 +121,20 @@ void CLoginDlg::OnBnClickedButtonClose()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	EndDialog(IDCLOSE);
+}
+
+
+void CLoginDlg::OnOK()
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+
+	// CDialogEx::OnOK();
+}
+
+
+void CLoginDlg::OnCancel()
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+
+	CDialogEx::OnCancel();
 }

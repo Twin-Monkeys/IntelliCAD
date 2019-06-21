@@ -5,13 +5,17 @@
 #include <GL/wglew.h>
 #include <cuda_gl_interop.h>
 #include "Pixel.h"
-#include "VolumeLoadingListener.h"
+#include "VolumeLoadedListener.h"
+#include "RequestScreenUpdateListener.h"
 
-class CRenderingView : public CView, public VolumeLoadingListener
+class CRenderingView :
+	public CView, public VolumeLoadedListener, public RequestScreenUpdateListener
 {
 	DECLARE_MESSAGE_MAP()
 
 public:
+	CRenderingView();
+
 	/* member function */
 	virtual void OnDraw(CDC* /*pDC*/);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
@@ -19,18 +23,18 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	void render();
-
-	virtual void onLoadVolume(const VolumeData &volumeData) override;
 
 	/* member variable */
 	int index;
 
 protected:
+	const bool &_volumeLoaded;
+
 	/* member function */
 	virtual void _onDeviceRender(Pixel* const pDevScreen, const int screenWidth, const int screenHeight) = 0;
 	virtual void _onHostRender(CDC *const pDC, const int screenWidth, const int screenHeight);
 
+	void _render();
 	const CSize &_getScreenSize() const;
 
 private:
@@ -48,5 +52,13 @@ private:
 	GLuint __bufferObject = 0;
 	cudaGraphicsResource* __pCudaRes = nullptr;
 
-	bool __initialized = false;
+	bool __volumeLoaded = false;
+
+public:
+	RenderingScreenType screenType = RenderingScreenType::SLICE_TOP;
+
+	void init(const int viewIndex);
+
+	virtual void onVolumeLoaded(const VolumeMeta &volumeMeta) override;
+	virtual void onRequestScreenUpdate(const RenderingScreenType targetType) override;
 };

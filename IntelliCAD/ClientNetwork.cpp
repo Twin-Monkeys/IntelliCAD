@@ -13,26 +13,28 @@
 #include "MacroTransaction.h"
 #include "Debugger.h"
 #include "PacketHeader.h"
-#include <iostream>
+#include "NetworkStream.h"
+
 
 using namespace std;
 
 ClientNetwork ClientNetwork::__instance = ClientNetwork();
 
-shared_ptr<Socket> ClientNetwork::getSocket()
+shared_ptr<Socket> ClientNetwork::getSocket(const bool isRecevingLoop)
 {
-	cout << "__pSocket->isReceving() : " << __pSocket->isReceving();
-	cout << "__pSocket->isSending() : " << __pSocket->isSending();
 
+	if (!isRecevingLoop) { // loop를 돌지 않고, 생성되는 새로운 Socket으로 동기처리 하겠다.
+		shared_ptr<Socket> sock = Socket::create(__serverIP, __serverPort, true);
+		shared_ptr<Socket> connectedSocket = sock->connect(0);
+		return connectedSocket;
+	}
+
+	// loop 돌고 비동기 처리 위해 tempSockets에 저장
 	if (__pSocket->isReceving() || __pSocket->isSending()) {
-		shared_ptr<Socket> sock = Socket::create(__serverIP, __serverPort);
+		shared_ptr<Socket> sock = Socket::create(__serverIP, __serverPort, true);
 		__tempSockets.emplace(sock);
 		shared_ptr<Socket> connectedSocket = sock->connect(0);
-
-		System::getSystemContents().getTaskManager().
-			run_void(TaskType::GENERIC, *sock, &Socket::__receivingLoop);
-
-		cout << "getSocket() return tempSocket" << endl;
+		System::getSystemContents().getTaskManager().run(TaskType::CONNECTION_CLOSED, *sock, &Socket::__receivingLoop);
 
 		return connectedSocket;
 	}
@@ -65,6 +67,7 @@ bool ClientNetwork::isCreated() const
 bool ClientNetwork::isConnected() const
 {
 	IF_T_RET_F(!isCreated());
+
 	IF_T_RET_T(__pSocket->isConnected());
 
 	return false;
@@ -75,31 +78,19 @@ bool ClientNetwork::createClientSocket(const tstring &serverIP, const tstring &s
 	__serverIP = serverIP;
 	__serverPort = serverPort;
 
-	__pSocket = Socket::create(serverIP, serverPort);
+	__pSocket = Socket::create(serverIP, serverPort, false);
 
 	IF_T_RET_F(!isCreated());
-
-	cout << "socket create success" << endl;
 
 	return true;
 }
 
 void ClientNetwork::onServerConnectionResult(std::shared_ptr<Socket> pSocket)
 {
-	if (pSocket == nullptr) {
-		cout << "server connect fail. please retry." << endl;
-		cout << "ClientNetwork::onServerConnectionResult() : pSocket == nullptr" << endl;
-		
-		__pSocket->close();
-		__pSocket = nullptr;
-		__isRun = false;
-
+	if (pSocket == nullptr)
 		return;
-	}
 	//__pSocket = pSocket;
-	System::getSystemContents().getTaskManager().
-		run_void(TaskType::GENERIC, *pSocket, &Socket::__receivingLoop);
-
+	System::getSystemContents().getTaskManager().run(TaskType::CONNECTION_CLOSED, *pSocket, &Socket::__receivingLoop);
 	__isRun = false;
 }
 
@@ -111,6 +102,15 @@ void ClientNetwork::onSystemInit()
 	eventBroadcaster.addServerConnectingListener(*this);
 	eventBroadcaster.addConnectionCheckListener(*this);
 	eventBroadcaster.addConnectionClosedListener(*this);
+
+	// 세인 추가
+	eventBroadcaster.addSystemDestroyListener(*this);
+}
+
+void ClientNetwork::onSystemDestroy()
+{
+	// 세인: 시스템 종료 시 호출
+	close();
 }
 
 // 세인 추가
@@ -120,14 +120,8 @@ void ClientNetwork::onConnectionCheck()
 	// 이곳에서 패킷 send / receive를 통해 서버와 연결 체크를 해볼 것
 	
 	//__pSocket->sendMSG("Hello Server", ProtocolType::CONNECTION_CHECK);
-	
-	// sendFile(*(new string("c:\\network_test\\dummy.txt")));	// 메모리 누수
-	sendFile("c:\\network_test\\dummy.txt");
-
-	/*char * msg = new char[20]; 
-	strcpy(msg, "Hello Server");*/ // 메모리 누수
-	char msg[] = "Hello Server";
-	sendMSG(msg, ProtocolType::CONNECTION_CHECK);
+	sendFile(_T("c:\\network_test\\dummy.txt"));
+	sendMSG(_T("Hello Server"), ProtocolType::CONNECTION_CHECK);
 
 	// 이 함수는 "onConnectionCheck"이라는 메세지 박스를 팝업함
 	Debugger::popMessageBox(_T("onConnectionCheck"));
@@ -135,21 +129,9 @@ void ClientNetwork::onConnectionCheck()
 
 void ClientNetwork::onConnectionClosed(std::shared_ptr<Socket> pSocket)
 {
-	cout << "ClientNetwork::onConnectionClosed()" << endl;
 	
-	set<shared_ptr<Socket>> erase;
-	for (shared_ptr<Socket> sock : __taskCompletedSockets) {
-		if (!sock->isSending() && !sock->isReceving()) {
-			__tempSockets.erase(sock);
-			erase.emplace(sock);
-		}
-	}
-	for (shared_ptr<Socket> sock : erase) {
-		__taskCompletedSockets.erase(sock);
-	}
-
-	if (pSocket == __pSocket) return;
-	else __taskCompletedSockets.emplace(pSocket);
+	if (pSocket == __pSocket) __pSocket = nullptr;
+	else __tempSockets.erase(pSocket);
 }
 
 bool ClientNetwork::connect(const int timeout)
@@ -162,17 +144,26 @@ bool ClientNetwork::connect(const int timeout)
 	System::getSystemContents().getTaskManager()
 		.run(TaskType::SERVER_CONNECTED, *__pSocket, &Socket::connect, timeout);
 
-	//2개 test
-//	__testSocket = Socket::create(_T("127.0.0.1"), _T("9000"));
-//	System::getInstance().taskMgr
-//		.run(TaskType::SERVER_CONNECTED, *__testSocket, &Socket::connect, timeout);
+	return true;
+}
 
+bool ClientNetwork::connectBlocking()
+{
+	__pSocket = __pSocket->connect(500);
+	if (__pSocket == nullptr) return false;
+
+	System::getSystemContents().getTaskManager().run(TaskType::CONNECTION_CLOSED, *__pSocket, &Socket::__receivingLoop);
 	return true;
 }
 
 bool ClientNetwork::close()
 {
-	__pSocket = nullptr;
+	if (__pSocket)
+		__pSocket->close();
+
+	for (std::shared_ptr<Socket> sock : __tempSockets) {
+		sock->close();
+	}
 	return true;
 }
 
@@ -183,33 +174,86 @@ ClientNetwork& ClientNetwork::getInstance()
 
 ClientNetwork::~ClientNetwork()
 {
-	close();
 	WSACleanup();
 }
 
-void ClientNetwork::sendMSG(const char * const msg, const ProtocolType protocolType)
+void ClientNetwork::sendMSG(std::tstring const msg, const ProtocolType protocolType)
 {
-	shared_ptr<Socket> sock = getSocket();
+	shared_ptr<Socket> sock = getSocket(true);
 	
 	//GENERIC에서 통신완료 타입으로 바꾸고, listener를 통해 tempSockets에서 제외.
 	System::getSystemContents().getTaskManager()
-		.run(TaskType::CONNECTION_CLOSED, *sock, &Socket::sendMSG, msg, protocolType);
+		.run(TaskType::GENERIC, *sock, &Socket::sendMSG, msg, protocolType);
 }
 
 void ClientNetwork::sendObj(Serializable & obj, const ObjectType objectType)
 {
-	shared_ptr<Socket> sock = getSocket();
+	shared_ptr<Socket> sock = getSocket(true);
 
 	//GENERIC에서 통신완료 타입으로 바꾸고, listener를 통해 tempSockets에서 제외.
 	System::getSystemContents().getTaskManager()
-		.run(TaskType::CONNECTION_CLOSED, *sock, &Socket::sendObj, obj, objectType);
+		.run(TaskType::GENERIC, *sock, &Socket::sendObj, obj, objectType);
+
 }
 
-void ClientNetwork::sendFile(const std::string & path) 
+void ClientNetwork::sendFile(const std::tstring path) 
 {
-	shared_ptr<Socket> sock = getSocket();
+	shared_ptr<Socket> sock = getSocket(true);
 
 	//GENERIC에서 통신완료 타입으로 바꾸고, listener를 통해 tempSockets에서 제외.
 	System::getSystemContents().getTaskManager()
-		.run(TaskType::CONNECTION_CLOSED, *sock, &Socket::sendFile, path);
+		.run(TaskType::GENERIC, *sock, &Socket::sendFile, path);
+
 }
+
+AuthorizingResult ClientNetwork::loginRequest(Account &userInfo, const tstring & id, const tstring & password)
+{
+	shared_ptr<Socket> sock = getSocket(false);
+
+	// id
+	sock->sendMSG(id, ProtocolType::LOGIN);
+	const PacketHeader * ph = sock->getHeader();
+	if (ph->getProtocolType() == ProtocolType::NOK)
+		return AuthorizingResult::FAILED_INVALID_ID;
+	else if (ph->getProtocolType() == ProtocolType::DB_ERROR)
+		return AuthorizingResult::FAILED_DB_ERROR;
+
+	// password
+	sock->sendMSG(password, ProtocolType::LOGIN);
+	ph = sock->getHeader();
+	if (ph->getProtocolType() == ProtocolType::NOK)
+		return AuthorizingResult::FAILED_WRONG_PASSWORD;
+
+	// UserInfo recv
+	ph = sock->getHeader();
+	NetworkStream nStream = NetworkStream(sock, ph->getByteCount());
+	userInfo = Account(nStream);
+
+	return AuthorizingResult::SUCCESS;
+}
+
+bool ClientNetwork::requestServerDBFile(const ServerFileDBSectionType sectionType, const tstring & name)
+{
+	shared_ptr<Socket> sock = getSocket(false); // 동기 처리 위한 임시 소켓
+
+	// Send PH
+	// Send name
+	sock->sendMSG(name, ProtocolType::FILE_REQUEST);
+	
+	// Send ServerDBSectionType
+	memcpy(sock->bufForTemp, &sectionType, sizeof(sectionType));
+	sock->send(sock->bufForTemp, sock->BUF_SIZE);
+
+	// Recv EXISTENT (OK, NOK)
+	const PacketHeader * ph = sock->getHeader();
+	const bool EXISTENT = ph->getProtocolType() == ProtocolType::OK;
+
+	// File Receving Loop Start
+	sock->setFilePath(_T("db\\") + name);
+	__tempSockets.emplace(sock);
+	System::getSystemContents().getTaskManager()
+		.run(TaskType::CONNECTION_CLOSED, *sock, &Socket::__receivingLoop);
+	
+	return EXISTENT;
+}
+

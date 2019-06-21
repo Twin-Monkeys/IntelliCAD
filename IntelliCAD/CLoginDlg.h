@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#define LOGIN_DLG_LOGIN_SUCCESS 519
+
 // CLoginDlg 대화 상자
 class CLoginDlg : public CDialogEx
 {
@@ -19,11 +21,14 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnBnClickedButtonSignIn();
+
 private:
 	CEdit __ddxc_id;
 	CEdit __ddxc_pw;
+
 public:
 	afx_msg void OnBnClickedButtonClose();
+	virtual void OnOK();
+	virtual void OnCancel();
 };

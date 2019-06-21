@@ -12,7 +12,13 @@ BEGIN_MESSAGE_MAP(CSliceView, CRenderingView)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
+
+CSliceView::CSliceView()
+{
+	screenType = RenderingScreenType::SLICE_TOP;
+}
 
 void CSliceView::_onDeviceRender(Pixel* const pDevScreen, const int screenWidth, const int screenHeight)
 {
@@ -45,20 +51,55 @@ void CSliceView::_onHostRender(CDC *const pDC, const int screenWidth, const int 
 	pDC->SelectObject(pPrevBrush);
 }
 
+void CSliceView::__onMButtonUpImpl()
+{
+	__mButtonDown = false;
+	System::getSystemContents().
+		getEventBroadcaster().notifyUpdateAnchorFromView(sliceAxis);
+}
+
+void CSliceView::init(const int viewIndex, const SliceAxis sliceAxis)
+{
+	__super::init(viewIndex);
+
+	this->sliceAxis = sliceAxis;
+
+	switch (sliceAxis)
+	{
+	case SliceAxis::TOP:
+		screenType = RenderingScreenType::SLICE_TOP;
+		break;
+
+	case SliceAxis::FRONT:
+		screenType = RenderingScreenType::SLICE_FRONT;
+		break;
+
+	case SliceAxis::RIGHT:
+		screenType = RenderingScreenType::SLICE_RIGHT;
+		break;
+	}
+}
+
 BOOL CSliceView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (!_volumeLoaded)
+		return false;
+
 	RenderingEngine::ImageProcessor& imgProcessor =
 		System::getSystemContents().getRenderingEngine().imageProcessor;
 
 	if (nFlags & MK_CONTROL)
 	{
 		if (zDelta > 0)
-			imgProcessor.adjustSlicingPoint(3.f, sliceAxis);
-		else
 			imgProcessor.adjustSlicingPoint(-3.f, sliceAxis);
+		else
+			imgProcessor.adjustSlicingPoint(3.f, sliceAxis);
 
-		static_cast<CMainFrame *>(AfxGetMainWnd())->renderSliceViews();
+		EventBroadcaster &eventBroadcaster = System::getSystemContents().getEventBroadcaster();
+		eventBroadcaster.notifyRequestScreenUpdate(RenderingScreenType::SLICE_TOP);
+		eventBroadcaster.notifyRequestScreenUpdate(RenderingScreenType::SLICE_FRONT);
+		eventBroadcaster.notifyRequestScreenUpdate(RenderingScreenType::SLICE_RIGHT);
 	}
 	else
 	{
@@ -67,7 +108,7 @@ BOOL CSliceView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		else
 			imgProcessor.adjustSamplingStep(.1f, sliceAxis);
 
-		render();
+		_render();
 	}
 
 	return CRenderingView::OnMouseWheel(nFlags, zDelta, pt);
@@ -76,8 +117,11 @@ BOOL CSliceView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 void CSliceView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	if (!(nFlags & MK_MBUTTON))
-		__mButtonDown = false;
+	if (!_volumeLoaded)
+		return;
+
+	if (__mButtonDown && !(nFlags & MK_MBUTTON))
+		__onMButtonUpImpl();
 
 	if (__mButtonDown)
 	{
@@ -91,7 +135,7 @@ void CSliceView::OnMouseMove(UINT nFlags, CPoint point)
 
 		__prevPos = point;
 
-		render();
+		_render();
 	}
 
 	CRenderingView::OnMouseMove(nFlags, point);
@@ -100,6 +144,9 @@ void CSliceView::OnMouseMove(UINT nFlags, CPoint point)
 void CSliceView::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (!_volumeLoaded)
+		return;
+
 	__mButtonDown = true;
 	__prevPos = point;
 
@@ -109,11 +156,10 @@ void CSliceView::OnMButtonDown(UINT nFlags, CPoint point)
 void CSliceView::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	__mButtonDown = false;
+	__onMButtonUpImpl();
 
 	CRenderingView::OnMButtonUp(nFlags, point);
 }
-
 
 int CSliceView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -124,9 +170,11 @@ int CSliceView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	__dcPen.CreatePen(PS_DOT, 1, RGB(220, 25, 72));
 	__dcBrush.CreateSolidBrush(RGB(220, 25, 72));
 
+	System::getSystemContents().
+		getEventBroadcaster().addUpdateSliceTransferFunctionListener(*this);
+
 	return 0;
 }
-
 
 void CSliceView::OnDestroy()
 {
@@ -137,19 +185,36 @@ void CSliceView::OnDestroy()
 	__dcBrush.DeleteObject();
 }
 
-
 void CSliceView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	RenderingEngine::ImageProcessor& imgProcessor =
-		System::getSystemContents().getRenderingEngine().imageProcessor;
+	if (!_volumeLoaded)
+		return;
 
 	const CSize &screenSize = _getScreenSize();
 
-	imgProcessor.setSlicingPointFromScreen(
-		{ screenSize.cx, screenSize.cy }, { point.x, point.y }, sliceAxis);
+	System::getSystemContents().getRenderingEngine().imageProcessor.
+		setSlicingPointFromScreen({ screenSize.cx, screenSize.cy }, { point.x, point.y }, sliceAxis);
 
-	static_cast<CMainFrame *>(AfxGetMainWnd())->renderSliceViews();
+	EventBroadcaster &eventBroadcaster = System::getSystemContents().getEventBroadcaster();
+	eventBroadcaster.notifyRequestScreenUpdate(RenderingScreenType::SLICE_TOP);
+	eventBroadcaster.notifyRequestScreenUpdate(RenderingScreenType::SLICE_FRONT);
+	eventBroadcaster.notifyRequestScreenUpdate(RenderingScreenType::SLICE_RIGHT);
+	eventBroadcaster.notifyUpdateSlicingPointFromView();
 
 	CRenderingView::OnLButtonDown(nFlags, point);
+}
+
+void CSliceView::onUpdateSliceTransferFunction()
+{
+	_render();
+}
+
+void CSliceView::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (!_volumeLoaded)
+		return;
+
+	__super::OnLButtonDblClk(nFlags, point);
 }

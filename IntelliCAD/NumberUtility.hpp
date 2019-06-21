@@ -34,7 +34,7 @@ namespace NumberUtility
 	/// <returns>주어진 값이 범위를 벗어나는지 여부</returns>
 	template <typename T>
 	__host__ __device__
-	bool isOutOfBound(T value, T lowerInc, T upperExc);
+	bool isOutOfBound(const T value, const T lowerInc, const T upperExc);
 
 	/// <summary>
 	/// <para>주어진 값 value가 [lowerInc, upperExc) 범위에 포함되는지 검사한다.</para>
@@ -49,7 +49,7 @@ namespace NumberUtility
 	/// <returns>주어진 값이 범위에 포함되는지 여부</returns>
 	template <typename T>
 	__host__ __device__
-	bool isInOfBound(T value, T lowerInc, T upperExc);
+	bool isInOfBound(const T value, const T lowerInc, const T upperExc);
 
 	/// <summary>
 	/// <para>주어진 값 value가 [lower, upper] 범위에 존재하도록 강제 조정한다.</para>
@@ -63,7 +63,7 @@ namespace NumberUtility
 	/// <returns>범위 내로 조정된 값</returns>
 	template <typename T>
 	__host__ __device__
-	T truncate(T value, T lower, T upper);
+	T truncate(const T value, const T lower, const T upper);
 
 	/// <summary>
 	/// 두 값을 유사 동등 비교한다
@@ -82,7 +82,7 @@ namespace NumberUtility
 	/// </returns>
 	__host__ __device__
 	bool nearEqual(
-		const float operand1, const float operand2, const float epsilon = 1e-5f);
+		const float operand1, const float operand2, const float epsilon = 1e-6f);
 
 	/// <summary>
 	/// <para>2개의 3차원 벡터 정보를 입력 받아 역방향의 그라디언트를 계산한다.</para>
@@ -137,7 +137,7 @@ namespace NumberUtility
 	__host__ __device__
 	T truncate(const T value, const T lower, const T upper)
 	{
-		if (value < lower)
+		if (value <= lower)
 			return lower;
 		else if (value >= upper)
 			return upper;

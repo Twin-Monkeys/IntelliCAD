@@ -6,5 +6,5 @@
 namespace VolumeIndicator
 {
 	__device__
-	bool recognize(const Size3D<> &volSize, const Point3D &target, const float lineLength, const float lineThickness);
+	bool recognize(const Size3D<float> &volSize, const Point3D &target, const float lineLength, const float lineThickness);
 }

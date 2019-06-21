@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <client_network>
+    <server_ip>127.0.0.1</server_ip>
+    <server_port>9000</server_port>
+  </client_network>
+</config>

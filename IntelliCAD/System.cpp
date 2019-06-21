@@ -8,31 +8,40 @@
 *	시스템 모듈
 */
 
+#include "stdafx.h"
 #include "System.h"
+#include "CLogDialog.h"
+
+using namespace std;
 
 System System::__instance;
 
+void System::__setLogDlgReference(CLogDialog &dlg)
+{
+	__pLogDlg = &dlg;
+}
+
 void System::__init()
 {
-	__instance.systemContents.__init();
+	systemContents.__init();
 }
 
 void System::__release()
 {
-	__instance.systemContents.__release();
+	systemContents.__pEventBroadcaster->__notifySystemDestroy();
+	systemContents.__release();
 }
 
 void System::SystemContents::__init()
 {
 	__pTaskMgr = new AsyncTaskManager();
 	__pEventBroadcaster = new EventBroadcaster();
-	__pDatabaseManager = new DatabaseManager();
+	__pClientDBManager = new ClientDBManager();
 	__pRemoteAccessAuthorizer = new RemoteAccessAuthorizer();
 	__pRenderingEngine = &RenderingEngine::getInstance();
 	__pClientNetwork = &ClientNetwork::getInstance();
 
 	// SystemInitListeners
-	__pEventBroadcaster->__addSystemInitListener(*__pRenderingEngine);
 	__pEventBroadcaster->__addSystemInitListener(*__pClientNetwork);
 	__pEventBroadcaster->__notifySystemInit();
 }
@@ -47,9 +56,9 @@ EventBroadcaster &System::SystemContents::getEventBroadcaster()
 	return *__pEventBroadcaster;
 }
 
-DatabaseManager &System::SystemContents::getDatabaseManager()
+ClientDBManager &System::SystemContents::getClientDBManager()
 {
-	return *__pDatabaseManager;
+	return *__pClientDBManager;
 }
 
 RemoteAccessAuthorizer &System::SystemContents::getRemoteAccessAuthorizer()
@@ -67,11 +76,6 @@ ClientNetwork &System::SystemContents::getClientNetwork()
 	return *__pClientNetwork;
 }
 
-void System::SystemContents::loadVolume(const VolumeData &volumeData)
-{
-	__pEventBroadcaster->notifyLoadVolume(volumeData);
-}
-
 void System::SystemContents::__release()
 {
 	if (__pEventBroadcaster)
@@ -80,10 +84,10 @@ void System::SystemContents::__release()
 		__pEventBroadcaster = nullptr;
 	}
 
-	if (__pDatabaseManager)
+	if (__pClientDBManager)
 	{
-		delete __pDatabaseManager;
-		__pDatabaseManager = nullptr;
+		delete __pClientDBManager;
+		__pClientDBManager = nullptr;
 	}
 
 	if (__pTaskMgr)
@@ -97,6 +101,14 @@ void System::SystemContents::__release()
 		delete __pRemoteAccessAuthorizer;
 		__pRemoteAccessAuthorizer = nullptr;
 	}
+}
+
+bool System::printLog(const tstring &message)
+{
+	if (__pLogDlg)
+		__pLogDlg->printLog(message);
+
+	return __pLogDlg;
 }
 
 System& System::getInstance()

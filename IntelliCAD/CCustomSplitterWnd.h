@@ -1,7 +1,5 @@
 #pragma once
 
-#include <afxext.h>
-
 class CCustomSplitterWnd : public CSplitterWnd 
 {
 	DECLARE_MESSAGE_MAP()
@@ -33,6 +31,7 @@ private:
 	float __rowRatio = 0.5f;
 	int __maximizedViewIdx;
 	CRect __clientWindow;
+
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);

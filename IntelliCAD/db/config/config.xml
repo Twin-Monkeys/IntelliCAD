@@ -1,6 +1,0 @@
-﻿<config>
-  <network>
-    <server_ip>127.0.0.1</server_ip>
-    <server_port>9000</server_port>
-  </network>
-</config>

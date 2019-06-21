@@ -1,8 +1,9 @@
 #pragma once
 
 #include "CRenderingView.h"
+#include "UpdateVolumeTransferFunctionListener.h"
 
-class CVolumeRenderingView : public CRenderingView
+class CVolumeRenderingView : public CRenderingView, public UpdateVolumeTransferFunctionListener
 {
 	DECLARE_DYNCREATE(CVolumeRenderingView)
 	DECLARE_MESSAGE_MAP()
@@ -29,9 +30,14 @@ private:
 	bool __dblClickSemaphore = false;
 
 public:
+	CVolumeRenderingView();
+
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+
+	virtual void onUpdateVolumeTransferFunction(const ColorChannelType colorType) override;
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 };
 

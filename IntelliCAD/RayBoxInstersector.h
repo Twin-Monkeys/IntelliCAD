@@ -33,7 +33,7 @@ namespace RayBoxIntersector
 	/// </returns>
 	__host__ __device__
 	Range<float> getValidRange(
-		const Size3D<>& volumeSize,
+		const Size3D<float>& volumeSize,
 		const Point3D& pixelPosition, 
 		const Vector3D& camDirection);
 }

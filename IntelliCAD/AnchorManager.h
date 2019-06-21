@@ -10,37 +10,24 @@
 class AnchorManager
 {
 private:
-	const float &__samplingStep_top;
-	const float &__samplingStep_front;
-	const float &__samplingStep_right;
+	const float(&__samplingStepArr)[3];
 
-	Size3D<float> __volHalfSize;
+	// Top, Front, Right
+	Point2D __anchorBaseArr[3];
+	Point2D __anchorAdjArr[3];
+	Point2D __anchorArr[3];
 
-	Point2D __anchorAdj_top;
-	Point2D __anchorAdj_front;
-	Point2D __anchorAdj_right;
-
-	Point2D __anchor_top;
-	Point2D __anchor_front;
-	Point2D __anchor_right;
-
-	bool __dirty_top;
-	bool __dirty_front;
-	bool __dirty_right;
-
-	void __sync();
+	void __sync(const SliceAxis axis);
 
 public:
-	AnchorManager(
-		const float &samplingStep_top,
-		const float &samplingStep_front,
-		const float &samplingStep_right);
+	AnchorManager(const float(&samplingStepArr)[3]);
 
-	void init(const Size3D<> &volumeSize);
-	void adjustAnchor(const float deltaHoriz, const float deltaVert, const SliceAxis axis);
+	void init(const Size3D<float> &volumeSize);
+	void adjustAnchor(const float deltaX, const float deltaY, const SliceAxis axis);
+	void setAnchorAdj(const float adjX, const float adjY, const SliceAxis axis);
 
 	const Point2D &getAnchorAdj(const SliceAxis axis) const;
-	const Point2D &getAnchor(const SliceAxis axis);
+	const Point2D &getAnchor(const SliceAxis axis) const;
 
 	Index2D<> getSlicingPointForScreen(
 		const Size2D<> &screenSize, const Point3D &slicingPointAdj, const SliceAxis axis);

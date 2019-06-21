@@ -11,6 +11,7 @@
 #pragma once
 
 #include <WinSock2.h>
+#include <memory>
 #include "tstring.h"
 #include "PacketHeader.h"
 #include "Serializable.h"
@@ -26,6 +27,10 @@ class Socket : public std::enable_shared_from_this<Socket>
 {
 private:
 
+	std::tstring __filePath;
+
+	bool __isTempSocket = false;
+
 	bool __isReceving = false;
 	bool __isSending = false;
 
@@ -36,7 +41,7 @@ private:
 
 	SOCKADDR_IN __sockAddr;
 
-	const bool __connected;
+	bool __connected;
 
 	Socket(const Socket &) = delete;
 	Socket(Socket &&) = delete;
@@ -52,7 +57,7 @@ private:
 	char bufForPH[12];
 	char bufForTemp[BUF_SIZE];
 
-	const char* recvMSG();
+	std::tstring recvMSG();
 
 	/// <summary>
 	/// Serializable 을 상속한 Object를 네트워크로부터 recv한다.
@@ -62,13 +67,14 @@ private:
 	/// </summary>
 	bool recvObj(const ObjectType objectType, const uint32_t byteCount); // notify 필요
 
-	bool recvFile(const std::string & path, const uint32_t byteCount); // notify 필요
+	bool recvFile(const std::tstring t_path, const uint32_t byteCount); // notify 필요
 
 	const PacketHeader* getHeader();
 
 	bool sendHeader(PacketHeader ph);
 
 public:
+	void setFilePath(std::tstring & filePath);
 
 	bool isReceving() const;
 	bool isSending() const;
@@ -79,7 +85,7 @@ public:
 	/// <param name="hSockRaw">raw data</param>
 	/// <param name="sockAddr">raw data</param>
 	/// <param name="connected">상대 단말과의 연결 여부</param>
-	Socket(const SOCKET &hSockRaw, const SOCKADDR_IN &sockAddr, bool connected);
+	Socket(const SOCKET &hSockRaw, const SOCKADDR_IN &sockAddr, bool connected, bool isTempSocket);
 
 	/// <summary>
 	/// 현재 객체가 상대 단말과 연결되어 있는지 여부를 반환한다.
@@ -115,21 +121,21 @@ public:
 	/// <param name="serverIP">서버 IP</param>
 	/// <param name="serverPort">서버 포트</param>
 	/// <returns>주어진 정보를 가지고 정상적인 소켓 객체를 생성할 수 있다면 소켓 클래스의 포인터, 생성에 실패한 경우 nullptr</returns>
-	static std::shared_ptr<Socket> create(const std::tstring &serverIP, const std::tstring &serverPort);
+	static std::shared_ptr<Socket> create(const std::tstring &serverIP, const std::tstring &serverPort, const bool isTempSocket);
 
 
 	// 이하 recv & send part
 
-	std::shared_ptr<Socket> sendMSG(const char* const msg, const ProtocolType protocolType);
+	bool sendMSG(std::tstring const t_msg, const ProtocolType protocolType);
 	
-	std::shared_ptr<Socket> sendObj(Serializable & obj, const ObjectType objectType);
+	bool sendObj(Serializable & obj, const ObjectType objectType);
 
-	std::shared_ptr<Socket> sendFile(const std::string &path);
+	bool sendFile(const std::tstring t_path);
 
 	/// <summary>
 	/// AsyncTask Work
 	/// 클라이언트로부터 패킷헤더를 받고 그에 따른 대응을 한다.
 	/// 패킷헤더를 받은 시점(recv 직후)에서 다시 새로운 receiveTo를 비동기로 돌리고 나서 위의 대응을 한다.
 	/// </summary>
-	void __receivingLoop();
+	std::shared_ptr<Socket> __receivingLoop();
 };

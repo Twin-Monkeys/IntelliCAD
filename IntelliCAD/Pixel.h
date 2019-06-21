@@ -26,16 +26,22 @@ public:
 	Pixel() = default;
 
 	__host__ __device__
-	Pixel(ubyte r, ubyte g, ubyte b);
+	Pixel(const ubyte r, const ubyte g, const ubyte b);
 
 	__host__ __device__
-	Pixel(ubyte value);
+	Pixel(const ubyte value);
 
 	__host__ __device__
-	void set(ubyte r, ubyte g, ubyte b);
+	void set(const ubyte r, const ubyte g, const ubyte b);
 
 	__host__ __device__
-	void set(ubyte value);
+	void set(const float r, const float g, const float b);
+
+	__host__ __device__
+	void set(const ubyte value);
+
+	__host__ __device__
+	void set(const float value);
 
 	__host__ __device__
 	void set(const Pixel &another);

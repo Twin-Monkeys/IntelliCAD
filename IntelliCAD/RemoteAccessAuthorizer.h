@@ -1,7 +1,9 @@
 #pragma once
 
-#include "UserInfo.h"
+#include "Account.h"
 #include "AuthorizingResult.h"
+#include "ServerFileDBSectionType.h"
+#include "RequestingServerDBResult.h"
 
 class RemoteAccessAuthorizer
 {
@@ -10,11 +12,13 @@ private:
 	const std::tstring &__serverPort = _T("9000");
 
 	bool __authorized = false;
-	UserInfo __userInfo;
+	Account __account;
 
 public:
 	AuthorizingResult authorize(const std::tstring &id, const std::tstring &password);
 
 	bool isAuthorized() const;
-	const UserInfo &getUserInfo() const;
+	const Account &getAccount() const;
+
+	RequestingServerDBResult requestServerDBFile(const ServerFileDBSectionType sectionType, const std::tstring &name);
 };

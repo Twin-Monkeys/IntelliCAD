@@ -14,11 +14,20 @@ BEGIN_MESSAGE_MAP(CVolumeRenderingView, CRenderingView)
 	ON_WM_LBUTTONUP()
 	ON_WM_MBUTTONUP()
 	ON_WM_RBUTTONUP()
+	ON_WM_CREATE()
 END_MESSAGE_MAP()
+
+CVolumeRenderingView::CVolumeRenderingView()
+{
+	screenType = RenderingScreenType::VOLUME_RENDERING;
+}
 
 /* member function */
 void CVolumeRenderingView::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	if (!_volumeLoaded)
+		return;
+
 	__lButtonDown = true;
 	__prevPos = point;
 
@@ -27,6 +36,9 @@ void CVolumeRenderingView::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CVolumeRenderingView::OnRButtonDown(UINT nFlags, CPoint point)
 {
+	if (!_volumeLoaded)
+		return;
+
 	__rButtonDown = true;
 	__prevPos = point;
 
@@ -35,6 +47,9 @@ void CVolumeRenderingView::OnRButtonDown(UINT nFlags, CPoint point)
 
 void CVolumeRenderingView::OnMButtonDown(UINT nFlags, CPoint point)
 {
+	if (!_volumeLoaded)
+		return;
+
 	__mButtonDown = true;
 	__prevPos = point;
 
@@ -43,6 +58,9 @@ void CVolumeRenderingView::OnMButtonDown(UINT nFlags, CPoint point)
 
 void CVolumeRenderingView::OnMouseMove(UINT nFlags, CPoint point)
 {
+	if (!_volumeLoaded)
+		return;
+
 	if (!(nFlags & MK_LBUTTON))
 		__lButtonDown = false;
 
@@ -95,7 +113,7 @@ void CVolumeRenderingView::OnMouseMove(UINT nFlags, CPoint point)
 			__prevPos.y = point.y;
 		}
 
-		render();
+		_render();
 	}
 
 	CRenderingView::OnMouseMove(nFlags, point);
@@ -109,6 +127,9 @@ void CVolumeRenderingView::_onDeviceRender(Pixel* const pDevScreen, const int sc
 
 BOOL CVolumeRenderingView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
+	if (!_volumeLoaded)
+		return false;
+
 	RenderingEngine::VolumeRenderer& volumeRenderer =
 		System::getSystemContents().getRenderingEngine().volumeRenderer;
 
@@ -117,14 +138,16 @@ BOOL CVolumeRenderingView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	else
 		volumeRenderer.adjustImgBasedSamplingStep(0.1f);
 
-	render();
+	_render();
 
 	return CRenderingView::OnMouseWheel(nFlags, zDelta, pt);
 }
 
-
 void CVolumeRenderingView::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
+	if (!_volumeLoaded)
+		return;
+
 	__dblClickSemaphore = true;
 
 	CRenderingView::OnLButtonDblClk(nFlags, point);
@@ -134,6 +157,9 @@ void CVolumeRenderingView::OnLButtonDblClk(UINT nFlags, CPoint point)
 void CVolumeRenderingView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (!_volumeLoaded)
+		return;
+
 	__lButtonDown = false;
 
 	CRenderingView::OnLButtonUp(nFlags, point);
@@ -143,6 +169,9 @@ void CVolumeRenderingView::OnLButtonUp(UINT nFlags, CPoint point)
 void CVolumeRenderingView::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (!_volumeLoaded)
+		return;
+
 	__mButtonDown = false;
 
 	CRenderingView::OnMButtonUp(nFlags, point);
@@ -152,7 +181,27 @@ void CVolumeRenderingView::OnMButtonUp(UINT nFlags, CPoint point)
 void CVolumeRenderingView::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (!_volumeLoaded)
+		return;
+
 	__rButtonDown = false;
 
 	CRenderingView::OnRButtonUp(nFlags, point);
+}
+
+void CVolumeRenderingView::onUpdateVolumeTransferFunction(const ColorChannelType colorType)
+{
+	_render();
+}
+
+int CVolumeRenderingView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (__super::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
+	System::getSystemContents().
+		getEventBroadcaster().addUpdateVolumeTransferFunctionListener(*this);
+
+	return 0;
 }

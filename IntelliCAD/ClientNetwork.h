@@ -18,6 +18,10 @@
 #include "ServerConnectingListener.h"
 #include "ConnectionClosedListener.h"
 #include "ConnectionCheckListener.h"
+#include "AuthorizingResult.h"
+#include "Account.h"
+#include "SystemDestroyListener.h"
+#include "ServerFileDBSectionType.h"
 
 /// <summary>
 /// <para>서버와 통신하기 위한 클라이언트 네트워크 모듈이다.</para>
@@ -27,8 +31,8 @@
 /// <para><c>Socket</c> 객체를 생성하려면 <c>ClientNetwork::createClientSocket()</c> 함수를 이용한다.</para>
 /// <para><c>Socket</c> 객체가 생성 되었다면 <c>ClientNetwork::connect()</c> 함수를 통해 서버와 연결한다.</para>
 /// </summary>
-class ClientNetwork :
-	public SystemInitListener, public ServerConnectingListener,
+class ClientNetwork : 
+	public SystemInitListener, public SystemDestroyListener, public ServerConnectingListener,
 	public ConnectionCheckListener, public ConnectionClosedListener
 {
 private:
@@ -41,7 +45,7 @@ private:
 	/// </summary>
 	static ClientNetwork __instance;
 
-	std::tstring __serverIP = _T("0.0.0.0");
+	std::tstring __serverIP = _T("127.0.0.1");
 	std::tstring __serverPort = _T("9000");
 
 	/// <summary>
@@ -49,16 +53,9 @@ private:
 	/// </summary>
 	std::shared_ptr<Socket> __pSocket = nullptr;
 
-
-	// 다중 처리 위한 멤버변수, 메서드
-	
+	// 다중 처리 위한 멤버변수, 메서드	
 	std::set<std::shared_ptr<Socket>> __tempSockets;
-
-	std::set<std::shared_ptr<Socket>> __taskCompletedSockets;
-
-	std::shared_ptr<Socket> getSocket();
-
-	//
+	std::shared_ptr<Socket> getSocket(const bool isRecevingLoop);
 
 	/// <summary>
 	/// <para>유일 객체를 생성하기 위한 내부용 기본 생성자.</para>
@@ -111,10 +108,8 @@ public:
 
 	virtual void onServerConnectionResult(std::shared_ptr<Socket> pSocket) override;
 	virtual void onSystemInit() override;
-
-	// 세인 추가
+	virtual void onSystemDestroy() override;
 	virtual void onConnectionCheck() override;
-
 	virtual void onConnectionClosed(std::shared_ptr<Socket> pSocket) override;
 
 	/// <summary>
@@ -125,6 +120,8 @@ public:
 	/// <param name="timeout">연결 수립 시도 후 최대 대기 시간</param>
 	/// <returns>서버와 연결 성공 여부</returns>
 	bool connect(int timeout = 5000);
+
+	bool connectBlocking();
 
 	/// <summary>
 	/// <para>서버와의 연결을 종료한다.</para>
@@ -146,7 +143,13 @@ public:
 	~ClientNetwork();
 
 	// 비동기 send
-	void sendMSG(const char* const msg, const ProtocolType protocolType);
+	void sendMSG(std::tstring const msg, const ProtocolType protocolType);
+
 	void sendObj(Serializable & obj, const ObjectType objectType);
-	void sendFile(const std::string &path);
+
+	void sendFile(const std::tstring path);
+
+	AuthorizingResult loginRequest(Account &account, const std::tstring & id, const std::tstring & password);
+
+	bool requestServerDBFile(const ServerFileDBSectionType sectionType, const std::tstring &name);
 };

@@ -29,6 +29,8 @@
 
 // CIntelliCADApp
 
+using namespace std;
+
 BEGIN_MESSAGE_MAP(CIntelliCADApp, CWinAppEx)
 	ON_COMMAND(ID_APP_ABOUT, &CIntelliCADApp::OnAppAbout)
 	// 표준 파일을 기초로 하는 문서 명령입니다.
@@ -38,6 +40,10 @@ END_MESSAGE_MAP()
 
 
 // CIntelliCADApp 생성
+
+// 유일한 CIntelliCADApp 개체입니다.
+
+CIntelliCADApp theApp;
 
 CIntelliCADApp::CIntelliCADApp() noexcept
 {
@@ -49,16 +55,12 @@ CIntelliCADApp::CIntelliCADApp() noexcept
 	// InitInstance에 모든 중요한 초기화 작업을 배치합니다.
 }
 
-// 유일한 CIntelliCADApp 개체입니다.
-
-CIntelliCADApp theApp;
-
 
 // CIntelliCADApp 초기화
 
 BOOL CIntelliCADApp::InitInstance()
 {
-	System::__init();
+	System::getInstance().__init();
 
 	// 응용 프로그램 매니페스트가 ComCtl32.dll 버전 6 이상을 사용하여 비주얼 스타일을
 	// 사용하도록 지정하는 경우, Windows XP 상에서 반드시 InitCommonControlsEx()가 필요합니다. 
@@ -91,9 +93,10 @@ BOOL CIntelliCADApp::InitInstance()
 	// 해당 설정이 저장된 레지스트리 키를 변경하십시오.
 	// TODO: 이 문자열을 회사 또는 조직의 이름과 같은
 	// 적절한 내용으로 수정해야 합니다.
-	SetRegistryKey(_T("로컬 응용 프로그램 마법사에서 생성된 응용 프로그램"));
-	LoadStdProfileSettings(4);  // MRU를 포함하여 표준 INI 파일 옵션을 로드합니다.
+	SetRegistryKey(_T("IntelliCAD"));
 
+	// MRU 4개 로드
+	LoadStdProfileSettings(4);  // MRU를 포함하여 표준 INI 파일 옵션을 로드합니다.
 
 	InitContextMenuManager();
 
@@ -137,9 +140,9 @@ BOOL CIntelliCADApp::InitInstance()
 int CIntelliCADApp::ExitInstance()
 {
 	//TODO: 추가한 추가 리소스를 처리합니다.
-	AfxOleTerm(FALSE);
+	System::getInstance().__release();
 
-	System::__release();
+	AfxOleTerm(FALSE);
 
 	return CWinAppEx::ExitInstance();
 }
@@ -207,5 +210,45 @@ void CIntelliCADApp::SaveCustomState()
 
 // CIntelliCADApp 메시지 처리기
 
+BOOL CIntelliCADApp::OnIdle(LONG lCount)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	AsyncTaskManager &taskMgr = System::getSystemContents().getTaskManager();
+	EventBroadcaster &eventBroadcaster = System::getSystemContents().getEventBroadcaster();
 
+	for (const FinishedTask &task : taskMgr.getFinishedTasks())
+	{
+		switch (task.first)
+		{
+		case TaskType::SERVER_CONNECTED:
+			eventBroadcaster.notifyServerConnected(
+				any_cast<shared_ptr<Socket>>(task.second));
 
+			break;
+
+		case TaskType::GENERIC:
+			eventBroadcaster.notifyGeneric();
+			break;
+
+		case TaskType::CONNECTION_CLOSED:
+			eventBroadcaster.notifyConnectionClosed(
+				any_cast<shared_ptr<Socket>>(task.second));
+
+			break;
+		}
+	}
+
+	return CWinAppEx::OnIdle(lCount);
+}
+
+const CString& CIntelliCADApp::getRecentFileName(const int index) const
+{
+	return (*m_pRecentFileList)[index];
+}
+
+void CIntelliCADApp::AddToRecentFileList(LPCTSTR lpszPathName)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	if (m_pRecentFileList)
+		m_pRecentFileList->Add(lpszPathName);
+}

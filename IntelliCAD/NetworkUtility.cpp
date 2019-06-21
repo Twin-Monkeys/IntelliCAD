@@ -30,7 +30,7 @@ namespace NetworkUtility
 		for (const tstring &token : tokens)
 		{
 			IF_F_RET_F(Parser::isAvailable_tstring$Int(token));
-			const int VALUE = Parser::tstring$Int(token);
+			const int VALUE = Parser::tstring$int(token);
 
 			IF_T_RET_F(NumberUtility::isOutOfBound(VALUE, 0, 256));
 		}
@@ -43,7 +43,7 @@ namespace NetworkUtility
 		IF_T_RET_F(portString.empty());
 		IF_F_RET_F(Parser::isAvailable_tstring$Int(portString));
 
-		const int VALUE = Parser::tstring$Int(portString);
+		const int VALUE = Parser::tstring$int(portString);
 
 		return NumberUtility::isInOfBound(VALUE, 0, 65536);
 	}

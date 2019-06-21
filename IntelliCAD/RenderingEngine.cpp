@@ -7,8 +7,7 @@
 */
 
 #include "custom_cudart.h"
-#include "RenderingEngine.h"
-#include "SystemIndirectAccessor.h"
+#include "RenderingEngine.hpp"
 #include "RayBoxInstersector.h"
 #include "NumberUtility.hpp"
 #include "Constant.h"
@@ -20,25 +19,25 @@ RenderingEngine RenderingEngine::__instance;
 
 using namespace std;
 
-namespace Device
+namespace __Device
 {
 	static Light *__pLightsDev;
 
-	// Volume Indicator
+	// __Volume Indicator
 	__device__
-	static float __indicatorLength[] = { 100.f };
+	static float __indicatorLength[] = { 70.f };
 
 	__device__
-	static float __indicatorThickness[] = { 8.f };
+	static float __indicatorThickness[] = { 6.f };
 
 	__device__
-	static float __indicatorAlpha[] = { .4f };
+	static float __indicatorAlpha[] = { .3f };
 
 	__device__
 	static Color<float> __indicatorColor[] =
 	{{ (220.f / 256.f), (25.f / 256.f), (72.f / 256.f) }};
 
-	namespace Volume
+	namespace __Volume
 	{
 		/* variable */
 		/// <summary>
@@ -46,7 +45,7 @@ namespace Device
 		/// <para>볼륨 크기, 복셀간 간격, 복셀 정밀도를 가진다.</para>
 		/// </summary>
 		__device__
-		static VolumeMeta __meta[1];
+		static VolumeNumericMeta __meta[1];
 
 		/// <summary>
 		/// <para>GPU 메모리를 할당하는 short 타입 볼륨 3차원 배열</para>
@@ -59,7 +58,7 @@ namespace Device
 		/// <para>float 타입 3차원 index로 접근하여 대응되는 볼륨 데이터를 선형 보간해서 가져온다.</para>
 		/// <para>접근 예시: tex3D(texMem, x, y, z);</para>
 		/// </summary>
-		static texture<ushort, 3, cudaReadModeNormalizedFloat> __texMem;
+		static texture<ushort, 3, cudaReadModeNormalizedFloat> __volTexture;
 
 		/* function */
 		/// <summary>
@@ -72,37 +71,38 @@ namespace Device
 		static void __malloc(const VolumeData& volumeData)
 		{
 			const cudaChannelFormatDesc DESC = cudaCreateChannelDesc<ushort>();
+			const VolumeNumericMeta &numericMeta = volumeData.meta.numeric;
 
 			// 볼륨 메타 데이터를 CPU에서 GPU 변수로 복사한다.  
-			cudaMemcpyToSymbol(__meta, &volumeData.meta, sizeof(VolumeMeta));
+			cudaMemcpyToSymbol(__meta, &numericMeta, sizeof(VolumeNumericMeta));
 
 			// 볼륨의 크기
-			const cudaExtent VOL_SIZE =
-				make_cudaExtent(volumeData.meta.size.width, volumeData.meta.size.height, volumeData.meta.size.depth);
+			const cudaExtent MEM_EXTENT =
+				make_cudaExtent(numericMeta.memSize.width, numericMeta.memSize.height, numericMeta.memSize.depth);
 
 			// 볼륨 3차원 배열 메모리를 GPU에 할당한다.
-			cudaMalloc3DArray(&__pBuffer, &DESC, VOL_SIZE);
+			cudaMalloc3DArray(&__pBuffer, &DESC, MEM_EXTENT);
 
 			// 메모리 복사 파라미터를 설정한다.
 			cudaMemcpy3DParms params;
 			ZeroMemory(&params, sizeof(cudaMemcpy3DParms));
 
 			params.srcPtr = make_cudaPitchedPtr(
-				volumeData.pBuffer.get(), (VOL_SIZE.width * sizeof(ushort)), VOL_SIZE.width, VOL_SIZE.height);
+				volumeData.pBuffer.get(), (MEM_EXTENT.width * sizeof(ushort)), MEM_EXTENT.width, MEM_EXTENT.height);
 			
 			params.dstArray = __pBuffer;
-			params.extent = VOL_SIZE;
+			params.extent = MEM_EXTENT;
 
 			// 볼륨 데이터를 CPU에서 GPU 배열로 복사한다.
 			cudaMemcpy3D(&params);
 
-			__texMem.addressMode[0] = cudaAddressModeBorder;
-			__texMem.addressMode[1] = cudaAddressModeBorder;
-			__texMem.addressMode[2] = cudaAddressModeBorder;
-			__texMem.filterMode = cudaFilterModeLinear;
+			__volTexture.addressMode[0] = cudaAddressModeBorder;
+			__volTexture.addressMode[1] = cudaAddressModeBorder;
+			__volTexture.addressMode[2] = cudaAddressModeBorder;
+			__volTexture.filterMode = cudaFilterModeLinear;
 
 			// 텍스처 참조자와 볼륨 3차원 배열을 바인딩한다.
-			cudaBindTextureToArray(__texMem, __pBuffer);
+			cudaBindTextureToArray(__volTexture, __pBuffer);
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace Device
 		{
 			if (__pBuffer)
 			{
-				cudaUnbindTexture(__texMem);
+				cudaUnbindTexture(__volTexture);
 				cudaFreeArray(__pBuffer);
 
 				__pBuffer = nullptr;
@@ -120,149 +120,33 @@ namespace Device
 		}
 	}
 
-	namespace TransferFunc
-	{
-		/* variable */
-		/// <summary>
-		/// <para>GPU 메모리를 할당하는 float 타입 1차원 red transfer function</para>
-		/// <para>0.f~1.f 사이 값을 가진다.</para>
-		/// </summary>
-		static cudaArray_t __pRed = nullptr;
+	/// <summary>
+	/// <para>GPU red 필터와 바인딩 된 텍스처 접근자</para>
+	/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
+	/// <para>이때 대응되는 값은 red 필터를 선형 보간하여 가져온다.</para>
+	/// </summary>
+	static texture<float> __transferTableRed;
 
-		/// <summary>
-		/// <para>GPU 메모리를 할당하는 float 타입 1차원 green transfer function</para>
-		/// <para>0.f~1.f 사이 값을 가진다.</para>
-		/// </summary>
-		static cudaArray_t __pGreen = nullptr;
+	/// <summary>
+	/// <para>GPU green 필터와 바인딩 된 텍스처 접근자</para>
+	/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
+	/// <para>이때 대응되는 값은 green 필터를 선형 보간하여 가져온다.</para>
+	/// </summary>
+	static texture<float> __transferTableGreen;
 
-		/// <summary>
-		/// <para>GPU 메모리를 할당하는 float 타입 1차원 blue transfer function</para>
-		/// <para>0.f~1.f 사이 값을 가진다.</para>
-		/// </summary>
-		static cudaArray_t __pBlue = nullptr;
+	/// <summary>
+	/// <para>GPU blue 필터와 바인딩 된 텍스처 접근자</para>
+	/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
+	/// <para>이때 대응되는 값은 blue 필터를 선형 보간하여 가져온다.</para>
+	/// </summary>
+	static texture<float> __transferTableBlue;
 
-		/// <summary>
-		/// <para>GPU 메모리를 할당하는 float 타입 1차원 alpha transfer function</para>
-		/// <para>0.f~1.f 사이 값을 가진다.</para>
-		/// </summary>
-		static cudaArray_t __pAlpha = nullptr;
-
-		/// <summary>
-		/// <para>GPU red 필터와 바인딩 된 텍스처 접근자</para>
-		/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
-		/// <para>이때 대응되는 값은 red 필터를 선형 보간하여 가져온다.</para>
-		/// </summary>
-		static texture<float> __texMemRed;
-
-		/// <summary>
-		/// <para>GPU green 필터와 바인딩 된 텍스처 접근자</para>
-		/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
-		/// <para>이때 대응되는 값은 green 필터를 선형 보간하여 가져온다.</para>
-		/// </summary>
-		static texture<float> __texMemGreen;
-
-		/// <summary>
-		/// <para>GPU blue 필터와 바인딩 된 텍스처 접근자</para>
-		/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
-		/// <para>이때 대응되는 값은 blue 필터를 선형 보간하여 가져온다.</para>
-		/// </summary>
-		static texture<float> __texMemBlue;
-
-		/// <summary>
-		/// <para>GPU alpha 필터와 바인딩 된 텍스처 접근자</para>
-		/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
-		/// <para>이때 대응되는 값은 alpha 필터를 선형 보간하여 가져온다.</para>
-		/// </summary>
-		static texture<float> __texMemAlpha;
-
-		/* function */
-		/// <summary>
-		/// transfer function을 CPU에서 GPU로 복사한다. 
-		/// </summary>
-		/// <param name="transferFunc">
-		/// CPU trasfer function 레퍼런스
-		/// </param>
-		static void __memcpy(const TransferFunction& transferFunc)
-		{
-			const size_t MEM_SIZE = (transferFunc.PRECISION * sizeof(float));
-
-			cudaMemcpyToArray(__pRed, 0, 0, transferFunc.getRed(), MEM_SIZE, cudaMemcpyHostToDevice);
-			cudaMemcpyToArray(__pGreen, 0, 0, transferFunc.getGreen(), MEM_SIZE, cudaMemcpyHostToDevice);
-			cudaMemcpyToArray(__pBlue, 0, 0, transferFunc.getBlue(), MEM_SIZE, cudaMemcpyHostToDevice);
-			cudaMemcpyToArray(__pAlpha, 0, 0, transferFunc.getAlpha(), MEM_SIZE, cudaMemcpyHostToDevice);
-		}
-
-		/// <summary>
-		/// GPU 메모리를 할당하고, 텍스처 인터페이스와 바인딩 한다.
-		/// </summary>
-		/// <param name="transferFunc">
-		/// CPU trasfer function 레퍼런스
-		/// </param>
-		static void __malloc(const TransferFunction& transferFunc)
-		{
-			const cudaChannelFormatDesc DESC = cudaCreateChannelDesc<float>();
-			const size_t MEM_SIZE = (transferFunc.PRECISION * sizeof(float));
-
-			cudaMallocArray(&__pRed, &DESC, MEM_SIZE);
-			cudaMallocArray(&__pGreen, &DESC, MEM_SIZE);
-			cudaMallocArray(&__pBlue, &DESC, MEM_SIZE);
-			cudaMallocArray(&__pAlpha, &DESC, MEM_SIZE);
-
-			__memcpy(transferFunc);
-
-			__texMemRed.filterMode = cudaFilterModeLinear;
-			cudaBindTextureToArray(__texMemRed, __pRed);
-
-			__texMemGreen.filterMode = cudaFilterModeLinear;
-			cudaBindTextureToArray(__texMemGreen, __pGreen);
-
-			__texMemBlue.filterMode = cudaFilterModeLinear;
-			cudaBindTextureToArray(__texMemBlue, __pBlue);
-
-			__texMemAlpha.filterMode = cudaFilterModeLinear;
-			cudaBindTextureToArray(__texMemAlpha, __pAlpha);
-		}
-
-		/// <summary>
-		/// GPU 메모리를 반환하고, 텍스처 인터페이스와 바인딩을 해제한다.
-		/// </summary>
-		static void __free()
-		{
-			if (__pRed)
-			{
-				cudaUnbindTexture(__texMemRed);
-				cudaFreeArray(__pRed);
-
-				__pRed = nullptr;
-			}
-
-			if (__pGreen)
-			{
-				cudaUnbindTexture(__texMemGreen);
-				cudaFreeArray(__pGreen);
-
-				__pGreen = nullptr;
-			}
-
-			if (__pBlue)
-			{
-				cudaUnbindTexture(__texMemBlue);
-				cudaFreeArray(__pBlue);
-
-				__pBlue = nullptr;
-			}
-
-			if (__pAlpha)
-			{
-				cudaUnbindTexture(__texMemAlpha);
-				cudaFreeArray(__pAlpha);
-
-				__pAlpha = nullptr;
-			}
-		}
-	}
-
-
+	/// <summary>
+	/// <para>GPU alpha 필터와 바인딩 된 텍스처 접근자</para>
+	/// <para>0.f~1.f 사이로 정규화 된 float 타입 1차원 index로 접근할 수 있다.</para>
+	/// <para>이때 대응되는 값은 alpha 필터를 선형 보간하여 가져온다.</para>
+	/// </summary>
+	static texture<float> __transferTableAlpha;
 
 	/* function */
 	/// <summary>
@@ -331,14 +215,14 @@ namespace Device
 			samplePoint.z + .5f
 		};
 
-		const float X_LEFT = tex3D(Volume::__texMem, (ADJ_POINT.x - 1.f), ADJ_POINT.y, ADJ_POINT.z);
-		const float X_RIGHT = tex3D(Volume::__texMem, (ADJ_POINT.x + 1.f), ADJ_POINT.y, ADJ_POINT.z);
+		const float X_LEFT = tex3D(__Volume::__volTexture, (ADJ_POINT.x - 1.f), ADJ_POINT.y, ADJ_POINT.z);
+		const float X_RIGHT = tex3D(__Volume::__volTexture, (ADJ_POINT.x + 1.f), ADJ_POINT.y, ADJ_POINT.z);
 
-		const float Y_LEFT = tex3D(Volume::__texMem, ADJ_POINT.x, (ADJ_POINT.y - 1.f), ADJ_POINT.z);
-		const float Y_RIGHT = tex3D(Volume::__texMem, ADJ_POINT.x, (ADJ_POINT.y + 1.f), ADJ_POINT.z);
+		const float Y_LEFT = tex3D(__Volume::__volTexture, ADJ_POINT.x, (ADJ_POINT.y - 1.f), ADJ_POINT.z);
+		const float Y_RIGHT = tex3D(__Volume::__volTexture, ADJ_POINT.x, (ADJ_POINT.y + 1.f), ADJ_POINT.z);
 
-		const float Z_LEFT = tex3D(Volume::__texMem, ADJ_POINT.x, ADJ_POINT.y, (ADJ_POINT.z - 1.f));
-		const float Z_RIGHT = tex3D(Volume::__texMem, ADJ_POINT.x, ADJ_POINT.y, (ADJ_POINT.z + 1.f));
+		const float Z_LEFT = tex3D(__Volume::__volTexture, ADJ_POINT.x, ADJ_POINT.y, (ADJ_POINT.z - 1.f));
+		const float Z_RIGHT = tex3D(__Volume::__volTexture, ADJ_POINT.x, ADJ_POINT.y, (ADJ_POINT.z + 1.f));
 
 		return NumberUtility::inverseGradient(
 			X_LEFT, X_RIGHT, Y_LEFT, Y_RIGHT, Z_LEFT, Z_RIGHT);
@@ -373,14 +257,14 @@ namespace Device
 	/// </param>
 	/// <returns></returns>
 	__device__ static Color<float> __shade(
-		const Point3D& samplePoint,
+		const Point3D& samplingPoint_mappedToMem,
 		const float intensity, const float alpha, const float shininess,
 		const Light *const pLights, const Vector3D& camDirection)
 	{
 		// 볼륨 데이터 값을 transfer function에 넣어 albedo 정보를 가져온다.
-		const float RED = tex1D(TransferFunc::__texMemRed, intensity + .5f);
-		const float GREEN = tex1D(TransferFunc::__texMemGreen, intensity + .5f);
-		const float BLUE = tex1D(TransferFunc::__texMemBlue, intensity + .5f);
+		const float RED = tex1D(__transferTableRed, intensity + .5f);
+		const float GREEN = tex1D(__transferTableGreen, intensity + .5f);
+		const float BLUE = tex1D(__transferTableBlue, intensity + .5f);
 
 		const Color<float> ALBEDO(RED, GREEN, BLUE);
 
@@ -395,8 +279,8 @@ namespace Device
 		{
 			if (pLights[i].enabled)
 			{
-				const Vector3D N = __getNormal(samplePoint);
-				const Vector3D L = (pLights[i].position - samplePoint).getUnit();
+				const Vector3D N = __getNormal(samplingPoint_mappedToMem);
+				const Vector3D L = (pLights[i].position - samplingPoint_mappedToMem).getUnit();
 				const Vector3D V = -camDirection;
 				const Vector3D H = ((L + V) * .5f);
 
@@ -416,6 +300,17 @@ namespace Device
 		}
 
 		return retVal;
+	}
+
+	__device__
+	static Point3D __mapIdxVolumeToMem(const Point3D &volumeIdx)
+	{
+		return
+		{
+			volumeIdx.x / __Volume::__meta->spacing.width,
+			volumeIdx.y / __Volume::__meta->spacing.height,
+			volumeIdx.z / __Volume::__meta->spacing.depth,
+		};
 	}
 
 	/// <summary>
@@ -474,8 +369,8 @@ namespace Device
 
 		// 픽셀 위치에서 카메라 시점 방향으로 시야 광선을 투사하였을 때 
 		// 볼륨을 투과하는지 여부를 조사하고, 투과 영역을 알아낸다.
-		const Range<float> RANGE = RayBoxIntersector::getValidRange(
-			Volume::__meta->size, STARTING_POINT, orthoBasis.u);
+		const Range<float> RANGE =
+			RayBoxIntersector::getValidRange(__Volume::__meta->volSize, STARTING_POINT, orthoBasis.u);
 
 		// 시야 광선이 볼륨을 투과하지 않는다면, 픽셀 값을 0으로 설정하고 리턴한다.
 		if (RANGE.end < RANGE.start)
@@ -492,9 +387,9 @@ namespace Device
 
 		const Vector3D STEP_VECTOR = (orthoBasis.u * objectBasedSamplingStep);
 
-		// Volume indicator
+		// __Volume indicator
 		if (VolumeIndicator::recognize(
-			Volume::__meta->size, samplePoint, *__indicatorLength, *__indicatorThickness))
+			__Volume::__meta->volSize, samplePoint, *__indicatorLength, *__indicatorThickness))
 		{
 			color += (*__indicatorColor * *__indicatorAlpha);
 			transparency = (1.f - *__indicatorAlpha);
@@ -504,15 +399,21 @@ namespace Device
 		{
 			// 현재 샘플 위치에서 볼륨 데이터 값을 선형 보간하여 가져온다.
 			// 0.5를 더하는 것은 CUDA의 텍스처 메모리 특성 때문. 지우지 말 것
+
+			const Point3D samplingPoint_mappedToMem = __mapIdxVolumeToMem(samplePoint);
+
 			const float INTENSITY = tex3D(
-				Volume::__texMem, samplePoint.x + .5f, samplePoint.y + .5f, samplePoint.z + .5f);
+				__Volume::__volTexture,
+				samplingPoint_mappedToMem.x + .5f,
+				samplingPoint_mappedToMem.y + .5f,
+				samplingPoint_mappedToMem.z + .5f);
 
 			// 볼륨 데이터 값을 보정한다.
 			const float CORRECTED_INTENSITY = (INTENSITY * USHRT_MAX);
 
 			// alpha transfer function에 위의 값을 넣어 alpha 값을 알아낸다.
 			// 세인 변경: 이제 normalized 인덱스가 아님. 실제 값을 넣자 (RGB transfer function 모두에게 해당됨)
-			const float ALPHA = tex1D(TransferFunc::__texMemAlpha, CORRECTED_INTENSITY + .5f);
+			const float ALPHA = tex1D(__transferTableAlpha, CORRECTED_INTENSITY + .5f);
 
 			// 시야 광선 전진 단위에 따라 alpha 값을 보정한다.
 			// (전진 단위가 작아지면 alpha 값이 금방 누적되어 원하는 결과를 얻을 수 없다.)
@@ -523,7 +424,8 @@ namespace Device
 			{
 				// shading 연산을 수행한다.
 				const Color<float> SHADING_RESULT = __shade(
-					samplePoint, CORRECTED_INTENSITY, CORRECTED_ALPHA, shininess, pLightsDev, orthoBasis.u);
+					samplingPoint_mappedToMem, CORRECTED_INTENSITY, CORRECTED_ALPHA,
+					shininess, pLightsDev, orthoBasis.u);
 
 				// alpha-blending
 				const float CUR_ALPHA = (transparency * CORRECTED_ALPHA);
@@ -544,20 +446,17 @@ namespace Device
 			samplePoint += STEP_VECTOR;
 		}
 
-		// Volume indicator
+		// __Volume indicator
 		if (transparency > .01f)
 		{
 			samplePoint = (STARTING_POINT + (orthoBasis.u * RANGE.end));
 			if (VolumeIndicator::recognize(
-				Volume::__meta->size, samplePoint, *__indicatorLength, *__indicatorThickness))
+				__Volume::__meta->volSize, samplePoint, *__indicatorLength, *__indicatorThickness))
 				color += (*__indicatorColor * (transparency * *__indicatorAlpha));
 		}
 
 		// 픽셀 값을 alpha-blending compositing 연산 결과로 설정한다.
-		pScreen[OFFSET].set(
-			static_cast<ubyte>(NumberUtility::truncate(color.red * 255.f, 0.f, 255.f)),
-			static_cast<ubyte>(NumberUtility::truncate(color.green * 255.f, 0.f, 255.f)),
-			static_cast<ubyte>(NumberUtility::truncate(color.blue * 255.f, 0.f, 255.f)));
+		pScreen[OFFSET].set(color.red, color.green, color.blue);
 	}
 }
 
@@ -567,7 +466,7 @@ namespace Device
 
 /* constructor */
 RenderingEngine::RenderingEngine() :
-	volumeRenderer(__volumeMeta, __initialized), imageProcessor(__volumeMeta, __initialized)
+	volumeRenderer(__volumeMeta.numeric, __volumeLoaded), imageProcessor(__volumeMeta.numeric, __volumeLoaded)
 {}
 
 /* member function */
@@ -575,23 +474,25 @@ void RenderingEngine::loadVolume(const VolumeData& volumeData)
 {
 	__volumeMeta = volumeData.meta;
 
-	Device::Volume::__free();
-	Device::Volume::__malloc(volumeData);
+	__Device::__Volume::__free();
+	__Device::__Volume::__malloc(volumeData);
 
-	volumeRenderer.__onLoadVolume();
-	imageProcessor.__onLoadVolume();
+	volumeRenderer.__init();
+	imageProcessor.__init();
 
-	__initialized = true;
+	__volumeLoaded = true;
+
+	SystemIndirectAccessor::getEventBroadcaster().notifyVolumeLoaded(volumeData.meta);
 }
 
-void RenderingEngine::onSystemInit()
+bool RenderingEngine::isVolumeLoaded() const
 {
-	SystemIndirectAccessor::getEventBroadcaster().addVolumeLoadingListener(*this);
+	return __volumeLoaded;
 }
 
-void RenderingEngine::onLoadVolume(const VolumeData& volumeData)
+const VolumeMeta &RenderingEngine::getVolumeMeta() const
 {
-	loadVolume(volumeData);
+	return __volumeMeta;
 }
 
 RenderingEngine& RenderingEngine::getInstance()
@@ -604,25 +505,28 @@ RenderingEngine& RenderingEngine::getInstance()
 ///////////////////////////////
 
 /* constructor */
-RenderingEngine::VolumeRenderer::VolumeRenderer(const VolumeMeta &volumeMeta, const bool &initFlag) :
-	__volumeMeta(volumeMeta), __initialized(initFlag), camera(__imgBasedSamplingStep)
+RenderingEngine::VolumeRenderer::VolumeRenderer(const VolumeNumericMeta &volumeNumericMeta, const bool &activeFlag) :
+	__volumeNumericMeta(volumeNumericMeta), __volumeLoaded(activeFlag), camera(__imgBasedSamplingStep)
 {
-	cudaMalloc(&Device::__pLightsDev, 3 * sizeof(Light));
+	cudaMalloc(&__Device::__pLightsDev, 3 * sizeof(Light));
+
+	__Device::__transferTableRed.filterMode = cudaTextureFilterMode::cudaFilterModeLinear;
+	__Device::__transferTableGreen.filterMode = cudaTextureFilterMode::cudaFilterModeLinear;
+	__Device::__transferTableBlue.filterMode = cudaTextureFilterMode::cudaFilterModeLinear;
+	__Device::__transferTableAlpha.filterMode = cudaTextureFilterMode::cudaFilterModeLinear;
 }
 
 /* member function */
 void RenderingEngine::VolumeRenderer::render(
 	Pixel *const pScreen, const int screenWidth, const int screenHeight)
 {
-	if (__initialized)
+	if (__volumeLoaded)
 	{
 		const OrthoBasis ORTHOBASIS = camera.getOrthoBasis();
 
-		Device::__raycast<<<dim3(screenWidth / 16, screenHeight / 16), dim3(16, 16)>>>(
-			screenWidth, screenHeight,
-			camera.getPosition(), ORTHOBASIS,
-			Device::__pLightsDev, __shininess,
-			__imgBasedSamplingStep, __objectBasedSamplingStep, pScreen);
+		__Device::__raycast<<<dim3(screenWidth / 16, screenHeight / 16), dim3(16, 16)>>>(
+			screenWidth, screenHeight, camera.getPosition(), ORTHOBASIS,
+			__Device::__pLightsDev, __shininess, __imgBasedSamplingStep, __objectBasedSamplingStep, pScreen);
 	}
 }
 
@@ -636,67 +540,129 @@ void RenderingEngine::VolumeRenderer::adjustImgBasedSamplingStep(const float del
 		__imgBasedSamplingStep = 4.f;
 }
 
+const Light &RenderingEngine::VolumeRenderer::getLight(const int index) const
+{
+	return __lights[index];
+}
+
 void RenderingEngine::VolumeRenderer::setIndicatorLength(const float length)
 {
-	cudaMemcpyToSymbol(Device::__indicatorLength, &length, sizeof(float));
+	cudaMemcpyToSymbol(__Device::__indicatorLength, &length, sizeof(float));
 }
 
 void RenderingEngine::VolumeRenderer::setIndicatorThickness(const float thickness)
 {
-	cudaMemcpyToSymbol(Device::__indicatorThickness, &thickness, sizeof(float));
+	cudaMemcpyToSymbol(__Device::__indicatorThickness, &thickness, sizeof(float));
 }
 
-void RenderingEngine::VolumeRenderer::__onLoadVolume()
+void RenderingEngine::VolumeRenderer::toggleLighting(const int index)
 {
-	// 새로운 볼륨이 렌더링 엔진에 적재된 후 나중에 호출되는 콜백 함수
-	// 새로운 볼륨 적재 시 필요한 처리 루틴 작성
-	Device::TransferFunc::__free();
-	__initTransferFunc();
-	__initLight();
+	__lights[index].enabled = !__lights[index].enabled;
+	__syncLight();
+}
+
+void RenderingEngine::VolumeRenderer::setLightAmbient(const int index, const Color<float>& ambient)
+{
+	__lights[index].ambient = ambient;
+	__syncLight();
+}
+
+void RenderingEngine::VolumeRenderer::setLightDiffuse(const int index, const Color<float>& diffuse)
+{
+	__lights[index].diffuse = diffuse;
+	__syncLight();
+}
+
+void RenderingEngine::VolumeRenderer::setLightSpecular(const int index, const Color<float>& specular)
+{
+	__lights[index].specular = specular;
+	__syncLight();
+}
+
+void RenderingEngine::VolumeRenderer::setLightXPos(const int index, const float x)
+{
+	__lights[index].position.x = x;
+	__syncLight();
+}
+
+void RenderingEngine::VolumeRenderer::setLightYPos(const int index, const float y)
+{
+	__lights[index].position.y = y;
+	__syncLight();
+}
+
+void RenderingEngine::VolumeRenderer::setLightZPos(const int index, const float z)
+{
+	__lights[index].position.z = z;
+	__syncLight();
+}
+
+void RenderingEngine::VolumeRenderer::__init()
+{
+	__release();
+
+	initLight();
 	__initCamera();
 
-	__imgBasedSamplingStep = 2.f;
+	__pTransferFunction = new ColorTransferFunction(__volumeNumericMeta.voxelPrecision);
+
+	const cudaChannelFormatDesc DESC = cudaCreateChannelDesc<float>();
+	const size_t MEM_SIZE = (__volumeNumericMeta.voxelPrecision * sizeof(float));
+
+	for (int i = 0; i < 4; i++)
+		cudaMallocArray(__pTransferTableDevBufferArr + i, &DESC, MEM_SIZE);
+
+	cudaBindTextureToArray(__Device::__transferTableRed, __pTransferTableDevBufferArr[0]);
+	cudaBindTextureToArray(__Device::__transferTableGreen, __pTransferTableDevBufferArr[1]);
+	cudaBindTextureToArray(__Device::__transferTableBlue, __pTransferTableDevBufferArr[2]);
+	cudaBindTextureToArray(__Device::__transferTableAlpha, __pTransferTableDevBufferArr[3]);
+
+	initTransferFunction(ColorChannelType::ALL);
+
+	__initImgBasedSamplingStep();
 	__objectBasedSamplingStep = 1.f;
 }
 
-void RenderingEngine::VolumeRenderer::__initTransferFunc()
+bool RenderingEngine::VolumeRenderer::initTransferFunction(const ColorChannelType colorType)
 {
-	__pTransferFunc = new TransferFunction(__volumeMeta.voxelPrecision);
+	IF_F_RET_F(__pTransferFunction);
 
-	/*__pTransferFunc->setRed({ 0, __volumeMeta.voxelPrecision });
-	__pTransferFunc->setGreen({ 0, __volumeMeta.voxelPrecision });
-	__pTransferFunc->setBlue({ 0, __volumeMeta.voxelPrecision });
-	__pTransferFunc->setAlpha({ 0, __volumeMeta.voxelPrecision });*/
+	__pTransferFunction->init(colorType);
+	__syncTransferFunction(colorType);
 
-	ushort minVal = 3300;
-	ushort maxVal = 4000;
+	EventBroadcaster &eventBroadcaster = SystemIndirectAccessor::getEventBroadcaster();
 
-	__pTransferFunc->setRed({ minVal, maxVal });
-	__pTransferFunc->setGreen({ minVal, maxVal });
-	__pTransferFunc->setBlue({ minVal, maxVal });
-	__pTransferFunc->setAlpha({ minVal, maxVal });
+	eventBroadcaster.notifyInitVolumeTransferFunction(colorType);
+	eventBroadcaster.notifyUpdateVolumeTransferFunction(colorType);
 
-	Device::TransferFunc::__malloc(*__pTransferFunc);
+	return true;
 }
 
-void RenderingEngine::VolumeRenderer::__initLight()
+void RenderingEngine::VolumeRenderer::initLight()
 {
 	__lights[0].position = Constant::Light::Position::LEFT;
 	__lights[0].ambient = { 0.03f, 0.02f, 0.01f };
 	__lights[0].diffuse = { 0.4f, 0.1f, 0.1f };
 	__lights[0].specular = { 0.5f, 0.1f, 0.1f };
+	__lights[0].enabled = false;
 
 	__lights[1].position = Constant::Light::Position::RIGHT;
 	__lights[1].ambient = { 0.02f, 0.03f, 0.01f };
 	__lights[1].diffuse = { 0.1f, 0.6f, 0.1f };
 	__lights[1].specular = { 0.1f, 0.5f, 0.1f };
+	__lights[1].enabled = false;
 
 	__lights[2].position = Constant::Light::Position::BACK;
 	__lights[2].ambient = { 0.01f, 0.02f, 0.03f };
 	__lights[2].diffuse = { 0.2f, 0.4f, 0.6f };
 	__lights[2].specular = { 0.3f, 0.4f, 0.5f };
+	__lights[2].enabled = false;
 
-	cudaMemcpy(Device::__pLightsDev, __lights, 3 * sizeof(Light), cudaMemcpyKind::cudaMemcpyHostToDevice);
+	__syncLight();
+
+	EventBroadcaster &eventBroadcaster = SystemIndirectAccessor::getEventBroadcaster();
+	eventBroadcaster.notifyInitLight();
+	eventBroadcaster.notifyUpdateLight();
 }
 
 void RenderingEngine::VolumeRenderer::__initCamera()
@@ -704,9 +670,68 @@ void RenderingEngine::VolumeRenderer::__initCamera()
 	camera.set(Constant::Camera::EYE, Constant::Camera::AT, Constant::Camera::UP);
 }
 
+void RenderingEngine::VolumeRenderer::__initImgBasedSamplingStep()
+{
+	__imgBasedSamplingStep =
+		SQUARE(__volumeNumericMeta.volSize.width) +
+		SQUARE(__volumeNumericMeta.volSize.height) +
+		SQUARE(__volumeNumericMeta.volSize.depth);
+
+	__imgBasedSamplingStep = (sqrtf(__imgBasedSamplingStep) / 400.f);
+}
+
+void RenderingEngine::VolumeRenderer::__release()
+{
+	if (__volumeLoaded)
+	{
+		cudaUnbindTexture(__Device::__transferTableRed);
+		cudaUnbindTexture(__Device::__transferTableGreen);
+		cudaUnbindTexture(__Device::__transferTableBlue);
+		cudaUnbindTexture(__Device::__transferTableAlpha);
+
+		delete __pTransferFunction;
+		__pTransferFunction = nullptr;
+
+		for (int i = 0; i < 4; i++)
+		{
+			cudaFreeArray(__pTransferTableDevBufferArr[i]);
+			__pTransferTableDevBufferArr[i] = nullptr;
+		}
+	}
+}
+
+void RenderingEngine::VolumeRenderer::__syncLight()
+{
+	cudaMemcpy(
+		__Device::__pLightsDev, __lights,
+		3 * sizeof(Light), cudaMemcpyKind::cudaMemcpyHostToDevice);
+}
+
+void RenderingEngine::VolumeRenderer::__syncTransferFunction(const ColorChannelType colorType)
+{
+	const int MEM_SIZE = (__volumeNumericMeta.voxelPrecision * sizeof(float));
+
+	if (colorType == ColorChannelType::ALL)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			cudaMemcpyToArray(
+				__pTransferTableDevBufferArr[i], 0, 0,
+				__pTransferFunction->getBuffer(static_cast<ColorChannelType>(i)),
+				MEM_SIZE, cudaMemcpyKind::cudaMemcpyHostToDevice);
+		}
+
+		return;
+	}
+
+	cudaMemcpyToArray(
+		__pTransferTableDevBufferArr[colorType], 0, 0,
+		__pTransferFunction->getBuffer(colorType), MEM_SIZE, cudaMemcpyKind::cudaMemcpyHostToDevice);
+}
+
 RenderingEngine::VolumeRenderer::~VolumeRenderer()
 {
-	cudaFree(Device::__pLightsDev);
+	cudaFree(__Device::__pLightsDev);
 }
 
 ///////////////////////////////
@@ -738,15 +763,18 @@ namespace __Device
 		}
 
 		__device__
-		ubyte __shade(const Point3D &samplingPoint)
+		float __shade(const Point3D &samplingPoint)
 		{
+			const Point3D samplingPoint_mappedToMem = __Device::__mapIdxVolumeToMem(samplingPoint);
+
 			const float INTENSITY =
-				(tex3D(Device::Volume::__texMem, samplingPoint.x + .5f, samplingPoint.y + .5f, samplingPoint.z + .5f) *
+				(tex3D(__Device::__Volume::__volTexture,
+					samplingPoint_mappedToMem.x + .5f,
+					samplingPoint_mappedToMem.y + .5f,
+					samplingPoint_mappedToMem.z + .5f) *
 					static_cast<float>(USHRT_MAX));
 
-			const float RET_VAL = tex1D(__transferTable, INTENSITY + .5f);
-
-			return static_cast<ubyte>(NumberUtility::truncate(RET_VAL * 255.f, 0.f, 255.f));
+			return tex1D(__transferTable, INTENSITY + .5f);
 		}
 
 		__global__
@@ -762,9 +790,8 @@ namespace __Device
 			const Index2D<float> SAMPLING_PLANE =
 				__calcSamplingPoint(SCR_IDX, screenSize, anchor.x, anchor.y, samplingStep);
 
-			const ubyte RET_VAL = __shade({ SAMPLING_PLANE.x, SAMPLING_PLANE.y, volumeSlicingZ });
-			
-			pScreen[SCR_OFFSET].set(RET_VAL);
+			const float PIXEL_VAL = __shade({ SAMPLING_PLANE.x, SAMPLING_PLANE.y, volumeSlicingZ });
+			pScreen[SCR_OFFSET].set(PIXEL_VAL);
 		}
 
 		__global__
@@ -781,9 +808,8 @@ namespace __Device
 			const Index2D<float> SAMPLING_PLANE =
 				__calcSamplingPoint(SCR_IDX, screenSize, anchor.x, anchor.y, samplingStep);
 
-			const ubyte RET_VAL = __shade({ SAMPLING_PLANE.x, volumeSlicingY, SAMPLING_PLANE.y });
-
-			pScreen[SCR_OFFSET].set(RET_VAL);
+			const float PIXEL_VAL = __shade({ SAMPLING_PLANE.x, volumeSlicingY, SAMPLING_PLANE.y });
+			pScreen[SCR_OFFSET].set(PIXEL_VAL);
 		}
 
 		__global__
@@ -791,7 +817,7 @@ namespace __Device
 			Pixel* const pScreen, const Size2D<> screenSize, const Point2D anchor,
 			const float samplingStep, const float volumeSlicingX)
 		{
-			using Device::Volume::__meta;
+			using __Device::__Volume::__meta;
 
 			const Index2D<> SCR_IDX = Index2D<>::getKernelIndex();
 
@@ -801,99 +827,69 @@ namespace __Device
 			const Index2D<float> SAMPLING_PLANE =
 				__calcSamplingPoint(SCR_IDX, screenSize, anchor.x, anchor.y, samplingStep);
 
-			const ubyte RET_VAL = __shade({ volumeSlicingX, SAMPLING_PLANE.x, SAMPLING_PLANE.y });
-
-			pScreen[SCR_OFFSET].set(RET_VAL);
+			const float PIXEL_VAL = __shade({ volumeSlicingX, SAMPLING_PLANE.x, SAMPLING_PLANE.y });
+			pScreen[SCR_OFFSET].set(PIXEL_VAL);
 		}
 	}
 }
 
-RenderingEngine::ImageProcessor::ImageProcessor(const VolumeMeta &volumeMeta, const bool &initFlag) :
-	__volumeMeta(volumeMeta), __initialized(initFlag),
-	__slicingPointMgr(__samplingStep_top, __samplingStep_front, __samplingStep_right),
-	__anchorMgr(__samplingStep_top, __samplingStep_front, __samplingStep_right)
+RenderingEngine::ImageProcessor::ImageProcessor(
+	const VolumeNumericMeta &volumeNumericMeta, const bool &activeFlag) :
+	__volumeNumericMeta(volumeNumericMeta), __volumeLoaded(activeFlag),
+	__slicingPointMgr(__samplingStepArr), __anchorMgr(__samplingStepArr)
 {
 	using namespace __Device::__ImgProc;
-	
 	__transferTable.filterMode = cudaTextureFilterMode::cudaFilterModeLinear;
 }
 
-void RenderingEngine::ImageProcessor::__onLoadVolume()
+static float __calcSamplingStep(const float width, const float height)
 {
-	__init();
-}
+	float retVal = (SQUARE(width) + SQUARE(height));
 
-void RenderingEngine::ImageProcessor::__sync()
-{
-	if (__transferTableDirty)
-		__syncTransferFunction();
-}
-
-void RenderingEngine::ImageProcessor::__syncTransferFunction()
-{
-	const float RANGE_INV =
-		(1.f / static_cast<float>(_transferTableBoundary.end - _transferTableBoundary.start));
-
-	const Range<int> BOUNDARY = _transferTableBoundary.castTo<int>();
-
-	const int ITER = __volumeMeta.voxelPrecision;
-	for (int i = 0; i < ITER; i++)
-	{
-		if (i < BOUNDARY.start)
-			__pHostTransferTableBuffer[i] = 0.f;
-		else if (i < BOUNDARY.end)
-			__pHostTransferTableBuffer[i] = (static_cast<float>(i - BOUNDARY.start) * RANGE_INV);
-		else
-			__pHostTransferTableBuffer[i] = 1.f;
-	}
-
-	cudaMemcpyToArray(
-		__transferTableBuffer, 0, 0, __pHostTransferTableBuffer,
-		__volumeMeta.voxelPrecision * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
-
-	__transferTableDirty = false;
+	return (sqrtf(retVal) / 400.f);
 }
 
 void RenderingEngine::ImageProcessor::__init()
 {
 	__release();
 
-	__pHostTransferTableBuffer = new float[__volumeMeta.voxelPrecision];
+	__pTransferFunction = new MonoTransferFunction(__volumeNumericMeta.voxelPrecision);
 
 	const cudaChannelFormatDesc DESC = cudaCreateChannelDesc<float>();
+	cudaMallocArray(&__transferTableBuffer, &DESC, __volumeNumericMeta.voxelPrecision * sizeof(float));
+	cudaBindTextureToArray(__Device::__ImgProc::__transferTable, __transferTableBuffer);
 
-	cudaMallocArray(
-		&__transferTableBuffer, &DESC, __volumeMeta.voxelPrecision * sizeof(float));
+	initTransferFunction();
 
-	using namespace __Device::__ImgProc;
-	cudaBindTextureToArray(__transferTable, __transferTableBuffer);
+	const Size3D<float> &VOL_SIZE = __volumeNumericMeta.volSize;
 
-	volumeHalfSize = (__volumeMeta.size.castTo<float>() * .5f);
+	__slicingPointMgr.init(VOL_SIZE);
+	__anchorMgr.init(VOL_SIZE);
 
-	_transferTableBoundary.set(0, __volumeMeta.voxelPrecision);
-	__transferTableDirty = true;
-
-	__slicingPointMgr.init(__volumeMeta.size);
-	__anchorMgr.init(__volumeMeta.size);
-
-	__samplingStep_top = 2.f;
-	__samplingStep_front = 2.f;
-	__samplingStep_right = 2.f;
+	__samplingStepArr[SliceAxis::TOP] = __calcSamplingStep(VOL_SIZE.width, VOL_SIZE.height);
+	__samplingStepArr[SliceAxis::FRONT] = __calcSamplingStep(VOL_SIZE.width, VOL_SIZE.depth);
+	__samplingStepArr[SliceAxis::RIGHT] = __calcSamplingStep(VOL_SIZE.height, VOL_SIZE.depth);
 }
 
 void RenderingEngine::ImageProcessor::__release()
 {
-	if (__transferTableBuffer)
+	if (__volumeLoaded)
 	{
-		using namespace __Device::__ImgProc;
-		cudaUnbindTexture(__transferTable);
+		cudaUnbindTexture(__Device::__ImgProc::__transferTable);
 
 		cudaFreeArray(__transferTableBuffer);
 		__transferTableBuffer = nullptr;
 
-		delete[] __pHostTransferTableBuffer;
-		__pHostTransferTableBuffer = nullptr;
+		delete __pTransferFunction;
+		__pTransferFunction = nullptr;
 	}
+}
+
+void RenderingEngine::ImageProcessor::__syncTransferFunction()
+{
+	cudaMemcpyToArray(
+		__transferTableBuffer, 0, 0, __pTransferFunction->getBuffer(),
+		__pTransferFunction->PRECISION * sizeof(float), cudaMemcpyKind::cudaMemcpyHostToDevice);
 }
 
 Index2D<> RenderingEngine::ImageProcessor::
@@ -904,15 +900,9 @@ getSlicingPointForScreen(const Size2D<> &screenSize, const SliceAxis axis)
 	return __anchorMgr.getSlicingPointForScreen(screenSize, slicingPointAdj, axis);
 }
 
-void RenderingEngine::ImageProcessor::setTransferFunction(const ushort startInc, const ushort endExc)
+const Point3D &RenderingEngine::ImageProcessor::getSlicingPoint() const
 {
-	_transferTableBoundary.set(startInc, endExc);
-	__transferTableDirty = true;
-}
-
-void RenderingEngine::ImageProcessor::setTransferFunction(const Range<ushort> &range)
-{
-	setTransferFunction(range.start, range.end);
+	return __slicingPointMgr.getSlicingPoint();
 }
 
 void RenderingEngine::ImageProcessor::setSlicingPointFromScreen(
@@ -922,51 +912,63 @@ void RenderingEngine::ImageProcessor::setSlicingPointFromScreen(
 		screenSize, screenIdx, __anchorMgr.getAnchorAdj(axis), axis);
 }
 
+void RenderingEngine::ImageProcessor::setSlicingPointAdj(const Point3D &adj)
+{
+	__slicingPointMgr.setSlicingPointAdj(adj);
+}
+
+void RenderingEngine::ImageProcessor::setSlicingPoint(const Point3D &point)
+{
+	__slicingPointMgr.setSlicingPoint(point);
+}
+
+const Point2D &RenderingEngine::ImageProcessor::getAnchorAdj(const SliceAxis axis) const
+{
+	return __anchorMgr.getAnchorAdj(axis);
+}
+
+void RenderingEngine::ImageProcessor::setAnchorAdj(
+	const float adjX, const float adjY, const SliceAxis axis)
+{
+	__anchorMgr.setAnchorAdj(adjX, adjY, axis);
+}
+
 void RenderingEngine::ImageProcessor::adjustSlicingPoint(const float delta, const SliceAxis axis)
 {
 	__slicingPointMgr.adjustSlicingPoint(delta, axis);
 }
 
-void RenderingEngine::ImageProcessor::adjustSamplingStep(const float delta, const SliceAxis axis)
+void RenderingEngine::ImageProcessor::adjustAnchor(
+	const float deltaX, const float deltaY, const SliceAxis axis)
 {
-	float *pTarget = nullptr;
-
-	switch (axis)
-	{
-	case SliceAxis::TOP:
-		pTarget = &__samplingStep_top;
-		break;
-
-	case SliceAxis::FRONT:
-		pTarget = &__samplingStep_front;
-		break;
-
-	case SliceAxis::RIGHT:
-		pTarget = &__samplingStep_right;
-		break;
-	}
-
-	*pTarget += delta;
-
-	if (*pTarget < .1f)
-		*pTarget = .1f;
-	else if (*pTarget > 4.f)
-		*pTarget = 4.f;
+	__anchorMgr.adjustAnchor(deltaX, deltaY, axis);
 }
 
-void RenderingEngine::ImageProcessor::adjustAnchor(
-	const float deltaHoriz, const float deltaVert, const SliceAxis axis)
+void RenderingEngine::ImageProcessor::adjustSamplingStep(const float delta, const SliceAxis axis)
 {
-	__anchorMgr.adjustAnchor(deltaHoriz, deltaVert, axis);
+	__samplingStepArr[axis] =
+		NumberUtility::truncate(__samplingStepArr[axis] + delta, .1f, 4.f);
+}
+
+bool RenderingEngine::ImageProcessor::initTransferFunction()
+{
+	IF_F_RET_F(__pTransferFunction);
+
+	__pTransferFunction->init();
+	__syncTransferFunction();
+
+	EventBroadcaster &eventBroadcaster = SystemIndirectAccessor::getEventBroadcaster();
+	eventBroadcaster.notifySliceTransferFunctionInit();
+	eventBroadcaster.notifySliceTransferFunctionUpdate();
+
+	return true;
 }
 
 void RenderingEngine::ImageProcessor::render(
 	Pixel *const pScreen, const int screenWidth, const int screenHeight, const SliceAxis axis)
 {
-	if (__initialized)
+	if (__volumeLoaded)
 	{
-		__sync();
-
 		using namespace __Device::__ImgProc;
 
 		const dim3 gridDim =
@@ -983,17 +985,17 @@ void RenderingEngine::ImageProcessor::render(
 		{
 		case SliceAxis::TOP:
 			__kernel_imgProcRender_top<<<gridDim, blockDim>>>(
-				pScreen, { screenWidth, screenHeight }, anchor, __samplingStep_top, slicingPoint.z);
+				pScreen, { screenWidth, screenHeight }, anchor, __samplingStepArr[axis], slicingPoint.z);
 			break;
 
 		case SliceAxis::FRONT:
 			__kernel_imgProcRender_front<<<gridDim, blockDim>>>(
-				pScreen, { screenWidth, screenHeight }, anchor, __samplingStep_front, slicingPoint.y);
+				pScreen, { screenWidth, screenHeight }, anchor, __samplingStepArr[axis], slicingPoint.y);
 			break;
 
 		case SliceAxis::RIGHT:
 			__kernel_imgProcRender_right<<<gridDim, blockDim>>>(
-				pScreen, { screenWidth, screenHeight }, anchor, __samplingStep_right, slicingPoint.x);
+				pScreen, { screenWidth, screenHeight }, anchor, __samplingStepArr[axis], slicingPoint.x);
 			break;
 		}
 	}

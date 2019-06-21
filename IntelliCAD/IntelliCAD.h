@@ -26,6 +26,8 @@
 
 class CIntelliCADApp : public CWinAppEx
 {
+	DECLARE_MESSAGE_MAP()
+
 public:
 	CIntelliCADApp() noexcept;
 
@@ -41,7 +43,10 @@ public:
 	virtual void SaveCustomState();
 
 	afx_msg void OnAppAbout();
-	DECLARE_MESSAGE_MAP()
+	virtual BOOL OnIdle(LONG lCount);
+
+	const CString& getRecentFileName(const int index) const;
+	virtual void AddToRecentFileList(LPCTSTR lpszPathName);
 };
 
 extern CIntelliCADApp theApp;

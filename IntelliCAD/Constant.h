@@ -61,8 +61,14 @@ namespace Constant
 		extern const Vector3D UP;
 	}
 
-	namespace Database
+	namespace DB
 	{
-		extern const std::tstring DB_ROOT;
+		extern const std::tstring ROOT_DIR;
+		extern const std::tstring CONFIG_SUBPATH;
+	}
+
+	namespace UI
+	{
+		extern const std::tstring TAB_NAMES[];
 	}
 }
