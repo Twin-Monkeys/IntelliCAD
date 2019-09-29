@@ -2,10 +2,10 @@
 
 # IntelliCAD
 
-오늘날 국내 영상의학 전문의의 부족으로 인하여, 의료 영상(X-ray, CT, MRI)을 촬영한 직후 판독까지 걸리는 시간이 증가하고 있습니다.
+> 오늘날 국내 영상의학 전문의의 부족으로 인하여, 의료 영상(X-ray, CT, MRI) 촬영 후 판독에 소요되는 시간이 증가하고 있습니다.
 
-IntelliCAD는 시각화에 특화된 CAD(Computer-Aided Detection and Diagnosis) 프로그램입니다.<br> 
-영상의학 전문의 및 관련업 종사자의 업무 보조 용도로 개발되었습니다.
+> IntelliCAD는 시각화에 특화된 CAD(Computer-Aided Detection and Diagnosis) 프로그램입니다.<br>
+  영상의학 전문의 및 관련업 종사자의 업무 보조 용도로 개발되었습니다.
 
 대표적인 기능들은 다음과 같습니다.
 
@@ -75,7 +75,7 @@ IntelliCAD는 시각화에 특화된 CAD(Computer-Aided Detection and Diagnosis)
 </table>
 
 다양한 렌더링 기능을 제공하기 위하여, GPU를 최대한 활용하고 싶었습니다.<br>
-그러나 저희 요구사항을 100% 만족시켜주는 상용 렌더링 프레임워크를 찾을 수 없었습니다.
+그러나 저희 요구사항을 100% 만족시켜주는 상용 렌더링 프레임워크를 찾을 수 없었습니다.<br>
 다음 기능들이 필요했습니다.
 
 - MFC GDI+ 캔버스 버퍼를 GPU 렌더 타겟으로 설정하여, host-device간 렌더링 협업을 하고자 하였습니다.<br>
