@@ -114,14 +114,14 @@ shear-warp은 품질 이슈를 포함한 몇 가지 한계점이 존재하기 �
 
 프로젝트 구조는 크게 UI 레이어, System 레이어, Worker 레이어로 나뉩니다. UI 레이어에서는 GUI 환경을 통해 사용자와 상호작용을 수행하게 됩니다. System 레이어에는 이벤트 브로드캐스터와 비동기 작업관리자가 있으며, 이벤트와 실제 로직 수행을 분리하는 역할을 담당합니다. 이벤트 브로드캐스터는 이벤트의 종류에 따라 실제 작업을 수행할 워커 모듈 및 파라미터를 parsing하여 비동기 작업관리자에게 넘겨줍니다. 이후 비동기 작업관리자는 이 정보를 기반으로 새로운 스레드와 작업을 생성하여 워커 모듈에게 작업 수행을 지시합니다. 워커 모듈이 작업을 완료하게 되면 비동기 작업 관리자에게 반환 값과 함께 작업이 완료되었음을 보고하고, 이러한 보고는 “완료된 작업” 큐에 쌓여 보관됩니다. 마지막으로 메인 루프에서 주기적으로 완료된 작업 큐에서 작업들을 꺼내 이벤트 브로드캐스터로 보고합니다.
 
-이러한 전체적인 프로젝트 메커니즘은 다음과 같습니다.
+프로젝트 메커니즘은 다음과 같습니다.
 <p><kbd><img src="md/demo19.png"></kbd></p>
 
-아래는 전체적인 프로그램 데모 영상입니다.
+아래는 데모 영상입니다.
 <p><a href="https://drive.google.com/open?id=1XzVM9GKDroPljC6qRziqWyzS9PnUJLMM"><img src="md/demo20.png" width="400"></a></p>
 
 > 레퍼런스<br>
 [1]	Lacroute, Philippe, and Marc Levoy.<br> 
-    "Fast volume rendering using a shear-warp factorization of the viewing transformation."<br>
-    Proceedings of the 21st annual conference on Computer graphics and interactive techniques. ACM, 1994.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"Fast volume rendering using a shear-warp factorization of the viewing transformation."<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Proceedings of the 21st annual conference on Computer graphics and interactive techniques. ACM, 1994.<br>
 [2]	Levoy, Marc. "Display of surfaces from volume data." IEEE Computer graphics and Applications 8.3 (1988): 29-37.
