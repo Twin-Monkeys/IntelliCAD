@@ -107,7 +107,6 @@ shear-warp은 품질 이슈를 포함한 몇 가지 한계점이 존재하기 �
     <img src="md/demo16.png" width="250">&nbsp;<img src="md/demo17.png" width="250">&nbsp;<img src="md/demo18.png" width="250">
   </td></tr>
   <tr><td>
-    그림 3<br>
     좌측부터 머리, 흉부, 복부입니다. 셰이딩 및 필터링 조건을 다양하게 부여하였습니다.
   </td></tr>
 </table>
