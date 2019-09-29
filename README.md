@@ -2,12 +2,13 @@
 
 # IntelliCAD
 
-> 오늘날 국내 영상의학 전문의의 부족으로 인하여, 의료 영상(X-ray, CT, MRI) 촬영 후 판독에 소요되는 시간이 증가하고 있습니다.
+> 오늘날 국내 영상의학 전문의의 부족으로 인하여,<br> 
+  의료 영상(X-ray, CT, MRI) 촬영 후 판독에 소요되는 시간이 증가하고 있습니다.
 
 > IntelliCAD는 시각화에 특화된 CAD(Computer-Aided Detection and Diagnosis) 프로그램입니다.<br>
   영상의학 전문의 및 관련업 종사자의 업무 보조 용도로 개발되었습니다.
 
-대표적인 기능들은 다음과 같습니다.
+기능은 다음과 같습니다.
 
 <table>
   <tr><td><img src="md/demo1.PNG"></td></tr>
